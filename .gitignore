@@ -1,0 +1,21 @@
+# dependencies
+/pose3d-client-frontend/node_modules
+/pose3d-client-frontend/.pnp
+/pose3d-client-frontend/.pnp.js
+
+# testing
+/pose3d-client-frontend/coverage
+
+# production
+/pose3d-client-frontend/build
+
+# misc
+/pose3d-client-frontend/.DS_Store
+/pose3d-client-frontend/.env.local
+/pose3d-client-frontend/.env.development.local
+/pose3d-client-frontend/.env.test.local
+/pose3d-client-frontend/.env.production.local
+
+/pose3d-client-frontend/npm-debug.log*
+/pose3d-client-frontend/yarn-debug.log*
+/pose3d-client-frontend/yarn-error.log*
