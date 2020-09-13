@@ -1,0 +1,59 @@
+.App {
+    margin: auto;
+    padding-top: 110px;
+    width: fit-content;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ? Startpage */
+.startpagemain-container {
+    padding-top: 110px;
+    margin: auto;
+    width: fit-content;
+}
+.startpagemain-button-container {
+    margin: auto;
+    margin-top: 40px;
+    width: fit-content;
+}
+.startpagemain-button-container button{
+    font-size: 1.4em;
+    width: fit-content;
+}
+
+/* ? Canvas */
+.canvas-container {
+    opacity: 1;
+}
+
+/* ? Pose */
+.posemain-container {
+    display: inline-block;
+    margin: auto;
+    width: fit-content;
+
+}
+
+.posemain-container img{
+    margin: auto;
+    position: absolute;
+    z-index: -1;
+}
+.posemain-container canvas{
+    margin: auto;
+    position: absolute;
+}
+
+/* ? VModel */
+.vmodelmain-container {
+    display: inline-block;
+    width: fit-content;
+}
