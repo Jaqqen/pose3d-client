@@ -18,7 +18,7 @@ export default class PoseMain extends Component {
             hasVideoSrcLoaded: false,
             _srcRef: null,
             srcPanelIdentifier: 'video',
-        }
+        };
 
         //? bindings
         this.getPosenetModel = this.getPosenetModel.bind(this);
@@ -42,9 +42,11 @@ export default class PoseMain extends Component {
     }
 
     getImageSrcOnLoad(srcRef) {
+        const { container } = this.state
+
         this.setState({
             container: {
-                ...this.state.container,
+                ...container,
                 height: srcRef.height,
                 width: srcRef.width,
             },
@@ -54,9 +56,11 @@ export default class PoseMain extends Component {
     }
 
     getVideoSrcOnPlay(srcRef) {
+        const { container } = this.state
+
         this.setState({
             container: {
-                ...this.state.container,
+                ...container,
                 height: srcRef.height,
                 width: srcRef.width,
             },
@@ -78,7 +82,6 @@ export default class PoseMain extends Component {
                     srcType={srcType}
                     srcRef={_srcRef}
                     _posenetModel={_posenetModel}
-
                 />
             );
         }

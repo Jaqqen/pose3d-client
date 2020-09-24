@@ -22,7 +22,7 @@ export default class PoseCam extends Component {
         const webcamVideo = this.webcamRef.current.video;
 
         webcamVideo.addEventListener('loadedmetadata', () => {
-             webcamVideo.height = webcamVideo.clientHeight;
+            webcamVideo.height = webcamVideo.clientHeight;
             getVideoSrcOnPlay(webcamVideo);
         });
     }

@@ -45,10 +45,10 @@ export default class PoseCanvas extends Component {
     }
 
     setDimensions() {
-        const { _srcRef } = this.state
+        const { _srcRef } = this.state;
 
         const width = _srcRef.width;
-        const height = _srcRef.height; 
+        const height = _srcRef.height;
 
         this.canvasRef.current.width = width;
         this.canvasRef.current.height = height;
@@ -59,8 +59,8 @@ export default class PoseCanvas extends Component {
         };
     }
 
-    async captureVideo(ctx, dimensions) {
-        const { _posenetModel, _srcRef } = this.state
+    captureVideo(ctx, dimensions) {
+        const { _posenetModel, _srcRef } = this.state;
 
         _srcRef.onplay = () => {
             const step = async () => {
@@ -122,7 +122,7 @@ export default class PoseCanvas extends Component {
         };
 
         ctx.beginPath();
-        ctx.arc(wholeValue(x), wholeValue(y), 5, 0, 2*Math.PI, false);
+        ctx.arc(wholeValue(x), wholeValue(y), 6, 0, 2*Math.PI, false);
         ctx.fillStyle = color;
         ctx.fill();
         ctx.lineWidth = 2;

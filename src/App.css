@@ -47,13 +47,11 @@
     position: absolute;
     z-index: -1;
 }
+.posemain-container video{
+    opacity: 0.3;
+    z-index: -1;
+}
 .posemain-container canvas{
     margin: auto;
     position: absolute;
-}
-
-/* ? VModel */
-.vmodelmain-container {
-    display: inline-block;
-    width: fit-content;
 }

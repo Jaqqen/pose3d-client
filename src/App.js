@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import 'App.css';
 import PoseMain from "components/pose/PoseMain";
-import VModelMain from "components/vmodel/VModelMain";
 import StartPageMain from 'components/startpage/StartPageMain';
 
 export default class App extends Component {
@@ -21,11 +20,12 @@ export default class App extends Component {
     }
 
     getContentPanel() {
-        if (this.state.hasMainAppStarted) {
+        const { hasMainAppStarted } = this.state;
+
+        if (hasMainAppStarted) {
             return (
                 <div className="App">
                     <PoseMain />
-                    <VModelMain />
                 </div>
             );
         }

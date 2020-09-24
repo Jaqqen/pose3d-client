@@ -10,7 +10,7 @@ export default class StartPageMain extends Component {
                     Please follow the instructions in the following page after clicking on <b>Start</b>
                 </p>
                 <div className={CLASSNAME.startpageMainButtonContainer}>
-                    <button onClick={this.props.renderMainAppPanel} >Start</button>
+                    <button autoFocus={true} onClick={this.props.renderMainAppPanel} >Start</button>
                 </div>
             </div>
         )
