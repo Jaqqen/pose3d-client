@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import 'App.css';
 import PoseMain from "components/pose/PoseMain";
 import StartPageMain from 'components/startpage/StartPageMain';
+import VoiceHandler from 'components/voice/VoiceHandler';
 
 export default class App extends Component {
     constructor(props) {
@@ -26,6 +27,7 @@ export default class App extends Component {
             return (
                 <div className="App">
                     <PoseMain />
+                    <VoiceHandler />
                 </div>
             );
         }

@@ -1,0 +1,1 @@
+export const voiceHanlder = "voice-handler";
