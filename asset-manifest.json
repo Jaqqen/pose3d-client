@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/pose3d-client/static/css/main.e89b774c.chunk.css",
+    "main.js": "/pose3d-client/static/js/main.739d3007.chunk.js",
+    "main.js.map": "/pose3d-client/static/js/main.739d3007.chunk.js.map",
+    "runtime-main.js": "/pose3d-client/static/js/runtime-main.39d3b9cf.js",
+    "runtime-main.js.map": "/pose3d-client/static/js/runtime-main.39d3b9cf.js.map",
+    "static/js/2.7e969263.chunk.js": "/pose3d-client/static/js/2.7e969263.chunk.js",
+    "static/js/2.7e969263.chunk.js.map": "/pose3d-client/static/js/2.7e969263.chunk.js.map",
+    "index.html": "/pose3d-client/index.html",
+    "precache-manifest.949c482083da203574e540a05b23ccb1.js": "/pose3d-client/precache-manifest.949c482083da203574e540a05b23ccb1.js",
+    "service-worker.js": "/pose3d-client/service-worker.js",
+    "static/css/main.e89b774c.chunk.css.map": "/pose3d-client/static/css/main.e89b774c.chunk.css.map",
+    "static/js/2.7e969263.chunk.js.LICENSE.txt": "/pose3d-client/static/js/2.7e969263.chunk.js.LICENSE.txt",
+    "static/media/dURRLkVfHr7ZRqTSHeHTEj-1366-80.jpg": "/pose3d-client/static/media/dURRLkVfHr7ZRqTSHeHTEj-1366-80.95c13657.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.39d3b9cf.js",
+    "static/js/2.7e969263.chunk.js",
+    "static/css/main.e89b774c.chunk.css",
+    "static/js/main.739d3007.chunk.js"
+  ]
+}
