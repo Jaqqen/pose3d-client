@@ -10,7 +10,7 @@ export default function VoiceHandler() {
     recognition.lang = "en-US";
     recognition.start();
 
-    let registeredSpeechRecogAlternatives = {};
+    let registeredSpeechRecogAlternatives = {0: {}};
     let currentSpeechRecogSession = 0;
     let isError = false;
 
@@ -71,7 +71,7 @@ export default function VoiceHandler() {
 
         recognition.onerror = (eventError) => {
             setIsError(true);
-            console.error(eventError);
+            if (eventError.error !== 'no-speech') console.error(eventError);
         };
 
     })
