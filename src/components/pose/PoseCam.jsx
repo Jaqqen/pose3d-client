@@ -28,13 +28,12 @@ export default class PoseCam extends Component {
     }
 
     render() {
-
         return (
             <React.Fragment>
                 <Webcam
                     ref={this.webcamRef}
                     audio={false}
-                    width={700}
+                    width={document.body.clientWidth * 0.7}
                     screenshotFormat='image/jpeg'
                     screenshotQuality={1}
                 />

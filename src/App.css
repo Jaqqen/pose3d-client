@@ -1,7 +1,17 @@
 .App {
     margin: auto;
-    padding-top: 110px;
+    padding-top: 65px;
     width: fit-content;
+}
+
+.app-loading {
+    opacity: 0;
+}
+
+
+.loading-screen {
+    width: fit-content;
+    margin: auto;
 }
 
 @keyframes App-logo-spin {

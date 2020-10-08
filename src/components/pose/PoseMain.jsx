@@ -42,13 +42,19 @@ export default class PoseMain extends Component {
     }
 
     getImageSrcOnLoad(srcRef) {
-        const { container } = this.state
+        const { container } = this.state;
+        const { getPixiJSMainDimensions } = this.props;
+
+        const _height = srcRef.height;
+        const _width = srcRef.width;
+
+        getPixiJSMainDimensions(_width, _height);
 
         this.setState({
             container: {
                 ...container,
-                height: srcRef.height,
-                width: srcRef.width,
+                height: _height,
+                width: _width,
             },
             hasImageSrcLoaded: true,
             _srcRef: srcRef,
@@ -56,13 +62,19 @@ export default class PoseMain extends Component {
     }
 
     getVideoSrcOnPlay(srcRef) {
-        const { container } = this.state
+        const { container } = this.state;
+        const { getPixiJSMainDimensions } = this.props;
+
+        const _height = srcRef.height;
+        const _width = srcRef.width;
+
+        getPixiJSMainDimensions(_width, _height);
 
         this.setState({
             container: {
                 ...container,
-                height: srcRef.height,
-                width: srcRef.width,
+                height: _height,
+                width: _width,
             },
             hasVideoSrcLoaded: true,
             _srcRef: srcRef,
@@ -123,7 +135,7 @@ export default class PoseMain extends Component {
             )
         }
 
-        return ".-`´-. Loading... .-`´-.";
+        return null;
     }
 
     render() { return this.getPoseMainContentPanel(); }
