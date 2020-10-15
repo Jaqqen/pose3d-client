@@ -9,14 +9,15 @@ export default class PoseMain extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            _posenetModel: null,
+            _srcRef: null,
             container: {
                 height: 0,
                 width: 0,
             },
-            _posenetModel: null,
             hasImageSrcLoaded: false,
             hasVideoSrcLoaded: false,
-            _srcRef: null,
+            isMirrored: true,
             srcPanelIdentifier: 'video',
         };
 
@@ -82,7 +83,8 @@ export default class PoseMain extends Component {
     }
 
     getPoseCanvas() {
-        const { hasImageSrcLoaded, hasVideoSrcLoaded, _posenetModel, _srcRef } = this.state;
+        const { hasImageSrcLoaded, hasVideoSrcLoaded,
+                _posenetModel, _srcRef, isMirrored } = this.state;
 
         let srcType = null;
         if (hasVideoSrcLoaded) srcType = 'video';
@@ -91,6 +93,7 @@ export default class PoseMain extends Component {
         if (srcType !== null) {
             return (
                 <PoseCanvas
+                    isMirrored={isMirrored}
                     srcType={srcType}
                     srcRef={_srcRef}
                     _posenetModel={_posenetModel}
@@ -101,7 +104,7 @@ export default class PoseMain extends Component {
     }
 
     getSrcPanel() {
-        const { srcPanelIdentifier } = this.state;
+        const { srcPanelIdentifier, isMirrored } = this.state;
 
         if (srcPanelIdentifier === 'image') {
             return (
@@ -113,6 +116,7 @@ export default class PoseMain extends Component {
             return (
                 <PoseCam
                     getVideoSrcOnPlay={this.getVideoSrcOnPlay}
+                    isMirrored={isMirrored}
                 />
             );
         } else {

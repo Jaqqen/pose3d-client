@@ -153,9 +153,11 @@ export default class PoseCanvas extends Component {
     }
 
     render() {
+        const { isMirrored } = this.props;
+
         return (
             <React.Fragment>
-                <div className={CLASSNAME.canvasContainer}>
+                <div className={isMirrored ? CLASSNAME.canvasContainerFlipped : CLASSNAME.canvasContainer}>
                     <canvas
                         ref={this.canvasRef}
                         width={100}

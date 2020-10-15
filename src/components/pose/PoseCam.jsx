@@ -28,14 +28,17 @@ export default class PoseCam extends Component {
     }
 
     render() {
+        const { isMirrored } = this.props;
+
         return (
             <React.Fragment>
                 <Webcam
-                    ref={this.webcamRef}
                     audio={false}
-                    width={document.body.clientWidth * 0.7}
+                    mirrored={isMirrored}
+                    ref={this.webcamRef}
                     screenshotFormat='image/jpeg'
                     screenshotQuality={1}
+                    width={document.body.clientWidth * 0.7}
                 />
             </React.Fragment>
         );

@@ -43,6 +43,10 @@
 .canvas-container {
     opacity: 1;
 }
+.canvas-container-flipped {
+    opacity: 1;
+    transform: scaleX(-1);
+}
 
 /* ? Pose */
 .posemain-container {
