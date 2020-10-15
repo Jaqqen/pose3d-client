@@ -6,7 +6,7 @@ import PoseMain from "components/pose/PoseMain";
 import React, { Component } from 'react';
 import StartPageMain from 'components/startpage/StartPageMain';
 import VoiceHandler from 'components/voice/VoiceHandler';
-
+import DatGui from "shared/DatGui";
 
 export default class App extends Component {
     constructor(props) {
@@ -52,6 +52,7 @@ export default class App extends Component {
                             getPixiJSMainDimensions={this.getPixiJSMainDimensions}
                         />
                         <VoiceHandler />
+                        <DatGui />
                         <PixiJSMain 
                             height={pixiJSMain.height}
                             width={pixiJSMain.width}
