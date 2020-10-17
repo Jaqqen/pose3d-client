@@ -1,17 +1,19 @@
 import * as ID from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 
 export default function PixiStage(props) {
+
     const stageProps = {
         antialias: true,
         height: props.height,
-        transparent: false,
+        transparent: true,
         width: props.width,
     };
 
     const app = new PIXI.Application({...stageProps});
+    app.view.id = ID.pixiJsCanvas;
 
     useEffect(() => {
         document.getElementById(ID.pixiJsContainer).appendChild(app.view);
@@ -40,6 +42,6 @@ export default function PixiStage(props) {
     }, [app, props]);
 
     return (
-        <div id={ID.pixiJsContainer}></div>
+        <Fragment></Fragment>
     )
 }

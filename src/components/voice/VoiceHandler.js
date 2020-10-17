@@ -77,6 +77,6 @@ export default function VoiceHandler() {
     })
 
     return (
-        <span id={voiceHanlder}>V2E</span>
+        <span id={voiceHanlder}></span>
     )
 }

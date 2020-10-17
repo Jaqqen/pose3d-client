@@ -1,13 +1,12 @@
 .App {
     margin: auto;
-    padding-top: 65px;
+    padding-top: 50px;
     width: fit-content;
 }
 
 .app-loading {
     opacity: 0;
 }
-
 
 .loading-screen {
     width: fit-content;
@@ -52,8 +51,9 @@
 .posemain-container {
     display: inline-block;
     margin: auto;
+    position: absolute;
     width: fit-content;
-
+    z-index: 1;
 }
 
 .posemain-container img{
@@ -62,7 +62,7 @@
     z-index: -1;
 }
 .posemain-container video{
-    opacity: 0.3;
+    opacity: 0;
     z-index: -1;
 }
 .posemain-container canvas{
