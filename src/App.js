@@ -7,6 +7,9 @@ import React, { Component } from 'react';
 import StartPageMain from 'components/startpage/StartPageMain';
 import VoiceHandler from 'components/voice/VoiceHandler';
 
+import { getPosenetModel } from 'components/pose/PoseHandler';
+import { setPosenetModule } from 'components/pose/PosenetModelModule';
+
 
 export default class App extends Component {
     constructor(props) {
@@ -24,9 +27,13 @@ export default class App extends Component {
         this.renderMainAppPanel = this.renderMainAppPanel.bind(this);
     }
 
-    renderMainAppPanel() {
+    async renderMainAppPanel() {
         const startWebcam = window.confirm("Enable Webcam to start tracking?");
         this.setState({ hasMainAppStarted: startWebcam, });
+        if (startWebcam) {
+            const model = await getPosenetModel();
+            setPosenetModule(model);
+        }
     } 
 
     getPixiJSMainDimensions(_width, _height) {
@@ -39,7 +46,7 @@ export default class App extends Component {
                 width: _width,
             },
         });
-    } 
+    }
 
     getContentPanel() {
         const { hasMainAppStarted, pixiJSMain, } = this.state;
@@ -48,11 +55,11 @@ export default class App extends Component {
             if (pixiJSMain.height !== 0 && pixiJSMain.width !== 0) {
                 return (
                     <div className={CLASSNAME.app}>
-                        <PoseMain 
+                        <PoseMain
                             getPixiJSMainDimensions={this.getPixiJSMainDimensions}
                         />
                         <VoiceHandler />
-                        <PixiJSMain 
+                        <PixiJSMain
                             height={pixiJSMain.height}
                             width={pixiJSMain.width}
                         />
@@ -63,7 +70,7 @@ export default class App extends Component {
             return (
                 <React.Fragment>
                     <div className={`${CLASSNAME.app} ${CLASSNAME.appLoading}`}>
-                        <PoseMain 
+                        <PoseMain
                             getPixiJSMainDimensions={this.getPixiJSMainDimensions}
                         />
                     </div>

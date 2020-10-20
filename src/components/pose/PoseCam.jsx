@@ -1,3 +1,5 @@
+import * as ID from 'shared/IdConstants';
+
 import React, { Component } from 'react'
 import Webcam from 'react-webcam';
 
@@ -34,6 +36,7 @@ export default class PoseCam extends Component {
             <React.Fragment>
                 <Webcam
                     audio={false}
+                    id={ID.poseWebcam}
                     mirrored={isMirrored}
                     ref={this.webcamRef}
                     screenshotFormat='image/jpeg'

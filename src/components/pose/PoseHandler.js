@@ -1,5 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 
+import { posenetModule } from "components/pose/PosenetModelModule";
+
 export const getPosenetModel = async () => {
     return await posenet.load({
         architecture: 'ResNet50',
@@ -21,6 +23,18 @@ export let estimatePoseOnImage = (poseNet, imageElement) => {
         );
     });
 
-
     return p;
+};
+
+export const captureVideo = async (ctx, dimensions, _srcRef, renderFunction) => {
+    _srcRef.onplay = () => {
+        const step = async () => {
+            let coordinates = await estimatePoseOnImage(posenetModule, _srcRef);
+            ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+            renderFunction(coordinates, ctx)
+            requestAnimationFrame(step);
+        };
+
+        requestAnimationFrame(step);
+    };
 };
