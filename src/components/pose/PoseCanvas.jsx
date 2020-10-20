@@ -38,7 +38,7 @@ export default class PoseCanvas extends Component {
         //? get coordinates
         if (srcType === media.image) {
             const poseCoordinates = await this.getPoseCoordinates();
-            drawJoints(poseCoordinates, ctx);
+            if (poseCoordinates !== null) drawJoints(poseCoordinates, ctx);
         }
         if (srcType === media.video) {
             captureVideo(ctx, dimensions, _srcRef, drawJoints);

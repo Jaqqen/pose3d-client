@@ -79,7 +79,7 @@ export default function PixiInteraction(props) {
         src.onplay = () => {
             const step = async () => {
                 let coordinates = await estimatePoseOnImage(posenetModule, src);
-                renderBodyPart(interactionType, app, coordinates);
+                if (coordinates !== null) renderBodyPart(interactionType, app, coordinates);
                 requestAnimationFrame(step);
             };
 

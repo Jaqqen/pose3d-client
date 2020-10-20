@@ -12,26 +12,32 @@ export const getPosenetModel = async () => {
 };
 
 export let estimatePoseOnImage = (poseNet, imageElement) => {
-    const p = new Promise((resolve) => {
-        resolve(
-            poseNet.estimateSinglePose(imageElement, {
-                flipHorizontal: false,
-                maxDetections: 5,
-                scoreThreshold: 0.1,
-                nmsRadius: 20,
-            })
-        );
-    });
+    if (imageElement !== null || imageElement !== undefined) {
+        const p = new Promise((resolve) => {
+            resolve(
+                poseNet.estimateSinglePose(imageElement, {
+                    flipHorizontal: false,
+                    maxDetections: 5,
+                    scoreThreshold: 0.1,
+                    nmsRadius: 20,
+                })
+            );
+        });
 
-    return p;
+        return p;
+    }
+
+    return null;
 };
 
 export const captureVideo = async (ctx, dimensions, _srcRef, renderFunction) => {
     _srcRef.onplay = () => {
         const step = async () => {
             let coordinates = await estimatePoseOnImage(posenetModule, _srcRef);
-            ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-            renderFunction(coordinates, ctx)
+            if (coordinates !== null) {
+                ctx.clearRect(0, 0, dimensions.width, dimensions.height);
+                renderFunction(coordinates, ctx)
+            }
             requestAnimationFrame(step);
         };
 
