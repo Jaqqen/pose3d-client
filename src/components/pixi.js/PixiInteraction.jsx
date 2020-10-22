@@ -25,14 +25,17 @@ export default function PixiInteraction(props) {
         };
 
         coordinates.keypoints.forEach((keypoint) => {
-            if (keypoint.score > 0.55) {
-                if (interactionType === interaction.hand) {
-                    if (keypoint.part === body.left.wrist) {
+            if (interactionType === interaction.hand) {
+                if (keypoint.part === body.left.wrist) {
+                    if (keypoint.score > 0.55) {
                         leftHandCoordinates.current = setCoordinates(keypoint);
-                    }
-                    if (keypoint.part === body.right.wrist) {
+                    } else { leftHandCoordinates.current = [-1000, -1000] }
+                }
+
+                if (keypoint.part === body.right.wrist) {
+                    if (keypoint.score > 0.55) {
                         rightHandCoordinates.current = setCoordinates(keypoint);
-                    }
+                    } else { rightHandCoordinates.current = [-1000, -1000] }
                 }
             }
         });

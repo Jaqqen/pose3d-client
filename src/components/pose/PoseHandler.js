@@ -1,6 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 
 import { posenetModule } from "components/pose/PosenetModelModule";
+import { logError } from "shared/P3dcLogger";
 
 export const getPosenetModel = async () => {
     return await posenet.load({
@@ -12,19 +13,25 @@ export const getPosenetModel = async () => {
 };
 
 export let estimatePoseOnImage = (poseNet, imageElement) => {
-    if (imageElement !== null || imageElement !== undefined) {
-        const p = new Promise((resolve) => {
-            resolve(
-                poseNet.estimateSinglePose(imageElement, {
-                    flipHorizontal: false,
-                    maxDetections: 5,
-                    scoreThreshold: 0.1,
-                    nmsRadius: 20,
-                })
-            );
-        });
-
-        return p;
+    try {
+        if ((imageElement !== null && imageElement !== undefined) &&
+            (poseNet !== null && poseNet !== undefined)) {
+            const p = new Promise((resolve) => {
+                resolve(
+                    poseNet.estimateSinglePose(imageElement, {
+                        flipHorizontal: false,
+                        maxDetections: 5,
+                        scoreThreshold: 0.1,
+                        nmsRadius: 20,
+                    })
+                );
+            });
+    
+            return p;
+        }
+    } catch (error) {
+        logError("Could not estimate Pose: ", error);
+        return null;
     }
 
     return null;
