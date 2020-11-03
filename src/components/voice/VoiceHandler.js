@@ -1,6 +1,5 @@
  
-import React, { useEffect } from 'react'
-import { voiceHanlder } from 'shared/IdConstants';
+import React, { Fragment, useEffect } from 'react'
 
 export default function VoiceHandler() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -74,9 +73,9 @@ export default function VoiceHandler() {
             if (eventError.error !== 'no-speech') console.error(eventError);
         };
 
-    })
+    });
 
     return (
-        <span id={voiceHanlder}></span>
+        <Fragment></Fragment>
     )
 }

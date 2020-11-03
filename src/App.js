@@ -5,7 +5,6 @@ import PixiJSMain from 'components/pixi.js/PixiJSMain';
 import PoseMain from "components/pose/PoseMain";
 import React, { Component } from 'react';
 import StartPageMain from 'components/startpage/StartPageMain';
-import VoiceHandler from 'components/voice/VoiceHandler';
 
 import { getPosenetModel } from 'components/pose/PoseHandler';
 import { setPosenetModule } from 'components/pose/PosenetModelModule';
@@ -54,11 +53,10 @@ export default class App extends Component {
         if (hasMainAppStarted) {
             if (pixiJSMain.height !== 0 && pixiJSMain.width !== 0) {
                 return (
-                    <div className={CLASSNAME.app}>
+                    <div className={CLASSNAME.appClassName}>
                         <PoseMain
                             getPixiJSMainDimensions={this.getPixiJSMainDimensions}
                         />
-                        <VoiceHandler />
                         <PixiJSMain
                             height={pixiJSMain.height}
                             width={pixiJSMain.width}
@@ -69,7 +67,7 @@ export default class App extends Component {
 
             return (
                 <React.Fragment>
-                    <div className={`${CLASSNAME.app} ${CLASSNAME.appLoading}`}>
+                    <div className={`${CLASSNAME.appClassName} ${CLASSNAME.appLoading}`}>
                         <PoseMain
                             getPixiJSMainDimensions={this.getPixiJSMainDimensions}
                         />

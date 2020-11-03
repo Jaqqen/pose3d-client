@@ -71,6 +71,5 @@ const logBuilder = (type, text, loggingOject) => {
 
     console.log('%c' + logLabel + ' --- ' + getCurrentTime(), labelStyle);
     console.log('%c' + text, textStyle);
-    if (loggingOject !== null || loggingOject !== undefined) console.log(loggingOject);
-
+    if (loggingOject !== null && loggingOject !== undefined) console.log(loggingOject);
 }

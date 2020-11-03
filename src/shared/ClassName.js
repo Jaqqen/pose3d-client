@@ -1,4 +1,4 @@
-export const app = "App";
+export const appClassName = "App";
 export const appLoading = "app-loading";
 export const canvasContainer = "canvas-container";
 export const canvasContainerFlipped = "canvas-container-flipped";
