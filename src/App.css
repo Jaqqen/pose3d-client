@@ -28,6 +28,17 @@
     margin: auto;
     width: fit-content;
 }
+.startpagemain-container p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: large;
+}
+.startpagemain-container img{
+    display: block;
+    margin: auto;
+    margin-top: 40px;
+    transform: translateX(10px);
+    width: fit-content;
+}
 .startpagemain-button-container {
     margin: auto;
     margin-top: 40px;

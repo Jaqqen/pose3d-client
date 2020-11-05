@@ -49,3 +49,17 @@ export const asset = {
         meteor: require('static/assets/pixi.js/img/projectiles/meteor.png'),
     },
 };
+
+export const goLabels = {
+    menu: {
+        levels: 'menuLevels',
+        tutorials: 'menuTutorials',
+        saves: 'menuSaves',
+    }
+};
+
+export const pJsTxtOptions = {
+    removeShadow: 'removeShadow',
+    mediumSize: 'mediumSize',
+    setFill: 'setFill',
+}

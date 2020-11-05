@@ -1,18 +1,14 @@
 import * as ID from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import gsap from 'gsap/gsap-core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import { asset, body } from 'shared/Indentifiers';
+import { asset, body, goLabels } from 'shared/Indentifiers';
 import { estimatePoseOnImage } from 'components/pose/PoseHandler';
 import { logInfo } from 'shared/P3dcLogger';
 import { PixiJSLevelOne } from 'components/pixi.js/levels/PixiJSLevelOne';
 import { posenetModule } from 'components/pose/PosenetModelModule';
-import { PixiJSMenu } from './PixiJSMenu';
-import { testForAABB } from "components/pixi.js/PixiJSCollision";
-import { useCallback } from 'react';
-import { Linear } from 'gsap/gsap-core';
+import { menuCollRes, PixiJSMenu } from './PixiJSMenu';
 
 
 export default function PixiJSMain(props) {
@@ -44,9 +40,6 @@ export default function PixiJSMain(props) {
 
     let menu = {
         isOn: useRef(true),
-        isLevelsPanel: useRef(false),
-        isHovering: useRef(false),
-        loadingCircle: useRef(new PIXI.Graphics())
     };
 
     const otherGOs = useRef({});
@@ -126,76 +119,6 @@ export default function PixiJSMain(props) {
         };
     }
 
-    let loadCircleTick = useRef(null);
-    let loadingTween = useRef(null);
-
-    const menuCollRes = (_if_func, otherGOKey, hand) => {
-        if (hand.go.current !== undefined && hand.go.current !== null) {
-            if (testForAABB(hand.go.current, otherGOs.current[otherGOKey])) {
-                if (!menu.isHovering.current) {
-                    const otherGO = otherGOs.current[otherGOKey];
-                    menu.isHovering.current = true;
-
-                    loadingTween.current = loadingConfigurator.start(otherGO, _if_func);
-                }
-            } else {
-                menu.isHovering.current = false;
-
-                loadingConfigurator.stop(loadCircleTick, loadingTween);
-            }
-        }
-    };
-
-    const loadingConfigurator = {
-        start: (otherGO, onCompleteFunc) => {
-            app.stage.addChild(menu.loadingCircle.current);
-
-            const RAD = Math.PI / 180;
-
-            const arcParam = {
-                x: (otherGO.getBounds().x + otherGO.getBounds().width),
-                y: otherGO.getBounds().y,
-                radius: 50,
-                angle: -95
-            };
-
-            const onCompleteLoading = () => {
-                loadingConfigurator.stop(loadCircleTick, loadingTween);
-                onCompleteFunc();
-            };
-
-            const tmpLoadingTween = gsap.to(arcParam, {
-                angle: 280,
-                duration: 3,
-                ease: Linear.easeNone,
-                onComplete: onCompleteLoading,
-            });
-
-            loadCircleTick.current = () => {
-                menu.loadingCircle.current
-                    .clear()
-                    .lineStyle(14, 0xf44336)
-                    .arc(arcParam.x, arcParam.y, arcParam.radius, -95 * RAD, arcParam.angle * RAD);
-            };
-
-            app.ticker.add(loadCircleTick.current);
-
-            return tmpLoadingTween;
-        },
-        stop: (tickToStop, tweenToStop) => {
-            if (tweenToStop.current !== null && tweenToStop.current !== undefined) {
-                tweenToStop.current
-                    .pause()
-                    .time(0);
-                app.ticker.remove(tickToStop.current);
-                menu.loadingCircle.current.clear();
-                app.stage.removeChild(menu.loadingCircle.current);
-
-                tweenToStop.current = null;
-            }
-        },
-    };
-
     //? stage Interaction-Controllers
     useEffect (() => {
         logInfo('Appending APP');
@@ -229,7 +152,10 @@ export default function PixiJSMain(props) {
     //? collision between hands and menu
     useEffect(() => {
         logInfo('Logging 3rd useEffect');
-        app.ticker.add(() => menuCollRes(() => console.log('collision'), 'levelsButton', leftHand));
+        const if_func = () => console.log('collision');
+        const menuGOs = [otherGOs.current[goLabels.menu.levels], otherGOs.current[goLabels.menu.tutorials]];
+
+        app.ticker.add(() => menuCollRes(app, if_func, menuGOs, leftHand.go));
     });
 
     useEffect(() => {
