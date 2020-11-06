@@ -50,11 +50,18 @@ export const asset = {
     },
 };
 
+export const assetRsrc = {
+    leftHand: 'leftHandRsrc',
+    rightHand: 'rightHandRsrc',
+}
+
 export const goLabels = {
     menu: {
+        MENU: 'menuHEAD',
         levels: 'menuLevels',
         tutorials: 'menuTutorials',
         saves: 'menuSaves',
+        topRight: 'topRight',
     }
 };
 
@@ -62,4 +69,17 @@ export const pJsTxtOptions = {
     removeShadow: 'removeShadow',
     mediumSize: 'mediumSize',
     setFill: 'setFill',
+}
+
+export const views = {
+    levelN: 'levelNormalView',
+    levelH: 'levelHardView',
+    levelX: 'levelExtremeView',
+    levels: 'levelsView',
+    menu: 'menuView',
+    subMenu: 'subMenuView',
+    subMenu2: 'subMenu2View',
+    tutHands: 'tutHandsView',
+    tutSpeech: 'tutSpeechView',
+    tutorials: 'tutorialsView',
 }

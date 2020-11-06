@@ -1,64 +1,107 @@
 import * as ID from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-import { asset, body, goLabels } from 'shared/Indentifiers';
+import { asset, assetRsrc, body, views } from 'shared/Indentifiers';
 import { estimatePoseOnImage } from 'components/pose/PoseHandler';
-import { logInfo } from 'shared/P3dcLogger';
-import { PixiJSLevelOne } from 'components/pixi.js/levels/PixiJSLevelOne';
+import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { posenetModule } from 'components/pose/PosenetModelModule';
-import { menuCollRes, PixiJSMenu } from './PixiJSMenu';
+import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 
+let app;
+let appContainer;
+
+let leftHand = {
+    go: null,
+    coordinates: {x: -1000, y: -1000,},
+};
+
+let rightHand = {
+    go: null,
+    coordinates: {x: -1000, y: -1000,},
+};
+
+let handSpriteCenter = {x: 0, y: 0,};
 
 export default function PixiJSMain(props) {
-    const stageProps = {
-        antialias: true,
-        backgroundColor: 0x666666,
-        height: props.height,
-        transparent: false,
-        width: props.width,
-    };
-    const app = new PIXI.Application({...stageProps});
-    app.view.id = ID.pixiJsCanvas;
-
+    const [areHandsStaged, setAreHandsStaged] = useState(false);
     const [videoSrc] = useState(document.getElementById(ID.poseWebcam));
+    const [viewState, setViewState] = useState(views.menu);
 
-    let leftHand = {
-        go: useRef(null),
-        coordinates: useRef({x: -1000, y: -1000,}),
-        resourceName: 'leftHand',
-    };
-
-    let rightHand = {
-        go: useRef(null),
-        coordinates: useRef({x: -1000, y: -1000,}),
-        resourceName: 'rightHand',
-    };
-
-    let handSpriteCenter = useRef({x: 0, y: 0,});
-
-    let menu = {
-        isOn: useRef(true),
-    };
-
-    const otherGOs = useRef({});
-    const otherResources = useRef({});
-
-    const stageHand = useCallback((hand, handResource) => {
-        hand.go.current = new PIXI.Sprite(handResource.texture);
-        hand.go.current.x = hand.coordinates.current.x;
-        hand.go.current.y = hand.coordinates.current.y;
-
-        handSpriteCenter.current = {
-            x: hand.go.current._texture.baseTexture.width/2,
-            y: hand.go.current._texture.baseTexture.height/2,
+    const setView = (viewKey) => {
+        logDebug('setting View with', viewKey);
+        switch (viewKey) {
+            case views.levelN:
+                break;
+            case views.levelH:
+                break;
+            case views.levelX:
+                break;
+            case views.levels:
+                break;
+            case views.menu:
+                debugger;
+                return(
+                    <PixiJSMenu
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
+            case views.subMenu:
+                break;
+            case views.subMenu2:
+                break;
+            case views.tutHands:
+                break;
+            case views.tutSpeech:
+                break;
+            case views.tutorials:
+                break;
+            default:
+                break;
         };
 
-        app.stage.addChild(hand.go.current);
-    }, [app.stage,]);
+        // app.stage.addChild(appContainer);
+    }
 
-    const renderHands = (src) => {
+    const stageHand = (hand, handResource) => {
+        logDebug('Staging Hands');
+        hand.go = new PIXI.Sprite(handResource.texture);
+        hand.go.x = hand.coordinates.x;
+        hand.go.y = hand.coordinates.y;
+        hand.go.zIndex = 99;
+
+        handSpriteCenter = {
+            x: hand.go._texture.baseTexture.width/2,
+            y: hand.go._texture.baseTexture.height/2,
+        };
+
+        appContainer.addChild(hand.go);
+    };
+
+    const setHandsPositions = useCallback((coordinates) => {
+        leftHand.coordinates = getCenterKPtOfHand(getHandPositions(coordinates, body.left.wrist));
+        rightHand.coordinates = getCenterKPtOfHand(getHandPositions(coordinates, body.right.wrist));
+
+        app.ticker.add(() => {
+            if (leftHand.coordinates !== null && leftHand.go !== null) {
+                leftHand.go.x = leftHand.coordinates.x;
+                leftHand.go.y = leftHand.coordinates.y;
+            }
+            if (rightHand.coordinates !== null && rightHand.go !== null) {
+                rightHand.go.x = rightHand.coordinates.x;
+                rightHand.go.y = rightHand.coordinates.y;
+            }
+        });
+    }, []);
+
+    const renderHands = useCallback((src) => {
         src.onplay = () => {
             const step = async () => {
                 let coordinates = await estimatePoseOnImage(posenetModule, src);
@@ -68,30 +111,13 @@ export default function PixiJSMain(props) {
 
             requestAnimationFrame(step);
         };
-    };
-
-    const setHandsPositions = (coordinates) => {
-
-        leftHand.coordinates.current = getCenterKPtOfHand(getHandPositions(coordinates, body.left.wrist));
-        rightHand.coordinates.current = getCenterKPtOfHand(getHandPositions(coordinates, body.right.wrist));
-
-        app.ticker.add(() => {
-            if (leftHand.coordinates.current !== null && leftHand.go.current !== null) {
-                leftHand.go.current.x = leftHand.coordinates.current.x;
-                leftHand.go.current.y = leftHand.coordinates.current.y;
-            }
-            if (rightHand.coordinates.current !== null && rightHand.go.current !== null) {
-                rightHand.go.current.x = rightHand.coordinates.current.x;
-                rightHand.go.current.y = rightHand.coordinates.current.y;
-            }
-        });
-    };
+    }, [setHandsPositions]);
 
     const getCenterKPtOfHand = (keypoint) => {
         if (keypoint !== null) {
             return {
-                x: (app.view.width - keypoint.x) - handSpriteCenter.current.x,
-                y: keypoint.y - handSpriteCenter.current.y
+                x: (app.view.width - keypoint.x) - handSpriteCenter.x,
+                y: keypoint.y - handSpriteCenter.y
             };
         }
 
@@ -105,138 +131,133 @@ export default function PixiJSMain(props) {
         return null;
     };
 
-    const setGoInGlbCtx = (goName, gameobject) => {
-        otherGOs.current = {
-            ...otherGOs.current,
-            [goName]: gameobject,
+    if (!areHandsStaged) {
+        const stageProps = {
+            antialias: true,
+            backgroundColor: 0x666666,
+            height: props.height,
+            transparent: false,
+            width: props.width,
         };
-    };
+        app = new PIXI.Application({...stageProps});
+        app.view.id = ID.pixiJsCanvas;
+        if (
+            document.getElementById(ID.pixiJsContainer) !== null &&
+            document.getElementById(ID.pixiJsCanvas) !== null
+        ) {
+            document.getElementById(ID.pixiJsCanvas).remove();
+        }
+        appContainer = new PIXI.Container();
+        appContainer.sortableChildren = true;
+        app.stage.addChild(appContainer);
 
-    const setResourceInGlbCtx = (resourceName, rsrc) => {
-        otherResources.current = {
-            ...otherResources.current,
-            [resourceName]: rsrc,
-        };
+        logDebug('Before APPLoader for Staging Hands');
+        app.loader
+            .add(assetRsrc.leftHand, asset.hand.left)
+            .add(assetRsrc.rightHand, asset.hand.right)
+            .load((loader, resources) => {
+                logDebug('Inside APPLoader for Staging Hands');
+
+                stageHand(leftHand, resources[assetRsrc.leftHand]);
+                stageHand(rightHand, resources[assetRsrc.rightHand]);
+
+                setAreHandsStaged(true);
+            });
     }
+
 
     //? stage Interaction-Controllers
     useEffect (() => {
-        logInfo('Appending APP');
-        document.getElementById(ID.pixiJsContainer).appendChild(app.view);
-
-        app.loader
-            .add(leftHand.resourceName, asset.hand.left)
-            .add(rightHand.resourceName, asset.hand.right)
-            .load((loader, resources) => {
-
-                if (leftHand.go.current === null) {
-                    stageHand(leftHand, resources[leftHand.resourceName]);
-                }
-                if (rightHand.go.current === null) {
-                    stageHand(rightHand, resources[rightHand.resourceName]);
-                }
-            });
-
-    }, [app, leftHand, rightHand, stageHand, ]);
+        if (!areHandsStaged) {
+            logInfo('Logging 1st useEffect');
+            document.getElementById(ID.pixiJsContainer).appendChild(app.view);
+        }
+    }, [areHandsStaged,]);
 
     //? requestAnimationFrames with videoSrc
     useEffect(() => {
-        logInfo('Logging 2nd useEffect');
-        renderHands(videoSrc);
-    });
+        if (!areHandsStaged) {
+            logInfo('Logging 2nd useEffect');
+            renderHands(videoSrc);
+        }
+    }, [areHandsStaged, renderHands, videoSrc]);
 
-    // let isLevelOne = useRef(false);
-    // const setIsLevelOne = () => {isLevelOne.current = true};
-    const [isLevelOne, setIsLevelOne] = useState(false);
+    const changeView = (viewKey) => {
+        logDebug('changing View with', viewKey);
+        setViewState(viewKey);
+    };
 
-    //? collision between hands and menu
-    useEffect(() => {
-        logInfo('Logging 3rd useEffect');
-        const if_func = () => console.log('collision');
-        const menuGOs = [otherGOs.current[goLabels.menu.levels], otherGOs.current[goLabels.menu.tutorials]];
+    // useEffect(() => {
+    //     app.loader.load((loader, resources) => {
+    //         // debugger
+    //         logInfo('Logging 4th useEffect');
 
-        app.ticker.add(() => menuCollRes(app, if_func, menuGOs, leftHand.go));
-    });
+    //         const groundDotsNoneResourceName = 'groundDotsNone';
+    //         const dummyResourceName = 'characterDummy';
+    //         const meteorResourceName = 'meteor';
 
-    useEffect(() => {
-        app.loader.load((loader, resources) => {
+    //         let groundDotsNone;
 
-            logInfo('Logging 4th useEffect');
+    //         if (meteorResourceName in otherResources.current &&
+    //             otherResources.current[meteorResourceName] !== null) {
 
-            const groundDotsNoneResourceName = 'groundDotsNone';
-            const dummyResourceName = 'characterDummy';
-            const meteorResourceName = 'meteor';
-
-            let groundDotsNone;
-
-            if (meteorResourceName in otherResources.current &&
-                otherResources.current[meteorResourceName] !== null) {
-
-                const meteor = new PIXI.Sprite(resources[meteorResourceName].texture);
-                //? meteor
-                meteor.scale.set(0.5, 0.5);
+    //             const meteor = new PIXI.Sprite(resources[meteorResourceName].texture);
+    //             //? meteor
+    //             meteor.scale.set(0.5, 0.5);
                 
-                meteor.x = app.view.width + 100;
-                meteor.y = 250;
+    //             meteor.x = app.view.width + 100;
+    //             meteor.y = 250;
                 
-                //? staging
-                app.stage.addChild(meteor);
+    //             //? staging
+    //             app.stage.addChild(meteor);
                 
-                const meteorMove = () => {
-                    if (!(meteor.y > app.view.height)) {
-                        meteor.x -= 2.2;
-                        meteor.y += 1.5;
-                    } else { app.ticker.remove(meteorMove) }
-                };
+    //             const meteorMove = () => {
+    //                 if (!(meteor.y > app.view.height)) {
+    //                     meteor.x -= 2.2;
+    //                     meteor.y += 1.5;
+    //                 } else { app.ticker.remove(meteorMove) }
+    //             };
 
-                app.ticker.add(meteorMove);
-            }
+    //             app.ticker.add(meteorMove);
+    //         }
 
-            if (groundDotsNoneResourceName in otherResources.current &&
-                otherResources.current[groundDotsNoneResourceName] !== null) {
-                groundDotsNone = new PIXI.Sprite(resources[groundDotsNoneResourceName].texture);
-                //? ground
-                groundDotsNone.scale.set(2.1, 0.7);
+    //         if (groundDotsNoneResourceName in otherResources.current &&
+    //             otherResources.current[groundDotsNoneResourceName] !== null) {
+    //             groundDotsNone = new PIXI.Sprite(resources[groundDotsNoneResourceName].texture);
+    //             //? ground
+    //             groundDotsNone.scale.set(2.1, 0.7);
 
-                groundDotsNone.y = app.view.height - groundDotsNone.height + 20;
-                groundDotsNone.x = 0;
+    //             groundDotsNone.y = app.view.height - groundDotsNone.height + 20;
+    //             groundDotsNone.x = 0;
 
-                //? staging
-                app.stage.addChild(groundDotsNone);
-            }
+    //             //? staging
+    //             app.stage.addChild(groundDotsNone);
+    //         }
 
-            if (dummyResourceName in otherResources.current &&
-                otherResources.current[dummyResourceName] !== null) {
-                const characterDummy = new PIXI.Sprite(resources[dummyResourceName].texture);
-                //? character
-                characterDummy.y = app.view.height - groundDotsNone.height - 15;
-                characterDummy.x = 0;
+    //         if (dummyResourceName in otherResources.current &&
+    //             otherResources.current[dummyResourceName] !== null) {
+    //             const characterDummy = new PIXI.Sprite(resources[dummyResourceName].texture);
+    //             //? character
+    //             characterDummy.y = app.view.height - groundDotsNone.height - 15;
+    //             characterDummy.x = 0;
 
-                //? staging
-                app.stage.addChild(characterDummy);
+    //             //? staging
+    //             app.stage.addChild(characterDummy);
 
-                app.ticker.add(() => {
-                    characterDummy.x += 0.4;
-                });
-            }
-        });
-    }, [app, isLevelOne]);
+    //             app.ticker.add(() => {
+    //                 characterDummy.x += 0.4;
+    //             });
+    //         }
+    //     });
+    // }, []);
 
     return (
         <div id={ID.pixiJsContainer}>
-            { menu.isOn.current ?
-                <PixiJSMenu
-                    app={app}
-                    resourceNames={{leftHand: leftHand.resourceName, rightHand: rightHand.resourceName}}
-                    setGoInGlbCtx={setGoInGlbCtx}
-                />
-                : null
-            }
-            {/* <PixiJSLevelOne app={app} setResourceInGlbCtx={setResourceInGlbCtx}/> */}
-            { isLevelOne ?
-                <PixiJSLevelOne app={app} setResourceInGlbCtx={setResourceInGlbCtx}/>
-                :
-                null
+            {
+                areHandsStaged ?
+                    setView(viewState)
+                    :
+                    null
             }
         </div>
     );

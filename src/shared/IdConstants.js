@@ -10,5 +10,6 @@ export const menu = {
         levelsId: 'levelsId',
         tutorialsId: 'tutorialsId',
         savesId: 'savesId',
+        topRight: 'topRightId',
     }
 };

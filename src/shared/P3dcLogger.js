@@ -23,7 +23,7 @@ export const logDebug = (text, loggingOject) => {
     logBuilder(logType.DEBUG, text, loggingOject);
 };
 
-const logBuilder = (type, text, loggingOject) => {
+const logBuilder = (type, text, loggingObject) => {
     let bgColor = null;
     let fontColor = null;
     let logLabel;
@@ -71,5 +71,5 @@ const logBuilder = (type, text, loggingOject) => {
 
     console.log('%c' + logLabel + ' --- ' + getCurrentTime(), labelStyle);
     console.log('%c' + text, textStyle);
-    if (loggingOject !== null && loggingOject !== undefined) console.log(loggingOject);
+    if (loggingObject !== null && loggingObject !== undefined) console.log(loggingObject);
 }

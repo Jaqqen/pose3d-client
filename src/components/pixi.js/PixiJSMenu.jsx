@@ -6,8 +6,9 @@ import React, { Fragment, useEffect } from 'react';
 import { Linear } from 'gsap/gsap-core';
 import { testForAABB } from "components/pixi.js/PixiJSCollision";
 import { getPixiJsText } from './PixiJSText';
-import { goLabels, pJsTxtOptions } from 'shared/Indentifiers';
+import { goLabels, pJsTxtOptions, views } from 'shared/Indentifiers';
 import { menu } from 'shared/IdConstants';
+import { logInfo } from 'shared/P3dcLogger';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -17,26 +18,33 @@ let loading = {
 let isHoveringOverMenu = false;
 let storedHoverMenuItem = null;
 
-export const menuCollRes = (app, _if_func, otherGOs, handGO) => {
-    if (handGO.current !== undefined && handGO.current !== null) {
-        const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGO.current, otherGO));
-        const isSingleCollision = collisionGOs.length === 1;
-        if (isSingleCollision) {
-            const currentlyHoveredMenuItem = collisionGOs[0].id;
-            if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
-                storedHoverMenuItem = currentlyHoveredMenuItem;
+export const menuCollRes = (app, otherGOs, handGO) => {
+    if (handGO !== undefined && handGO !== null) {
+        setTimeout(() => {
+
+            const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGO, otherGO[1]));
+            const isSingleCollision = collisionGOs.length === 1;
+            if (isSingleCollision) {
+                const currentlyHoveredMenuItem = collisionGOs[0][1].id;
+                if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
+                    storedHoverMenuItem = currentlyHoveredMenuItem;
+                    menuCollcleanUp(app);
+                }
+
+                if (!isHoveringOverMenu) {
+
+                    isHoveringOverMenu = true;
+
+                    loading.tween = loadingConfigurator.start(
+                        app, collisionGOs[0][1], collisionGOs[0][0]
+                    );
+                }
+            } else {
+                storedHoverMenuItem = null;
                 menuCollcleanUp(app);
             }
+        }, 600);
 
-            if (!isHoveringOverMenu) {
-                isHoveringOverMenu = true;
-
-                loading.tween = loadingConfigurator.start(app, collisionGOs[0], _if_func);
-            }
-        } else {
-            storedHoverMenuItem = null;
-            menuCollcleanUp(app);
-        }
     }
 };
 
@@ -62,7 +70,7 @@ const loadingConfigurator = {
         const arcParam = {
             x: (otherGO.getBounds().x + otherGO.getBounds().width),
             y: otherGO.getBounds().y,
-            radius: 50,
+            radius: 25,
             angle: -95
         };
 
@@ -75,7 +83,7 @@ const loadingConfigurator = {
 
         const tmpLoadingTween = gsap.to(arcParam, {
             angle: 280,
-            duration: 3,
+            duration: 1.5,
             ease: Linear.easeNone,
             onComplete: onCompleteLoading,
         });
@@ -108,77 +116,128 @@ const loadingConfigurator = {
     },
 };
 
-const defaultMenuButton = (tint = '0xf8e4b7') => {
-    const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = 440;
-    defaultButton.height = 284;
-    defaultButton.tint = tint;
+const defaultMenuButton = (buttonName, id=null, x=null, y =null) => {
+    const buttonContainer = new PIXI.Container();
 
-    return defaultButton;
+    const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
+    defaultButton.width = 390;
+    defaultButton.height = 274;
+    defaultButton.tint = '0xf8e4b7';
+
+    const buttonLabel = getButtonLabel(
+        defaultButton, buttonName, { [pJsTxtOptions.removeShadow]: true, }
+        );
+
+    buttonContainer.addChild(defaultButton);
+    buttonContainer.addChild(buttonLabel);
+
+    if (id !== null) buttonContainer.id = id;
+    if (x !== null) buttonContainer.x = x;
+    if (y !== null) buttonContainer.y = y;
+
+    return buttonContainer;
 };
 
-const getAndSetTextOnButton = (pixiJsGo, buttonText) => {
+const getButtonLabel = (pixiJsGo, buttonText, options={}) => {
     const bounds = pixiJsGo.getBounds();
 
     const buttonLabel = getPixiJsText(
-        buttonText, { [pJsTxtOptions.removeShadow]: true, }
+        buttonText, options
     );
     buttonLabel.anchor.set(0.5, 0.5);
     buttonLabel.position.set(
-        bounds.x + (bounds.width/2),
-        bounds.y + (bounds.height/2)
+        (bounds.width/2),
+        (bounds.height/2)
     );
 
     return buttonLabel;
 };
 
-const getAndSetTextOnDisabledButton = (pixiJsGo, buttonText, alpha) => {
-    const bounds = pixiJsGo.getBounds();
+const disabledMenuButton = (buttonName, id=null, x=null, y =null) => {
+    const buttonContainer = new PIXI.Container();
 
-    const buttonLabel = getPixiJsText(
-        buttonText, {
+    const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
+    defaultButton.width = 390;
+    defaultButton.height = 274;
+    defaultButton.tint = '0xe7ddc6';
+
+    const buttonLabel = getButtonLabel(
+        defaultButton, buttonName, {
             [pJsTxtOptions.removeShadow]: true,
-            [pJsTxtOptions.alpha]: alpha,
+            [pJsTxtOptions.alpha]: 0.5
         }
     );
 
-    buttonLabel.anchor.set(0.5, 0.5);
-    buttonLabel.position.set(
-        bounds.x + (bounds.width/2),
-        bounds.y + (bounds.height/2)
-    );
+    buttonContainer.addChild(defaultButton);
+    buttonContainer.addChild(buttonLabel);
 
-    return buttonLabel;
+    if (id !== null) buttonContainer.id = id;
+    if (x !== null) buttonContainer.x = x;
+    if (y !== null) buttonContainer.y = y;
+
+    return buttonContainer;
+}
+
+const menuTopRight = (id=null, x=null, y =null) => {
+    const menuContainer = new PIXI.Container();
+
+    for (let i = 0; i < 3; i++) {
+        const menuPart = new PIXI.Graphics();
+        menuPart.lineStyle(3, 0xFFFFFF, 1);
+        menuPart.beginFill(0x55335A);
+        menuPart.drawRect(0, 0, 80, 20);
+        menuPart.endFill();
+        menuPart.y = Math.floor(i * 28);
+
+        menuContainer.addChild(menuPart);
+    }
+
+    if (id !== null) menuContainer.id = id;
+    if (x !== null) menuContainer.x = x;
+    if (y !== null) menuContainer.y = y;
+
+    return menuContainer;
+}
+
+export const menuCleanUp = (app, globalObjCont) => {
+    if ([goLabels.menu.MENU] in globalObjCont) {
+        for (const gameObj of Object.values(globalObjCont[goLabels.menu.MENU])) {
+            app.stage.removeChild(gameObj);
+            gameObj.destroy({children:true, texture:true, baseTexture:true});
+        }
+        delete globalObjCont[goLabels.menu.MENU];
+    }
 };
 
 export const PixiJSMenu = (props) => {
-    const startLevelsButton = defaultMenuButton();
-    startLevelsButton.position.set(100, 76);
-    startLevelsButton.id = menu.button.levelsId;
+    const initX = 66;
+    const initY = 100;
 
-    const tutorialsButton = defaultMenuButton();
-    tutorialsButton.position.set(100, 450);
-    startLevelsButton.id = menu.button.tutorialsId;
+    const startLevelsButton = defaultMenuButton('Levels', menu.button.levelsId, initX, initY);
 
-    const savesButton = defaultMenuButton('0xe7ddc6');
-    savesButton.position.set(600, 76);
-    startLevelsButton.id = menu.button.savesId;
+    const tutorialsButton = defaultMenuButton('Tutorials', menu.button.tutorialsId, initX, 450);
 
+    const savesButton = disabledMenuButton('Saves', menu.button.savesId, 570, initY);
+
+    const menuTopRightButton = menuTopRight(menu.button.topRight, 1036, 26);
 
     useEffect(() => {
-        props.app.stage.addChild(startLevelsButton);
-        props.app.stage.addChild(tutorialsButton);
-        props.app.stage.addChild(savesButton);
+        logInfo('Logging PixiJSMenu useEffect');
 
-        props.app.stage.addChild(getAndSetTextOnButton(startLevelsButton, 'Levels'));
-        props.app.stage.addChild(getAndSetTextOnButton(tutorialsButton, 'Tutorials'));
-        props.app.stage.addChild(getAndSetTextOnDisabledButton(savesButton, 'Saves', 0.5));
+        const { app, appContainer, hands, changeViewFn } = props;
+        appContainer.addChild(startLevelsButton);
+        appContainer.addChild(tutorialsButton);
+        appContainer.addChild(savesButton);
+        appContainer.addChild(menuTopRightButton);
 
-        props.setGoInGlbCtx(goLabels.menu.levels, startLevelsButton);
-        props.setGoInGlbCtx(goLabels.menu.tutorials, tutorialsButton);
-        props.setGoInGlbCtx(goLabels.menu.saves, savesButton);
+        const menuGOs = [
+            [() => changeViewFn(views.levels), startLevelsButton],
+            [() => changeViewFn(views.tutorials), tutorialsButton],
+            [() => console.log('topu Righto'), menuTopRightButton]
+        ];
+        app.ticker.add(() => menuCollRes(app, menuGOs, hands.left));
 
-    },[props, startLevelsButton, tutorialsButton, savesButton]);
+    },[props, startLevelsButton, tutorialsButton, savesButton, menuTopRightButton]);
 
     return (
         <Fragment></Fragment>
