@@ -41,7 +41,6 @@ export default function PixiJSMain(props) {
             case views.levels:
                 break;
             case views.menu:
-                debugger;
                 return(
                     <PixiJSMenu
                         app={app}
@@ -82,7 +81,7 @@ export default function PixiJSMain(props) {
             y: hand.go._texture.baseTexture.height/2,
         };
 
-        appContainer.addChild(hand.go);
+        return hand.go;
     };
 
     const setHandsPositions = useCallback((coordinates) => {
@@ -150,6 +149,7 @@ export default function PixiJSMain(props) {
         appContainer = new PIXI.Container();
         appContainer.sortableChildren = true;
         app.stage.addChild(appContainer);
+        app.stage.sortableChildren = true;
 
         logDebug('Before APPLoader for Staging Hands');
         app.loader
@@ -158,8 +158,8 @@ export default function PixiJSMain(props) {
             .load((loader, resources) => {
                 logDebug('Inside APPLoader for Staging Hands');
 
-                stageHand(leftHand, resources[assetRsrc.leftHand]);
-                stageHand(rightHand, resources[assetRsrc.rightHand]);
+                app.stage.addChild(stageHand(leftHand, resources[assetRsrc.leftHand]));
+                app.stage.addChild(stageHand(rightHand, resources[assetRsrc.rightHand]));
 
                 setAreHandsStaged(true);
             });

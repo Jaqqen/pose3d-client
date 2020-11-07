@@ -53,7 +53,7 @@ export const asset = {
 export const assetRsrc = {
     leftHand: 'leftHandRsrc',
     rightHand: 'rightHandRsrc',
-}
+};
 
 export const goLabels = {
     menu: {
@@ -69,7 +69,7 @@ export const pJsTxtOptions = {
     removeShadow: 'removeShadow',
     mediumSize: 'mediumSize',
     setFill: 'setFill',
-}
+};
 
 export const views = {
     levelN: 'levelNormalView',
@@ -82,4 +82,11 @@ export const views = {
     tutHands: 'tutHandsView',
     tutSpeech: 'tutSpeechView',
     tutorials: 'tutorialsView',
-}
+};
+
+export const smvRefs = {
+    container: 'smvContainerRef',
+    credits: 'smvCreditsRef',
+    quit: 'smvQuitRef',
+    returnBack: 'smvReturnBackRef',
+};

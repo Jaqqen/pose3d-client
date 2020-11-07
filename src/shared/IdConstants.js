@@ -13,3 +13,14 @@ export const menu = {
         topRight: 'topRightId',
     }
 };
+
+export const subMenu = {
+    default: {
+        credits: 'smvCreditsId',
+        quit: 'smvQuitId',
+    },
+    nonDefault: {
+        menuView: 'smv2MenuViewId',
+        quit: 'smv2QuitId',
+    },
+};
