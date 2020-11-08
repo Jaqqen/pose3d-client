@@ -87,6 +87,17 @@ export const views = {
 export const smvRefs = {
     container: 'smvContainerRef',
     credits: 'smvCreditsRef',
+    mainMenu: 'smvMainMenuRef',
     quit: 'smvQuitRef',
     returnBack: 'smvReturnBackRef',
+};
+
+export const listenerKeys = {
+    menuView: {
+        mainTick: 'menuViewMainTickKey',
+        smvTick: 'menuViewSmvTickKey',
+    },
+    levelsView: {
+        mainTick: 'levelsViewMainTickKey',
+    }
 };

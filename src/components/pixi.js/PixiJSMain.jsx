@@ -8,6 +8,8 @@ import { estimatePoseOnImage } from 'components/pose/PoseHandler';
 import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { posenetModule } from 'components/pose/PosenetModelModule';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
+import { PixiJSLevels } from './levels/PixiJSLevels';
+import { pixiTicks, removePixiTick } from './SharedTicks';
 
 let app;
 let appContainer;
@@ -39,7 +41,17 @@ export default function PixiJSMain(props) {
             case views.levelX:
                 break;
             case views.levels:
-                break;
+                return(
+                    <PixiJSLevels 
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             case views.menu:
                 return(
                     <PixiJSMenu
@@ -65,8 +77,6 @@ export default function PixiJSMain(props) {
             default:
                 break;
         };
-
-        // app.stage.addChild(appContainer);
     }
 
     const stageHand = (hand, handResource) => {
@@ -107,8 +117,7 @@ export default function PixiJSMain(props) {
                 if (coordinates !== null) setHandsPositions(coordinates);
                 requestAnimationFrame(step);
             };
-
-            requestAnimationFrame(step);
+            step();
         };
     }, [setHandsPositions]);
 
@@ -125,7 +134,7 @@ export default function PixiJSMain(props) {
 
     const getHandPositions = (coordinates, handType) => {
         const kPWrist = coordinates.keypoints.filter(kPt => kPt.part === handType )[0];
-        if (kPWrist.score > 0.35) return kPWrist.position;
+        if (kPWrist.score > 0.5) return kPWrist.position;
 
         return null;
     };
@@ -148,6 +157,7 @@ export default function PixiJSMain(props) {
         }
         appContainer = new PIXI.Container();
         appContainer.sortableChildren = true;
+        appContainer.name = ID.appContainer;
         app.stage.addChild(appContainer);
         app.stage.sortableChildren = true;
 
@@ -184,12 +194,19 @@ export default function PixiJSMain(props) {
 
     const changeView = (viewKey) => {
         logDebug('changing View with', viewKey);
+        for (let _tickKey of Object.keys(pixiTicks)) {
+            removePixiTick(app, _tickKey)
+        }
+        appContainer.destroy({children: true, texture: true, baseTexture: true});
+        appContainer = new PIXI.Container();
+        appContainer.sortableChildren = true;
+        appContainer.name = ID.appContainer;
+        app.stage.addChild(appContainer);
         setViewState(viewKey);
     };
 
     // useEffect(() => {
     //     app.loader.load((loader, resources) => {
-    //         // debugger
     //         logInfo('Logging 4th useEffect');
 
     //         const groundDotsNoneResourceName = 'groundDotsNone';

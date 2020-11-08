@@ -7,9 +7,10 @@ import React, { Fragment, useEffect } from 'react';
 import { Linear } from 'gsap/gsap-core';
 import { testForAABB } from "components/pixi.js/PixiJSCollision";
 import { getPixiJsText } from './PixiJSText';
-import { pJsTxtOptions, views, smvRefs } from 'shared/Indentifiers';
+import { pJsTxtOptions, views, smvRefs, listenerKeys } from 'shared/Indentifiers';
 import { menu } from 'shared/IdConstants';
 import { logInfo } from 'shared/P3dcLogger';
+import { addPixiTick, removePixiTick } from './SharedTicks';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -21,31 +22,28 @@ let storedHoverMenuItem = null;
 
 export const menuCollRes = (app, otherGOs, handGO) => {
     if (handGO !== undefined && handGO !== null) {
-        setTimeout(() => {
 
-            const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGO, otherGO[1]));
-            const isSingleCollision = collisionGOs.length === 1;
-            if (isSingleCollision) {
-                const currentlyHoveredMenuItem = collisionGOs[0][1].id;
-                if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
-                    storedHoverMenuItem = currentlyHoveredMenuItem;
-                    menuCollcleanUp(app);
-                }
+    const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGO, otherGO[1]));
+    const isSingleCollision = collisionGOs.length === 1;
+    if (isSingleCollision) {
+        const currentlyHoveredMenuItem = collisionGOs[0][1].id;
+        if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
+            storedHoverMenuItem = currentlyHoveredMenuItem;
+            menuCollcleanUp(app);
+        }
 
-                if (!isHoveringOverMenu) {
+        if (!isHoveringOverMenu) {
 
-                    isHoveringOverMenu = true;
+            isHoveringOverMenu = true;
 
-                    loading.tween = loadingConfigurator.start(
-                        app, collisionGOs[0][1], collisionGOs[0][0]
-                    );
-                }
-            } else {
-                storedHoverMenuItem = null;
-                menuCollcleanUp(app);
-            }
-        }, 600);
-
+            loading.tween = loadingConfigurator.start(
+                app, collisionGOs[0][1], collisionGOs[0][0]
+            );
+        }
+    } else {
+        storedHoverMenuItem = null;
+        menuCollcleanUp(app);
+    }
     }
 };
 
@@ -84,6 +82,7 @@ const loadingConfigurator = {
 
         const tmpLoadingTween = gsap.to(arcParam, {
             angle: 280,
+            delay: 0.6,
             duration: 1.5,
             ease: Linear.easeNone,
             onComplete: onCompleteLoading,
@@ -122,8 +121,8 @@ export const defaultMenuButton = (buttonName, id=null, x=null, y =null, dimensio
     const buttonContainer = new PIXI.Container();
 
     const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = 390;
-    defaultButton.height = 274;
+    defaultButton.width = 350;
+    defaultButton.height = 124;
     defaultButton.tint = '0xf8e4b7';
 
     const buttonLabel = getButtonLabel(
@@ -161,13 +160,19 @@ const getButtonLabel = (pixiJsGo, buttonText, options={}) => {
     return buttonLabel;
 };
 
-const disabledMenuButton = (buttonName, id=null, x=null, y =null, dimensions={w: null, h: null}) => {
+export const disabledMenuButton = (buttonName, id=null, x=null, y =null, dimensions={w: null, h: null}) => {
     const buttonContainer = new PIXI.Container();
 
     const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = 390;
-    defaultButton.height = 274;
+    defaultButton.width = 350;
+    defaultButton.height = 124;
     defaultButton.tint = '0xe7ddc6';
+    if (dimensions !== null && dimensions !== undefined) {
+        if (dimensions.w !== null && dimensions.h !== null) {
+            buttonContainer.width = dimensions.w;
+            buttonContainer.height = dimensions.h;
+        }
+    }
 
     const buttonLabel = getButtonLabel(
         defaultButton, buttonName, {
@@ -182,17 +187,11 @@ const disabledMenuButton = (buttonName, id=null, x=null, y =null, dimensions={w:
     if (id !== null) buttonContainer.id = id;
     if (x !== null) buttonContainer.x = x;
     if (y !== null) buttonContainer.y = y;
-    if (dimensions !== null && dimensions !== undefined) {
-        if (dimensions.w !== null && dimensions.h !== null) {
-            buttonContainer.width = dimensions.w;
-            buttonContainer.height = dimensions.h;
-        }
-    }
 
     return buttonContainer;
 };
 
-const menuTopRight = (id=null, x=null, y =null) => {
+export const menuTopRight = (id=null, x=null, y =null) => {
     const menuContainer = new PIXI.Container();
 
     for (let i = 0; i < 3; i++) {
@@ -213,31 +212,55 @@ const menuTopRight = (id=null, x=null, y =null) => {
     return menuContainer;
 };
 
-const menuTopRightFn = (app, nonSmvTick, appContainer, hands) => {
-    app.ticker.remove(nonSmvTick);
+export const menuTopRightFn = (
+    app, mainTickForReturnBtn, appContainer, hands, mainTickKey, returnToMMFunction
+) => {
+    removePixiTick(app, mainTickKey);
 
-    const {
-        [smvRefs.container]:container,
-        [smvRefs.credits]:creditsBtn,
-        [smvRefs.quit]:quitBtn,
-        [smvRefs.returnBack]:returnBtn
-    } = getSubMenuView(app, appContainer);
-    app.stage.addChild(container);
-
+    let smvGOs;
     let pixiJsSmvTick;
-    const returnBtnFnWithSmvTick = () => {
-        returnBtnFn(app, pixiJsSmvTick, container, nonSmvTick);
+
+    if (returnToMMFunction === null) {
+        const {
+            [smvRefs.container]:container,
+            [smvRefs.credits]:creditsBtn,
+            [smvRefs.quit]:quitBtn,
+            [smvRefs.returnBack]:returnBtn
+        } = getSubMenuView(app, appContainer, true);
+        app.stage.addChild(container);
+
+        smvGOs = [
+            // [creditsBtnFn, creditsBtn],
+            [() => console.log('credits'), creditsBtn],
+            [quitBtnFn, quitBtn],
+            [() => returnBtnFn(app, listenerKeys.menuView.smvTick, container, mainTickForReturnBtn, mainTickKey), returnBtn]
+        ];
+    } else {
+        const {
+            [smvRefs.container]:container,
+            [smvRefs.mainMenu]:mainMenuBtn,
+            [smvRefs.quit]:quitBtn,
+            [smvRefs.returnBack]:returnBtn
+        } = getSubMenuView(app, appContainer, false);
+        app.stage.addChild(container);
+
+        const returnFn = () => returnBtnFn(
+            app, listenerKeys.menuView.smvTick, container, mainTickForReturnBtn, mainTickKey
+        );
+        const removeSmvAndReturnToMM = () => {
+            returnFn();
+            returnToMMFunction();
+        }
+
+        smvGOs = [
+            [removeSmvAndReturnToMM, mainMenuBtn],
+            [quitBtnFn, quitBtn],
+            [returnFn, returnBtn]
+        ];
     }
-
-    const smvGOs = [
-        [creditsBtnFn, creditsBtn],
-        [quitBtnFn, quitBtn],
-        [returnBtnFnWithSmvTick, returnBtn]
-    ];
     pixiJsSmvTick = () => menuCollRes(app, smvGOs, hands.left);
-    app.ticker.add(pixiJsSmvTick);
+    addPixiTick(app, listenerKeys.menuView.smvTick, pixiJsSmvTick)
 };
-
 
 const creditsBtnFn = () => {
     console.log('credits');
@@ -245,13 +268,14 @@ const creditsBtnFn = () => {
 const quitBtnFn = () => {
     document.location.reload();
 }
-const returnBtnFn = (app, pixiJsSmvTick, container, nonSmvTick) => {
-    app.ticker.remove(pixiJsSmvTick);
+const returnBtnFn = (app, smvTickKey, container, mainTick, mainTickKey) => {
+    removePixiTick(app, smvTickKey);
     app.stage.removeChild(container);
-    app.ticker.add(nonSmvTick);
+
+    addPixiTick(app, mainTickKey, mainTick);
 }
 
-const getSubMenuView = (app, appContainer) => {
+const getSubMenuView = (app, appContainer, isMainMenu) => {
     const subMenuContainer = new PIXI.Container();
     subMenuContainer.sortableChildren = true;
     subMenuContainer.zIndex = 49;
@@ -301,31 +325,52 @@ const getSubMenuView = (app, appContainer) => {
 
     subMenuContainer.addChild(smvReturnIconBtn);
 
-    const smvBtnCredits = disabledMenuButton(
-        'Credits',
-        ID.subMenu.default.credits,
-        subMenuStartX + 50,
-        66,
-        {w: 300, h: 190}
-    );
-    smvBtnCredits.zIndex = 52;
-    subMenuContainer.addChild(smvBtnCredits);
-
     const smvBtnQuit = disabledMenuButton(
         'Quit',
         ID.subMenu.default.quit,
-        subMenuStartX + 50,
-        subMenuViewHeight - 190 - 50,
+        subMenuStartX + 26,
+        subMenuViewHeight - 190,
         {w: 300, h: 190}
     );
     smvBtnQuit.zIndex = 52;
     subMenuContainer.addChild(smvBtnQuit);
 
+    const customProps = {
+        x: subMenuStartX + 26,
+        y: 66,
+        dim: {w: 300, h: 190},
+        zIndex: 52,
+    };
+
+    let customButton;
+    let customButtonKey;
+    if (isMainMenu) {
+        customButton = disabledMenuButton(
+            'Credits',
+            ID.subMenu.default.credits,
+            customProps.x,
+            customProps.y,
+            customProps.dim
+        );
+        customButtonKey = smvRefs.credits;
+    } else {
+        customButton = disabledMenuButton(
+            'Main Menu',
+            ID.subMenu.default.credits,
+            customProps.x,
+            customProps.y,
+            customProps.dim
+        );
+        customButtonKey = smvRefs.mainMenu;
+    }
+
+    customButton.zIndex = customProps.zIndex;
+    subMenuContainer.addChild(customButton)
     appContainer.addChild(subMenuContainer);
 
     return {
         [smvRefs.container]: subMenuContainer,
-        [smvRefs.credits]: smvBtnCredits,
+        [customButtonKey]: customButton,
         [smvRefs.quit]: smvBtnQuit,
         [smvRefs.returnBack]: smvReturnIconBtn,
     };
@@ -337,7 +382,7 @@ export const PixiJSMenu = (props) => {
 
     const startLevelsButton = defaultMenuButton('Levels', menu.button.levelsId, initX, initY);
 
-    const tutorialsButton = defaultMenuButton('Tutorials', menu.button.tutorialsId, initX, 450);
+    const tutorialsButton = defaultMenuButton('Tutorials', menu.button.tutorialsId, initX, 270);
 
     const savesButton = disabledMenuButton('Saves', menu.button.savesId, 570, initY);
 
@@ -353,16 +398,18 @@ export const PixiJSMenu = (props) => {
         appContainer.addChild(menuTopRightButton);
 
         let pixiJsMenuTick;
-        const openSmv = () => menuTopRightFn(app, pixiJsMenuTick, appContainer, hands);
+        const openSmv = () => menuTopRightFn(
+            app, pixiJsMenuTick, appContainer, hands, listenerKeys.menuView.mainTick, null
+        );
 
         const menuGOs = [
             [() => changeViewFn(views.levels), startLevelsButton],
-            [() => changeViewFn(views.tutorials), tutorialsButton],
+            [() => console.log('tutorials'), tutorialsButton],
             [openSmv, menuTopRightButton]
         ];
-        pixiJsMenuTick = () => menuCollRes(app, menuGOs, hands.left);
 
-        app.ticker.add(pixiJsMenuTick);
+        pixiJsMenuTick = () => menuCollRes(app, menuGOs, hands.left);
+        addPixiTick(app, listenerKeys.menuView.mainTick, pixiJsMenuTick);
     },[
         props,
         startLevelsButton, tutorialsButton, savesButton, menuTopRightButton

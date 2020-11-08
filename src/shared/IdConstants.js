@@ -24,3 +24,5 @@ export const subMenu = {
         quit: 'smv2QuitId',
     },
 };
+
+export const appContainer = "appContainerId";
