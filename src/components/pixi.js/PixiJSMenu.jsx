@@ -11,6 +11,7 @@ import { pJsTxtOptions, views, smvRefs, listenerKeys } from 'shared/Indentifiers
 import { menu } from 'shared/IdConstants';
 import { logInfo } from 'shared/P3dcLogger';
 import { addPixiTick, removePixiTick } from './SharedTicks';
+import { viewConstant } from './ViewConstants';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -19,6 +20,11 @@ let loading = {
 };
 let isHoveringOverMenu = false;
 let storedHoverMenuItem = null;
+
+const defaultMenuButtonDim = {
+    h: 124,
+    w: 350,
+};
 
 export const menuCollRes = (app, otherGOs, handGO) => {
     if (handGO !== undefined && handGO !== null) {
@@ -121,8 +127,8 @@ export const defaultMenuButton = (buttonName, id=null, x=null, y =null, dimensio
     const buttonContainer = new PIXI.Container();
 
     const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = 350;
-    defaultButton.height = 124;
+    defaultButton.width = defaultMenuButtonDim.w;
+    defaultButton.height = defaultMenuButtonDim.h;
     defaultButton.tint = '0xf8e4b7';
 
     const buttonLabel = getButtonLabel(
@@ -164,8 +170,8 @@ export const disabledMenuButton = (buttonName, id=null, x=null, y =null, dimensi
     const buttonContainer = new PIXI.Container();
 
     const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = 350;
-    defaultButton.height = 124;
+    defaultButton.width = defaultMenuButtonDim.w;
+    defaultButton.height = defaultMenuButtonDim.h;
     defaultButton.tint = '0xe7ddc6';
     if (dimensions !== null && dimensions !== undefined) {
         if (dimensions.w !== null && dimensions.h !== null) {
@@ -330,7 +336,7 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
         ID.subMenu.default.quit,
         subMenuStartX + 26,
         subMenuViewHeight - 190,
-        {w: 300, h: 190}
+        {w: viewConstant.modifiedMenuBtnDim.w, h: viewConstant.modifiedMenuBtnDim.h}
     );
     smvBtnQuit.zIndex = 52;
     subMenuContainer.addChild(smvBtnQuit);
@@ -338,7 +344,7 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
     const customProps = {
         x: subMenuStartX + 26,
         y: 66,
-        dim: {w: 300, h: 190},
+        dim: {w: viewConstant.modifiedMenuBtnDim.w, h: viewConstant.modifiedMenuBtnDim.h},
         zIndex: 52,
     };
 
@@ -377,16 +383,23 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
 };
 
 export const PixiJSMenu = (props) => {
-    const initX = 66;
-    const initY = 100;
+    const startLevelsButton = defaultMenuButton(
+        'Levels', menu.button.levelsId, viewConstant.initCoord.x, viewConstant.initCoord.y
+    );
 
-    const startLevelsButton = defaultMenuButton('Levels', menu.button.levelsId, initX, initY);
+    const tutorialsButton = defaultMenuButton(
+        'Tutorials', menu.button.tutorialsId,
+        viewConstant.initCoord.x, (viewConstant.initCoord.y + viewConstant.modifiedMenuBtnDim.h)
+    );
 
-    const tutorialsButton = defaultMenuButton('Tutorials', menu.button.tutorialsId, initX, 270);
+    const savesButton = disabledMenuButton(
+        'Saves', menu.button.savesId,
+        (viewConstant.initCoord.x + viewConstant.modifiedMenuBtnDim.w + 140), viewConstant.initCoord.y
+    );
 
-    const savesButton = disabledMenuButton('Saves', menu.button.savesId, 570, initY);
-
-    const menuTopRightButton = menuTopRight(menu.button.topRight, 1036, 26);
+    const menuTopRightButton = menuTopRight(
+        menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
+    );
 
     useEffect(() => {
         logInfo('Logging PixiJSMenu useEffect');
