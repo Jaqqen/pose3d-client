@@ -19,4 +19,11 @@ export const viewConstant = {
         x: 80,
         y: 100,
     },
-}
+    offset: {
+        w: 140,
+    },
+    previewBtnDim: {
+        h: 250,
+        w: 300,
+    }
+};

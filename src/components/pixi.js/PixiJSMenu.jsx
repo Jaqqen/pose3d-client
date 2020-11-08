@@ -6,12 +6,12 @@ import React, { Fragment, useEffect } from 'react';
 
 import { Linear } from 'gsap/gsap-core';
 import { testForAABB } from "components/pixi.js/PixiJSCollision";
-import { getPixiJsText } from './PixiJSText';
-import { pJsTxtOptions, views, smvRefs, listenerKeys } from 'shared/Indentifiers';
 import { menu } from 'shared/IdConstants';
 import { logInfo } from 'shared/P3dcLogger';
 import { addPixiTick, removePixiTick } from './SharedTicks';
 import { viewConstant } from './ViewConstants';
+import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
+import { listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -20,11 +20,6 @@ let loading = {
 };
 let isHoveringOverMenu = false;
 let storedHoverMenuItem = null;
-
-const defaultMenuButtonDim = {
-    h: 124,
-    w: 350,
-};
 
 export const menuCollRes = (app, otherGOs, handGO) => {
     if (handGO !== undefined && handGO !== null) {
@@ -121,80 +116,6 @@ const loadingConfigurator = {
             resetTick: null,
         }
     },
-};
-
-export const defaultMenuButton = (buttonName, id=null, x=null, y =null, dimensions={w: null, h: null}) => {
-    const buttonContainer = new PIXI.Container();
-
-    const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = defaultMenuButtonDim.w;
-    defaultButton.height = defaultMenuButtonDim.h;
-    defaultButton.tint = '0xf8e4b7';
-
-    const buttonLabel = getButtonLabel(
-        defaultButton, buttonName, { [pJsTxtOptions.removeShadow]: true, }
-        );
-
-    buttonContainer.addChild(defaultButton);
-    buttonContainer.addChild(buttonLabel);
-
-    if (id !== null) buttonContainer.id = id;
-    if (x !== null) buttonContainer.x = x;
-    if (y !== null) buttonContainer.y = y;
-    if (dimensions !== null && dimensions !== undefined) {
-        if (dimensions.w !== null && dimensions.h !== null) {
-            buttonContainer.width = dimensions.w;
-            buttonContainer.height = dimensions.h;
-        }
-    }
-
-    return buttonContainer;
-};
-
-const getButtonLabel = (pixiJsGo, buttonText, options={}) => {
-    const bounds = pixiJsGo.getBounds();
-
-    const buttonLabel = getPixiJsText(
-        buttonText, options
-    );
-    buttonLabel.anchor.set(0.5, 0.5);
-    buttonLabel.position.set(
-        (bounds.width/2),
-        (bounds.height/2)
-    );
-
-    return buttonLabel;
-};
-
-export const disabledMenuButton = (buttonName, id=null, x=null, y =null, dimensions={w: null, h: null}) => {
-    const buttonContainer = new PIXI.Container();
-
-    const defaultButton = new PIXI.Sprite(PIXI.Texture.WHITE);
-    defaultButton.width = defaultMenuButtonDim.w;
-    defaultButton.height = defaultMenuButtonDim.h;
-    defaultButton.tint = '0xe7ddc6';
-    if (dimensions !== null && dimensions !== undefined) {
-        if (dimensions.w !== null && dimensions.h !== null) {
-            buttonContainer.width = dimensions.w;
-            buttonContainer.height = dimensions.h;
-        }
-    }
-
-    const buttonLabel = getButtonLabel(
-        defaultButton, buttonName, {
-            [pJsTxtOptions.removeShadow]: true,
-            [pJsTxtOptions.alpha]: 0.5
-        }
-    );
-
-    buttonContainer.addChild(defaultButton);
-    buttonContainer.addChild(buttonLabel);
-
-    if (id !== null) buttonContainer.id = id;
-    if (x !== null) buttonContainer.x = x;
-    if (y !== null) buttonContainer.y = y;
-
-    return buttonContainer;
 };
 
 export const menuTopRight = (id=null, x=null, y =null) => {
@@ -394,7 +315,7 @@ export const PixiJSMenu = (props) => {
 
     const savesButton = disabledMenuButton(
         'Saves', menu.button.savesId,
-        (viewConstant.initCoord.x + viewConstant.modifiedMenuBtnDim.w + 140), viewConstant.initCoord.y
+        (viewConstant.initCoord.x + viewConstant.modifiedMenuBtnDim.w + viewConstant.offset.w), viewConstant.initCoord.y
     );
 
     const menuTopRightButton = menuTopRight(
@@ -417,7 +338,7 @@ export const PixiJSMenu = (props) => {
 
         const menuGOs = [
             [() => changeViewFn(views.levels), startLevelsButton],
-            [() => console.log('tutorials'), tutorialsButton],
+            [() => changeViewFn(views.tutorials), tutorialsButton],
             [openSmv, menuTopRightButton]
         ];
 

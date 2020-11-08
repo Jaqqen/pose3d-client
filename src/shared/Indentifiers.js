@@ -77,8 +77,6 @@ export const views = {
     levelX: 'levelExtremeView',
     levels: 'levelsView',
     menu: 'menuView',
-    subMenu: 'subMenuView',
-    subMenu2: 'subMenu2View',
     tutHands: 'tutHandsView',
     tutSpeech: 'tutSpeechView',
     tutorials: 'tutorialsView',
@@ -99,5 +97,8 @@ export const listenerKeys = {
     },
     levelsView: {
         mainTick: 'levelsViewMainTickKey',
-    }
+    },
+    tutorialsView: {
+        mainTick: 'tutorialsViewMainTickKey',
+    },
 };

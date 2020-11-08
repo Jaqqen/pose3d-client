@@ -25,4 +25,19 @@ export const subMenu = {
     },
 };
 
+export const levels = {
+    button: {
+        one: 'levelsOneId',
+        two: 'levelTwoId',
+        three: 'levelsThreeId',
+    },
+};
+
+export const tutorials = {
+    button: {
+        one: 'tutorialsOneId',
+        two: 'tutorialsTwoId',
+    },
+};
+
 export const appContainer = "appContainerId";

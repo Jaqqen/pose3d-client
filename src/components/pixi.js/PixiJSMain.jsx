@@ -10,6 +10,7 @@ import { posenetModule } from 'components/pose/PosenetModelModule';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from './levels/PixiJSLevels';
 import { pixiTicks, removePixiTick } from './SharedTicks';
+import { PixiJSTutorials } from './tutorials/PixiJSTutorials';
 
 let app;
 let appContainer;
@@ -64,16 +65,22 @@ export default function PixiJSMain(props) {
                         changeViewFn={changeView}
                     />
                 );
-            case views.subMenu:
-                break;
-            case views.subMenu2:
-                break;
             case views.tutHands:
                 break;
             case views.tutSpeech:
                 break;
             case views.tutorials:
-                break;
+                return(
+                    <PixiJSTutorials
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             default:
                 break;
         };
