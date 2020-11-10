@@ -40,7 +40,7 @@ export const PixiJSLevelThreePreview = (props) => {
             [openSmv2, menuTopRightButton]
         ];
 
-        pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands.left);
+        pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands);
         addPixiTick(app, listenerKeys.levelThreePreview.mainTick, pixiJsPreviewTick);
 
     },[props, prevContainer, returnButton, startButton, menuTopRightButton]);

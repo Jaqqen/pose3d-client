@@ -51,7 +51,7 @@ export const PixiJSLevels = (props) => {
             [openSmv2, menuTopRightButton]
         ];
 
-        pixiJsLevelsTick = () => menuCollRes(app, levelMenuGOs, hands.left);
+        pixiJsLevelsTick = () => menuCollRes(app, levelMenuGOs, hands);
         addPixiTick(app, listenerKeys.levelsView.mainTick, pixiJsLevelsTick);
 
     },[props, levelOneButton, levelTwoButton, levelThreeButton, menuTopRightButton]);

@@ -42,7 +42,7 @@ export const PixiJSTutorials = (props) => {
             [openSmv2, menuTopRightButton]
         ];
 
-        pixiJsTutorialsTick = () => menuCollRes(app, tutorialMenuGOs, hands.left);
+        pixiJsTutorialsTick = () => menuCollRes(app, tutorialMenuGOs, hands);
         addPixiTick(app, listenerKeys.tutorialsView.mainTick, pixiJsTutorialsTick);
 
     },[props, tutorialHandsButton, tutorialSpeechButton, menuTopRightButton]);

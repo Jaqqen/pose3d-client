@@ -13,9 +13,12 @@ export default class StartPageMain extends Component {
                 </p>
                 <br/>
                 <p>
-                    Please use your <b>left hand</b> to navigate throughout the menu.
+                    Please use <b>both hands</b> to navigate throughout the menu.
                 </p>
-                <img alt="leftHand" src={asset.hand.left} />
+                <div style={{display: 'flex'}}>
+                    <img alt="leftHand" src={asset.hand.left} />
+                    <img alt="rightHand" src={asset.hand.right} />
+                </div>
                 <div className={CLASSNAME.startpageMainButtonContainer}>
                     <button autoFocus={true} onClick={this.props.renderMainAppPanel} >Start</button>
                 </div>

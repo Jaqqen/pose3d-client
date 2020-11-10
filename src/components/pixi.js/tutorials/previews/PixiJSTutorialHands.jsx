@@ -40,7 +40,7 @@ export const PixiJSTutorialHands = (props) => {
             [openSmv2, menuTopRightButton]
         ];
 
-        pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands.left);
+        pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands);
         addPixiTick(app, listenerKeys.tutorialHandsPreview.mainTick, pixiJsPreviewTick);
 
     },[props, prevContainer, returnButton, startButton, menuTopRightButton]);

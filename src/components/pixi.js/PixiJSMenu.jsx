@@ -21,30 +21,60 @@ let loading = {
 let isHoveringOverMenu = false;
 let storedHoverMenuItem = null;
 
-export const menuCollRes = (app, otherGOs, handGO) => {
-    if (handGO !== undefined && handGO !== null) {
+export const menuCollRes = (app, otherGOs, handGOs) => {
+    if (handGOs !== undefined && handGOs !== null &&
+        handGOs.left !== undefined && handGOs.left !== null &&
+        handGOs.right !== undefined && handGOs.right !== null
+    ) {
 
-    const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGO, otherGO[1]));
-    const isSingleCollision = collisionGOs.length === 1;
-    if (isSingleCollision) {
-        const currentlyHoveredMenuItem = collisionGOs[0][1].id;
-        if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
-            storedHoverMenuItem = currentlyHoveredMenuItem;
+        const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGOs.left, otherGO[1]));
+        const isSingleCollision = collisionGOs.length === 1;
+        //* for a case where we want to seperate the funtionalities between left and right hand
+        // const collisionGOsRight = otherGOs.filter(otherGO => 
+        //     (otherGO[1].id === menu.button.topRight) && testForAABB(handGOs.right, otherGO[1])
+        // );
+        const collisionGOsRight = otherGOs.filter(otherGO => testForAABB(handGOs.right, otherGO[1]));
+        const isMenuCollisionSingle = collisionGOsRight.length === 1;
+
+        if (collisionGOs.length + collisionGOsRight.length === 1) {
+            if (isSingleCollision) {
+                const currentlyHoveredMenuItem = collisionGOs[0][1].id;
+                if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
+                    storedHoverMenuItem = currentlyHoveredMenuItem;
+                    menuCollcleanUp(app);
+                }
+
+                if (!isHoveringOverMenu) {
+
+                    isHoveringOverMenu = true;
+
+                    loading.tween = loadingConfigurator.start(
+                        app, collisionGOs[0][1], collisionGOs[0][0]
+                    );
+                }
+            } else if (isMenuCollisionSingle) {
+                const currentlyHoveredMenuItem = collisionGOsRight[0][1].id;
+                if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
+                    storedHoverMenuItem = currentlyHoveredMenuItem;
+                    menuCollcleanUp(app);
+                }
+
+                if (!isHoveringOverMenu) {
+
+                    isHoveringOverMenu = true;
+
+                    loading.tween = loadingConfigurator.start(
+                        app, collisionGOsRight[0][1], collisionGOsRight[0][0]
+                    );
+                }
+            } else {
+                storedHoverMenuItem = null;
+                menuCollcleanUp(app);
+            }
+        } else {
+            storedHoverMenuItem = null;
             menuCollcleanUp(app);
         }
-
-        if (!isHoveringOverMenu) {
-
-            isHoveringOverMenu = true;
-
-            loading.tween = loadingConfigurator.start(
-                app, collisionGOs[0][1], collisionGOs[0][0]
-            );
-        }
-    } else {
-        storedHoverMenuItem = null;
-        menuCollcleanUp(app);
-    }
     }
 };
 
@@ -184,7 +214,7 @@ export const menuTopRightFn = (
             [returnFn, returnBtn]
         ];
     }
-    pixiJsSmvTick = () => menuCollRes(app, smvGOs, hands.right);
+    pixiJsSmvTick = () => menuCollRes(app, smvGOs, hands);
     addPixiTick(app, listenerKeys.menuView.smvTick, pixiJsSmvTick)
 };
 
@@ -341,7 +371,7 @@ export const PixiJSMenu = (props) => {
             [openSmv, menuTopRightButton]
         ];
 
-        pixiJsMenuTick = () => menuCollRes(app, menuGOs, hands.left);
+        pixiJsMenuTick = () => menuCollRes(app, menuGOs, hands);
         addPixiTick(app, listenerKeys.menuView.mainTick, pixiJsMenuTick);
     },[
         props,
