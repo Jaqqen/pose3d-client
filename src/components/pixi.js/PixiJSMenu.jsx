@@ -157,8 +157,7 @@ export const menuTopRightFn = (
         app.stage.addChild(container);
 
         smvGOs = [
-            // [creditsBtnFn, creditsBtn],
-            [() => console.log('credits'), creditsBtn],
+            [creditsBtnFn, creditsBtn],
             [quitBtnFn, quitBtn],
             [() => returnBtnFn(app, listenerKeys.menuView.smvTick, container, mainTickForReturnBtn, mainTickKey), returnBtn]
         ];
@@ -185,7 +184,7 @@ export const menuTopRightFn = (
             [returnFn, returnBtn]
         ];
     }
-    pixiJsSmvTick = () => menuCollRes(app, smvGOs, hands.left);
+    pixiJsSmvTick = () => menuCollRes(app, smvGOs, hands.right);
     addPixiTick(app, listenerKeys.menuView.smvTick, pixiJsSmvTick)
 };
 
@@ -257,7 +256,7 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
         ID.subMenu.default.quit,
         subMenuStartX + 26,
         subMenuViewHeight - 190,
-        {w: viewConstant.modifiedMenuBtnDim.w, h: viewConstant.modifiedMenuBtnDim.h}
+        {w: viewConstant.smvBtnDim.w, h: viewConstant.smvBtnDim.h}
     );
     smvBtnQuit.zIndex = 52;
     subMenuContainer.addChild(smvBtnQuit);
@@ -265,7 +264,7 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
     const customProps = {
         x: subMenuStartX + 26,
         y: 66,
-        dim: {w: viewConstant.modifiedMenuBtnDim.w, h: viewConstant.modifiedMenuBtnDim.h},
+        dim: {w: viewConstant.smvBtnDim.w, h: viewConstant.smvBtnDim.h},
         zIndex: 52,
     };
 
@@ -310,12 +309,12 @@ export const PixiJSMenu = (props) => {
 
     const tutorialsButton = defaultMenuButton(
         'Tutorials', menu.button.tutorialsId,
-        viewConstant.initCoord.x, (viewConstant.initCoord.y + viewConstant.modifiedMenuBtnDim.h)
+        viewConstant.initCoord.x, (viewConstant.initCoord.y + viewConstant.menuBtnDim.h + viewConstant.offset.h[80])
     );
 
     const savesButton = disabledMenuButton(
         'Saves', menu.button.savesId,
-        (viewConstant.initCoord.x + viewConstant.modifiedMenuBtnDim.w + viewConstant.offset.w), viewConstant.initCoord.y
+        (viewConstant.initCoord.x + viewConstant.menuBtnDim.w + viewConstant.offset.w[73]), viewConstant.initCoord.y
     );
 
     const menuTopRightButton = menuTopRight(

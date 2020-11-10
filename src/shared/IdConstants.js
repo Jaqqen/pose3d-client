@@ -33,10 +33,17 @@ export const levels = {
     },
 };
 
+export const previews = {
+    button: {
+        return: 'previewReturnId',
+        start: 'previewStartId',
+    },
+};
+
 export const tutorials = {
     button: {
-        one: 'tutorialsOneId',
-        two: 'tutorialsTwoId',
+        hands: 'tutorialsHandsId',
+        speech: 'tutorialsSpeechId',
     },
 };
 

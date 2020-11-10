@@ -69,12 +69,17 @@ export const pJsTxtOptions = {
     removeShadow: 'removeShadow',
     mediumSize: 'mediumSize',
     setFill: 'setFill',
+    wordWrap: 'wordWrap',
+    wordWrapWidth: 'wordWrapWidth',
 };
 
 export const views = {
-    levelN: 'levelNormalView',
     levelH: 'levelHardView',
+    levelHPrev: 'levelHardPreview',
+    levelN: 'levelNormalView',
+    levelNPrev: 'levelNormalPreview',
     levelX: 'levelExtremeView',
+    levelXPrev: 'levelExtremePreview',
     levels: 'levelsView',
     menu: 'menuView',
     tutHands: 'tutHandsView',
@@ -98,7 +103,30 @@ export const listenerKeys = {
     levelsView: {
         mainTick: 'levelsViewMainTickKey',
     },
+    levelOnePreview: {
+        mainTick: 'levelOnePreviewMainTickKey',
+    },
+    levelTwoPreview: {
+        mainTick: 'levelTwoPreviewMainTickKey',
+    },
+    levelThreePreview: {
+        mainTick: 'levelThreePreviewMainTickKey',
+    },
     tutorialsView: {
         mainTick: 'tutorialsViewMainTickKey',
+    },
+    tutorialHandsPreview: {
+        mainTick: 'tutorialHandsPreviewMainTickKey',
+    },
+    tutorialSpeechPreview: {
+        mainTick: 'tutorialSpeechPreviewMainTickKey',
+    },
+};
+
+export const preview = {
+    level: {
+        container: 'previewLevelContainer',
+        returnBtn: 'previewLevelReturnBtn',
+        startBtn:  'previewLevelStartBtn',
     },
 };

@@ -7,9 +7,21 @@ export const topRightMenuCoord = {
     y: 50,
 };
 export const viewConstant = {
-    modifiedMenuBtnDim: {
+    smvBtnDim: {
         h: 190,
         w: 300,
+    },
+    menuBtnDim: {
+        h: 124,
+        w: 350,
+    },
+    previewBtnDim: {
+        h: 250,
+        w: 250,
+    },
+    previewDim: {
+        h: 530,
+        w: 890,
     },
     topRightMenuCoord: {
         x: 1000,
@@ -20,10 +32,15 @@ export const viewConstant = {
         y: 100,
     },
     offset: {
-        w: 140,
+        w: {
+            140: 140,
+            73: 73,
+            30: 30,
+
+        },
+        h: {
+            80: 80,
+            35: 35,
+        },
     },
-    previewBtnDim: {
-        h: 250,
-        w: 300,
-    }
 };

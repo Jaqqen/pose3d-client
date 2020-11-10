@@ -1,26 +1,28 @@
 import React, { useEffect, Fragment } from 'react'
 import { levels, menu } from 'shared/IdConstants';
 import { listenerKeys, views } from 'shared/Indentifiers';
-import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
+import { previewMenuBtn } from "components/pixi.js/PixiJSButton";
 import { menuTopRight, menuTopRightFn, menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import { logInfo } from 'shared/P3dcLogger';
 import { addPixiTick } from '../SharedTicks';
 import { viewConstant } from '../ViewConstants';
 
 export const PixiJSLevels = (props) => {
-    const levelOneButton = defaultMenuButton(
-        'Level 1', levels.button.one, viewConstant.initCoord.x, viewConstant.initCoord.y,
-        {h: viewConstant.previewBtnDim.h, w: viewConstant.previewBtnDim.w,}
+
+    const levelOneButton = previewMenuBtn(
+        'Lv. 1', levels.button.one, viewConstant.initCoord.x, viewConstant.initCoord.y
     );
 
-    const levelTwoButton = disabledMenuButton(
-        'Level 2', levels.button.two,
-        viewConstant.initCoord.x, (viewConstant.initCoord.y + viewConstant.modifiedMenuBtnDim.h)
+    const previewBtnWidthAndOffset = viewConstant.previewBtnDim.w + viewConstant.offset.w[30]
+    const secondMenuBtnX = viewConstant.initCoord.x + previewBtnWidthAndOffset;
+    const levelTwoButton = previewMenuBtn(
+        'Lv. 2', levels.button.two, secondMenuBtnX, viewConstant.initCoord.y 
     );
 
-    const levelThreeButton = disabledMenuButton(
-        'Level 3', levels.button.three,
-        (viewConstant.initCoord.x + viewConstant.modifiedMenuBtnDim.w + viewConstant.offset.w), viewConstant.initCoord.y
+    const thirdMenuBtnX = secondMenuBtnX + previewBtnWidthAndOffset;
+    const levelThreeButton = previewMenuBtn(
+        'Lv. 3', levels.button.three,
+        thirdMenuBtnX, viewConstant.initCoord.y
     );
 
     const menuTopRightButton = menuTopRight (
@@ -43,9 +45,9 @@ export const PixiJSLevels = (props) => {
         );
 
         const levelMenuGOs = [
-            [() => console.log('level one'), levelOneButton],
-            [() => console.log('level two'), levelTwoButton],
-            [() => console.log('level three'), levelThreeButton],
+            [() => changeViewFn(views.levelNPrev), levelOneButton],
+            [() => changeViewFn(views.levelHPrev), levelTwoButton],
+            [() => changeViewFn(views.levelXPrev), levelThreeButton],
             [openSmv2, menuTopRightButton]
         ];
 

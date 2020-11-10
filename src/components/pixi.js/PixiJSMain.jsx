@@ -11,6 +11,11 @@ import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from './levels/PixiJSLevels';
 import { pixiTicks, removePixiTick } from './SharedTicks';
 import { PixiJSTutorials } from './tutorials/PixiJSTutorials';
+import { PixiJSLevelOnePreview } from './levels/previews/PixiJSLevelOnePreview';
+import { PixiJSLevelTwoPreview } from './levels/previews/PixiJSLevelTwoPreview';
+import { PixiJSLevelThreePreview } from './levels/previews/PixiJSLevelThreePreview';
+import { PixiJSTutorialHands } from './tutorials/previews/PixiJSTutorialHands';
+import { PixiJSTutorialSpeech } from './tutorials/previews/PixiJSTutorialSpeech';
 
 let app;
 let appContainer;
@@ -37,10 +42,46 @@ export default function PixiJSMain(props) {
         switch (viewKey) {
             case views.levelN:
                 break;
+            case views.levelNPrev:
+                return(
+                    <PixiJSLevelOnePreview
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             case views.levelH:
                 break;
+            case views.levelHPrev:
+                return(
+                    <PixiJSLevelTwoPreview
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             case views.levelX:
                 break;
+            case views.levelXPrev:
+                return(
+                    <PixiJSLevelThreePreview
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             case views.levels:
                 return(
                     <PixiJSLevels 
@@ -66,9 +107,29 @@ export default function PixiJSMain(props) {
                     />
                 );
             case views.tutHands:
-                break;
+                return(
+                    <PixiJSTutorialHands
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             case views.tutSpeech:
-                break;
+                return(
+                    <PixiJSTutorialSpeech
+                        app={app}
+                        appContainer={appContainer}
+                        hands={{
+                            right: rightHand.go,
+                            left: leftHand.go,
+                        }}
+                        changeViewFn={changeView}
+                    />
+                );
             case views.tutorials:
                 return(
                     <PixiJSTutorials
