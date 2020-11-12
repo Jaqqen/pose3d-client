@@ -2,7 +2,8 @@ import * as CLASSNAME from 'shared/ClassName.js';
 
 import React, { Component } from 'react';
 
-import { captureVideo, estimatePoseOnImage } from 'components/pose/PoseHandler';
+// import { captureVideo } from 'components/pose/PoseHandler';
+import { estimatePoseOnImage } from 'components/pose/PoseHandler';
 import { drawJoints } from "shared/DrawHandler";
 import { media } from 'shared/Indentifiers';
 import { posenetModule } from './PosenetModelModule';
@@ -18,19 +19,19 @@ export default class PoseCanvas extends Component {
         this.drawGrid = this.drawGrid.bind(this);
         this.getPoseCoordinates = this.getPoseCoordinates.bind(this);
         this.setDimensions = this.setDimensions.bind(this);
-        
+
         //? references
         this.canvasRef = React.createRef();
     }
 
     async componentDidMount() {
         const { srcType } = this.props;
-        const { _srcRef } = this.state;
+        // const { _srcRef } = this.state;
 
         const ctx = this.canvasRef.current.getContext("2d");
 
         //? sets dimensions to src dimensions
-        const dimensions = this.setDimensions();
+        // const dimensions = this.setDimensions();
 
         //? draws grid for tests/check-ups - OPTIONAL
         // this.drawGrid(ctx);
@@ -41,7 +42,7 @@ export default class PoseCanvas extends Component {
             if (poseCoordinates !== null) drawJoints(poseCoordinates, ctx);
         }
         if (srcType === media.video) {
-            captureVideo(ctx, dimensions, _srcRef, drawJoints);
+            // captureVideo(ctx, dimensions, _srcRef, drawJoints);
         }
     }
 

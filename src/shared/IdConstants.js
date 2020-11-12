@@ -48,3 +48,4 @@ export const tutorials = {
 };
 
 export const appContainer = "appContainerId";
+export const cloudsContainerBg = "cloudsContainerBgId";

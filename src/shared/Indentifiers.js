@@ -36,9 +36,15 @@ export const asset = {
         dummy: require('static/assets/pixi.js/img/character_dummy.png'),
     },
     env: {
-        groundDots: require('static/assets/pixi.js/img/envs/ground_dots.png'),
-        groundDotsNone: require('static/assets/pixi.js/img/envs/ground_no_dots.png'),
-        groundDotsFlying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png'),
+        ground: {
+            dots: require('static/assets/pixi.js/img/envs/ground_dots.png'),
+            noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png'),
+            flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png'),
+        },
+        cloud: {
+            one: require('static/assets/pixi.js/img/envs/cloudOne.png'),
+            two: require('static/assets/pixi.js/img/envs/cloudTwo.png'),
+        },
     },
     hand: {
         left: require('static/assets/pixi.js/img/bodyparts/leftHand.png'),
@@ -51,8 +57,26 @@ export const asset = {
 };
 
 export const assetRsrc = {
+    character: {
+        dummy: 'dummyCharacterRsrc',
+    },
     leftHand: 'leftHandRsrc',
     rightHand: 'rightHandRsrc',
+    env: {
+        ground: {
+            dots: 'groundDotsRsrc',
+            noDots: 'groundNoDotsRsrc',
+            flying: 'groundDotsFlyingRsrc',
+        },
+        cloud: {
+            one: 'cloudOneRsrc',
+            two: 'cloudTwoRsrc',
+        },
+    },
+    projectile: {
+        icicle: 'icicleRsrc',
+        meteor: 'meteorRsrc',
+    },
 };
 
 export const goLabels = {
@@ -106,6 +130,9 @@ export const listenerKeys = {
     levelOnePreview: {
         mainTick: 'levelOnePreviewMainTickKey',
     },
+    levelOneScene: {
+        mainTick: 'levelOneSceneMainTickKey',
+    },
     levelTwoPreview: {
         mainTick: 'levelTwoPreviewMainTickKey',
     },
@@ -120,6 +147,26 @@ export const listenerKeys = {
     },
     tutorialSpeechPreview: {
         mainTick: 'tutorialSpeechPreviewMainTickKey',
+    },
+    char: {
+        entry: {
+            worldAnim: 'charEntryWorldAnimationTickKey',
+            infinite: {
+                clouds: 'charEntryInfiniteCloudsTickKey',
+                ground: 'charEntryInfiniteTickKey',
+            },
+            own: 'charEntryOwnTickKey', 
+        },
+        finish: {
+            own: 'charFinishOwnTickKey',
+        }
+    },
+    game: {
+        object: {
+            flag: {
+                own: 'flagOwnTickKey',
+            },
+        },
     },
 };
 

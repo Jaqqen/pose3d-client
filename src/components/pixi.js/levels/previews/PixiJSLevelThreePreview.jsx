@@ -36,7 +36,7 @@ export const PixiJSLevelThreePreview = (props) => {
 
         const previewMenuGOs = [
             [() => changeViewFn(views.levels), returnButton],
-            [() => console.log('start three two'), startButton],
+            [() => console.log('start level three'), startButton],
             [openSmv2, menuTopRightButton]
         ];
 

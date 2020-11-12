@@ -19,10 +19,7 @@ export let estimatePoseOnImage = (poseNet, imageElement) => {
             const p = new Promise((resolve) => {
                 resolve(
                     poseNet.estimateSinglePose(imageElement, {
-                        flipHorizontal: false,
-                        maxDetections: 5,
-                        scoreThreshold: 0.1,
-                        nmsRadius: 20,
+                        flipHorizontal: true,
                     })
                 );
             });
