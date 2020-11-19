@@ -30,7 +30,7 @@ export const PixiJSTutorialHands = (props) => {
 
         let pixiJsPreviewTick;
         const openSmv2 = () => menuTopRightFn(
-            app, pixiJsPreviewTick, appContainer, hands, listenerKeys.tutorialHandsPreview.mainTick,
+            app, pixiJsPreviewTick, hands, listenerKeys.tutorialHandsPreview.mainTick,
             () => changeViewFn(views.menu)
         );
 

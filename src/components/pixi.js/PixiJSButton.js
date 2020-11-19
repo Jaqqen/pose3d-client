@@ -61,10 +61,8 @@ export const disabledMenuButton = (buttonName, id=null, x=null, y =null, dimensi
     defaultButton.height = defaultMenuButtonDim.h;
     defaultButton.tint = '0xe7ddc6';
     if (dimensions !== null && dimensions !== undefined) {
-        if (dimensions.w !== null && dimensions.h !== null) {
-            buttonContainer.width = dimensions.w;
-            buttonContainer.height = dimensions.h;
-        }
+        if (dimensions.w !== null) { defaultButton.width = dimensions.w; }
+        if (dimensions.h !== null) { defaultButton.height = dimensions.h; }
     }
 
     const buttonLabel = getButtonLabel(

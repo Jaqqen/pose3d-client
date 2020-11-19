@@ -1,15 +1,15 @@
 import * as PIXI from 'pixi.js';
 import { pJsTxtOptions } from 'shared/Indentifiers';
 
-
-
 export const getPixiJsText = (
     text,
     options = {
         [pJsTxtOptions.removeShadow]: false,
         [pJsTxtOptions.mediumSize]: false,
+        [pJsTxtOptions.customFontSize]: 64,
         [pJsTxtOptions.alpha]: 1,
         [pJsTxtOptions.wordWrap]: 440,
+        [pJsTxtOptions.fill]: '#111111',
     }
 ) => {
     let style = {
@@ -33,9 +33,14 @@ export const getPixiJsText = (
     }
     if (options[pJsTxtOptions.mediumSize]) {
         style = { ...style, fontSize: 18, };
+    } else if (options[pJsTxtOptions.mediumSize] !== undefined) {
+        style = { ...style, fontSize: options[pJsTxtOptions.mediumSize], };
     }
-    if (options[pJsTxtOptions.wordWrap] !== 440) {
+    if (options[pJsTxtOptions.wordWrap] !== undefined) {
         style = { ...style, wordWrapWidth: options[pJsTxtOptions.wordWrap], };
+    }
+    if (options[pJsTxtOptions.fill] !== undefined) {
+        style = { ...style, fill: options[pJsTxtOptions.fill], };
     }
 
     const pixiJsText = new PIXI.Text(text, style);

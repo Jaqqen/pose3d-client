@@ -8,10 +8,13 @@ import { Linear } from 'gsap/gsap-core';
 import { testForAABB } from "components/pixi.js/PixiJSCollision";
 import { menu } from 'shared/IdConstants';
 import { logInfo } from 'shared/P3dcLogger';
-import { addPixiTick, removePixiTick } from './SharedTicks';
+import {
+    addPixiTick, addPixiTickFromSceneToCache, cachedPixiTicksFromScene, clearAllPixiTimeouts,
+    pixiTicks, removeCachedPixiTickFromScene, removePixiTick
+} from 'components/pixi.js/SharedTicks';
 import { viewConstant } from './ViewConstants';
 import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
-import { listenerKeys, smvRefs, views } from 'shared/Indentifiers';
+import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -170,7 +173,7 @@ export const menuTopRight = (id=null, x=null, y =null) => {
 };
 
 export const menuTopRightFn = (
-    app, mainTickForReturnBtn, appContainer, hands, mainTickKey, returnToMMFunction
+    app, mainTickForReturnBtn, hands, mainTickKey, returnToMMFunction
 ) => {
     removePixiTick(app, mainTickKey);
 
@@ -183,11 +186,11 @@ export const menuTopRightFn = (
             [smvRefs.credits]:creditsBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
-        } = getSubMenuView(app, appContainer, true);
+        } = getSubMenuView(app, true);
         app.stage.addChild(container);
 
         smvGOs = [
-            [creditsBtnFn, creditsBtn],
+            // [creditsBtnFn, creditsBtn],
             [quitBtnFn, quitBtn],
             [() => returnBtnFn(app, listenerKeys.menuView.smvTick, container, mainTickForReturnBtn, mainTickKey), returnBtn]
         ];
@@ -197,7 +200,7 @@ export const menuTopRightFn = (
             [smvRefs.mainMenu]:mainMenuBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
-        } = getSubMenuView(app, appContainer, false);
+        } = getSubMenuView(app, false);
         app.stage.addChild(container);
 
         const returnFn = () => returnBtnFn(
@@ -206,7 +209,7 @@ export const menuTopRightFn = (
         const removeSmvAndReturnToMM = () => {
             returnFn();
             returnToMMFunction();
-        }
+        };
 
         smvGOs = [
             [removeSmvAndReturnToMM, mainMenuBtn],
@@ -218,10 +221,71 @@ export const menuTopRightFn = (
     addPixiTick(app, listenerKeys.menuView.smvTick, pixiJsSmvTick)
 };
 
+export const menuTopRightSceneFn = (
+    app, interactiveTickObjs, worldTickObjs, mainTickObj, hands, _exitFn, menuTickObj
+) => {
+    interactiveTickObjs.forEach(tickObj => {
+        const _key = tickObj[goLabels.interactive.tick];
+        addPixiTickFromSceneToCache(_key, pixiTicks[_key]);
+        removePixiTick(app, _key);
+    });
+    for (let key of Object.keys(worldTickObjs)) {
+        addPixiTickFromSceneToCache(key, worldTickObjs[key]);
+        removePixiTick(app, key);
+    }
+    //* mainTickObj[0] is the KEY and mainTickObj[1] is the main tick FUNCTION
+    removePixiTick(app, mainTickObj[0]);
+    addPixiTickFromSceneToCache(mainTickObj[0], mainTickObj[1]);
+
+    //* menuTickObj[0] is the KEY and menuTickObj[1] is the main tick FUNCTION
+    removePixiTick(app, menuTickObj[0]);
+    addPixiTickFromSceneToCache(menuTickObj[0], menuTickObj[1]);
+
+    const {
+        [smvRefs.container]:container,
+        [smvRefs.mainMenu]:mainMenuBtn,
+        [smvRefs.quit]:quitBtn,
+        [smvRefs.returnBack]:returnBtn
+    } = getSubMenuView(app, false);
+    app.stage.addChild(container);
+    container.id = ID.sceneSmv;
+
+    const returnFn = () => {
+        for (let key of Object.keys(cachedPixiTicksFromScene)) {
+            addPixiTick(app, key, cachedPixiTicksFromScene[key]);
+            removeCachedPixiTickFromScene(key);
+        }
+        removePixiTick(app, listenerKeys.menuView.smvTick);
+        app.stage.removeChild(container);
+
+        addPixiTick(app, mainTickObj[0], mainTickObj[1]);
+        removeCachedPixiTickFromScene(mainTickObj[0]);
+
+        addPixiTick(app, menuTickObj[0], menuTickObj[1]);
+        removeCachedPixiTickFromScene(menuTickObj[0]);
+    };
+
+    const exitFn = () => {
+        clearAllPixiTimeouts();
+        removePixiTick(app, listenerKeys.menuView.smvTick);
+        app.stage.removeChild(container);
+        _exitFn();
+    };
+
+    const smvGOs = [
+        [exitFn, mainMenuBtn],
+        [quitBtnFn, quitBtn],
+        [returnFn, returnBtn]
+    ];
+
+    const pixiJsSmvTick = () => menuCollRes(app, smvGOs, hands);
+    addPixiTick(app, listenerKeys.menuView.smvTick, pixiJsSmvTick);
+};
+
 const creditsBtnFn = () => {
     console.log('credits');
 };
-const quitBtnFn = () => {
+export const quitBtnFn = () => {
     document.location.reload();
 }
 const returnBtnFn = (app, smvTickKey, container, mainTick, mainTickKey) => {
@@ -231,7 +295,7 @@ const returnBtnFn = (app, smvTickKey, container, mainTick, mainTickKey) => {
     addPixiTick(app, mainTickKey, mainTick);
 }
 
-const getSubMenuView = (app, appContainer, isMainMenu) => {
+const getSubMenuView = (app, isMainMenu) => {
     const subMenuContainer = new PIXI.Container();
     subMenuContainer.sortableChildren = true;
     subMenuContainer.zIndex = 49;
@@ -281,7 +345,7 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
 
     subMenuContainer.addChild(smvReturnIconBtn);
 
-    const smvBtnQuit = disabledMenuButton(
+    const smvBtnQuit = defaultMenuButton(
         'Quit',
         ID.subMenu.default.quit,
         subMenuStartX + 26,
@@ -296,6 +360,7 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
         y: 66,
         dim: {w: viewConstant.smvBtnDim.w, h: viewConstant.smvBtnDim.h},
         zIndex: 52,
+        scale: 0.9,
     };
 
     let customButton;
@@ -310,19 +375,19 @@ const getSubMenuView = (app, appContainer, isMainMenu) => {
         );
         customButtonKey = smvRefs.credits;
     } else {
-        customButton = disabledMenuButton(
+        customButton = defaultMenuButton(
             'Main Menu',
             ID.subMenu.default.credits,
             customProps.x,
             customProps.y,
             customProps.dim
         );
+        customButton.children.find(e => e.text === 'Main Menu').scale.set(customProps.scale);
         customButtonKey = smvRefs.mainMenu;
     }
 
     customButton.zIndex = customProps.zIndex;
     subMenuContainer.addChild(customButton)
-    appContainer.addChild(subMenuContainer);
 
     return {
         [smvRefs.container]: subMenuContainer,
@@ -362,7 +427,7 @@ export const PixiJSMenu = (props) => {
 
         let pixiJsMenuTick;
         const openSmv = () => menuTopRightFn(
-            app, pixiJsMenuTick, appContainer, hands, listenerKeys.menuView.mainTick, null
+            app, pixiJsMenuTick, hands, listenerKeys.menuView.mainTick, null
         );
 
         const menuGOs = [

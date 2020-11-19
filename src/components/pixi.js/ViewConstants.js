@@ -8,8 +8,8 @@ export const topRightMenuCoord = {
 };
 export const viewConstant = {
     smvBtnDim: {
-        h: 190,
-        w: 300,
+        h: 150,
+        w: 340,
     },
     menuBtnDim: {
         h: 124,
@@ -42,5 +42,13 @@ export const viewConstant = {
             80: 80,
             35: 35,
         },
+    },
+    lifeBarsDim: {
+        x: 50,
+        y: 50,
+    },
+    overlayBtnDim: {
+        h: 100,
+        w: 240,
     },
 };

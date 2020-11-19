@@ -40,7 +40,7 @@ export const PixiJSLevels = (props) => {
 
         let pixiJsLevelsTick;
         const openSmv2 = () => menuTopRightFn(
-            app, pixiJsLevelsTick, appContainer, hands, listenerKeys.levelsView.mainTick,
+            app, pixiJsLevelsTick, hands, listenerKeys.levelsView.mainTick,
             () => changeViewFn(views.menu)
         );
 

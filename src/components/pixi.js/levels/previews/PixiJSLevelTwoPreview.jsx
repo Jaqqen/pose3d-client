@@ -30,7 +30,7 @@ export const PixiJSLevelTwoPreview = (props) => {
 
         let pixiJsPreviewTick;
         const openSmv2 = () => menuTopRightFn(
-            app, pixiJsPreviewTick, appContainer, hands, listenerKeys.levelTwoPreview.mainTick,
+            app, pixiJsPreviewTick, hands, listenerKeys.levelTwoPreview.mainTick,
             () => changeViewFn(views.menu)
         );
 

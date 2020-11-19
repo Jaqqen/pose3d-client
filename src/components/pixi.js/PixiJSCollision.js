@@ -1,74 +1,49 @@
-// import * as PIXI from 'pixi.js';
-
-// const groundDotsNoneResourceName = 'groundDotsNone';
-// const dummyResourceName = 'characterDummy';
-// const meteorResourceName = 'meteor';
-
-
-// Options for how objects interact
-// How fast the red square moves
-// const movementSpeed = 0.05;
-
-// Strength of the impulse push between two objects
-// const impulsePower = 5;
+import * as ID from 'shared/IdConstants';
+import { goLabels } from 'shared/Indentifiers';
+import { reduceLifeByOne } from './PixiJSGameObjects';
 
 // Test For Hit
 // A basic AABB check between two different squares
 export const testForAABB = (object1, object2) => {
-    const bounds1 = object1.getBounds();
-    const bounds2 = object2.getBounds();
+    const b1 = object1.getBounds();
+    const b2 = object2.getBounds();
 
-    return bounds1.x < bounds2.x + bounds2.width
-        && bounds1.x + bounds1.width > bounds2.x
-        && bounds1.y < bounds2.y + bounds2.height
-        && bounds1.y + bounds1.height > bounds2.y;
+    return  b1.x < b2.x + b2.width && b1.x + b1.width > b2.x &&
+            b1.y < b2.y + b2.height && b1.y + b1.height > b2.y;
 };
 
-// Calculates the results of a collision, allowing us to give an impulse that
-// shoves objects apart
-// const collisionResponse = (object1, object2) => {
-//     if (!object1 || !object2) {
-//         return new PIXI.Point(0);
-//     }
+export const checkCollision = (app, hand, collisionGOs, character, lifebarsContainer) => {
+    if (
+        app.view.width > hand.go.x && hand.go.x > 0 &&
+        app.view.height > hand.go.y && hand.go.y > 0
+    ) {
+        const collGOsInFrame = collisionGOs.filter(collisionGo => (
+            app.view.width > collisionGo[goLabels.interactive.go].x &&
+            collisionGo[goLabels.interactive.go].x > 0 &&
+            app.view.height > collisionGo[goLabels.interactive.go].y &&
+            collisionGo[goLabels.interactive.go].y > 0
+        ));
+        collGOsInFrame.forEach(gameObj => {
+            if (testForAABB(gameObj[goLabels.interactive.go], hand.go)) {
+                const hitGO = gameObj[goLabels.interactive.go];
 
-//     const vCollision = new PIXI.Point(
-//         object2.x - object1.x,
-//         object2.y - object1.y,
-//     );
+                let horizontalSpeed = -9;
+                if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
 
-//     const distance = Math.sqrt(
-//         Math.pow((object2.x - object1.x), 2) +
-//         Math.pow((object2.y - object1.y), 2),
-//     );
+                let verticalSpeed = 9;
+                if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
 
-//     const vCollisionNorm = new PIXI.Point(
-//         vCollision.x / distance,
-//         vCollision.y / distance,
-//     );
+                hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
+            }
 
-//     const vRelativeVelocity = new PIXI.Point(
-//         object1.acceleration.x - object2.acceleration.x,
-//         object1.acceleration.y - object2.acceleration.y,
-//     );
-
-//     const speed = vRelativeVelocity.x * vCollisionNorm.x
-//         + vRelativeVelocity.y * vCollisionNorm.y;
-
-//     const impulse = impulsePower * speed / (object1.mass + object2.mass);
-
-//     return new PIXI.Point(
-//         impulse * vCollisionNorm.x,
-//         impulse * vCollisionNorm.y,
-//     );
-// };
-
-// Calculate the distance between two given points
-// const distanceBetweenTwoPoints = (p1, p2) => {
-//     const a = p1.x - p2.x;
-//     const b = p1.y - p2.y;
-
-//     return Math.hypot(a, b);
-// };
+            if (character.id !== ID.levels.charOnCooldown) {
+                if (testForAABB(character, gameObj[goLabels.interactive.go])) {
+                    reduceLifeByOne(lifebarsContainer, character);
+                }
+            }
+        });
+    }
+};
 
 // let characterRef = useRef(null);
 

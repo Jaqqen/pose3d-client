@@ -80,13 +80,18 @@ export const assetRsrc = {
 };
 
 export const goLabels = {
-    menu: {
-        MENU: 'menuHEAD',
-        levels: 'menuLevels',
-        tutorials: 'menuTutorials',
-        saves: 'menuSaves',
-        topRight: 'topRight',
-    }
+    interactive: {
+        go: '_interactiveGoKey_',
+        tick: '_interactiveTickKey_'
+    },
+    level: {
+        one: {
+            projectiles: {
+                meteor: '_meteorGoKey_',
+                tickKey: '_meteorTickKey_',
+            },
+        },
+    },
 };
 
 export const pJsTxtOptions = {
@@ -95,6 +100,8 @@ export const pJsTxtOptions = {
     setFill: 'setFill',
     wordWrap: 'wordWrap',
     wordWrapWidth: 'wordWrapWidth',
+    fill: 'fill',
+    customFontSize: 'customFontSize',
 };
 
 export const views = {
@@ -132,6 +139,7 @@ export const listenerKeys = {
     },
     levelOneScene: {
         mainTick: 'levelOneSceneMainTickKey',
+        menuCollTick: 'levelOneSceneMenuCollTickKey',
     },
     levelTwoPreview: {
         mainTick: 'levelTwoPreviewMainTickKey',
@@ -164,8 +172,21 @@ export const listenerKeys = {
     game: {
         object: {
             flag: {
-                own: 'flagOwnTickKey',
+                own: 'gameObjectFlagOwnTickKey',
             },
+            meteors: {
+                own: 'gameObjectMeteorsOwnTickKey',
+            },
+            icicles: {
+                own: 'gameObjectIciclesOwnTickKey',
+            }
+        },
+        interaction: {
+            left: 'gameInteractionLeftTickKey',
+            right: 'gameInteractionRightTickKey',
+        },
+        overlay: {
+            own: 'gameOverlayTickKey',
         },
     },
 };
@@ -177,3 +198,10 @@ export const preview = {
         startBtn:  'previewLevelStartBtn',
     },
 };
+
+export const overlayerRefs = {
+    container: 'overlayContainerRef',
+    retry: 'overlayRetryRef',
+    mainMenu: 'overlayMainMenuRef',
+    quit: 'overlayQuitRef',
+}

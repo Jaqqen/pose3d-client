@@ -9,7 +9,7 @@ import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { posenetModule } from 'components/pose/PosenetModelModule';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
-import { pixiTicks, removePixiTick } from 'components/pixi.js/SharedTicks';
+import { clearAllPixiTimeouts, pixiTicks, removePixiTick } from 'components/pixi.js/SharedTicks';
 import { PixiJSTutorials } from 'components/pixi.js/tutorials/PixiJSTutorials';
 import { PixiJSLevelOnePreview } from 'components/pixi.js/levels/previews/PixiJSLevelOnePreview';
 import { PixiJSLevelTwoPreview } from 'components/pixi.js/levels/previews/PixiJSLevelTwoPreview';
@@ -24,12 +24,10 @@ let appContainer;
 
 let leftHand = {
     go: null,
-    coordinates: {x: -1000, y: -1000,},
 };
 
 let rightHand = {
     go: null,
-    coordinates: {x: -1000, y: -1000,},
 };
 
 let handSpriteCenter = {x: 0, y: 0,};
@@ -44,7 +42,6 @@ export const getCloudsForBackground = (app, resources) => {
         if (i % 3 === 0) { assetType = assetRsrc.env.cloud.one; }
         else { assetType = assetRsrc.env.cloud.two; }
 
-        debugger
         const _cloud = new PIXI.Sprite(resources[assetType].texture);
         _cloud.scale.set(getRandomArbitrary(0.9, 1.3))
 
@@ -61,7 +58,7 @@ export const getCloudsForBackground = (app, resources) => {
 export default function PixiJSMain(props) {
     const [areHandsStaged, setAreHandsStaged] = useState(false);
     const [videoSrc] = useState(document.getElementById(ID.poseWebcam));
-    const [viewState, setViewState] = useState(views.levelN);
+    const [viewState, setViewState] = useState(views.menu);
 
     const setView = (viewKey) => {
         logDebug('setting View with', viewKey);
@@ -72,8 +69,8 @@ export default function PixiJSMain(props) {
                         app={app}
                         appContainer={appContainer}
                         hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
+                            right: rightHand,
+                            left: leftHand,
                         }}
                         exitViewFn={changeViewOnLevelOrTutExit}
                     />
@@ -199,7 +196,7 @@ export default function PixiJSMain(props) {
     };
 
     const setHandsPositions = useCallback((coordinates) => {
-        if (leftHand.coordinates !== null && leftHand.go !== null) {
+        if (leftHand.go !== null) {
             const {x: inX, y: inY} = getInterpolatedValues(
                 {x: leftHand.go.x, y: leftHand.go.y},
                 getCenterKPtOfHand(getHandPositions(coordinates, body.left.wrist)),
@@ -208,7 +205,7 @@ export default function PixiJSMain(props) {
             leftHand.go.x = inX;
             leftHand.go.y = inY;
         }
-        if (rightHand.coordinates !== null && rightHand.go !== null) {
+        if (rightHand.go !== null) {
             const {x: inX, y: inY} = getInterpolatedValues(
                 {x: rightHand.go.x, y: rightHand.go.y},
                 getCenterKPtOfHand(getHandPositions(coordinates, body.right.wrist)),
@@ -326,20 +323,24 @@ export default function PixiJSMain(props) {
     };
 
     const changeViewOnLevelOrTutExit = (viewKey, resources) => {
+        app.ticker.stop()
+        clearAllPixiTimeouts();
         logDebug('changing View with', viewKey);
         for (let _tickKey of Object.keys(pixiTicks)) {
             removePixiTick(app, _tickKey);
         }
+
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = new PIXI.Container();
         appContainer.sortableChildren = true;
         appContainer.name = ID.appContainer;
-
         app.stage.addChild(getCloudsForBackground(app, resources));
 
         app.stage.addChild(appContainer);
+        app.ticker.start();
+
         setViewState(viewKey);
-    }
+    };
 
     return (
         <div id={ID.pixiJsContainer}>

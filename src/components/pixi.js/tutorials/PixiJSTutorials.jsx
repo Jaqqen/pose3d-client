@@ -32,7 +32,7 @@ export const PixiJSTutorials = (props) => {
 
         let pixiJsTutorialsTick;
         const openSmv2 = () => menuTopRightFn(
-            app, pixiJsTutorialsTick, appContainer, hands, listenerKeys.tutorialsView.mainTick,
+            app, pixiJsTutorialsTick, hands, listenerKeys.tutorialsView.mainTick,
             () => changeViewFn(views.menu)
         );
 

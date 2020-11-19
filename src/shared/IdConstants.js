@@ -31,6 +31,13 @@ export const levels = {
         two: 'levelTwoId',
         three: 'levelsThreeId',
     },
+    lifeBar: 'levelsLifeBarId',
+    charOnCooldown: 'levelsCharOnCooldownId',
+    status: {
+        gameOver: 'levelsStatusGameOverId',
+        running: 'levelsStatusRunningId',
+        win: 'levelsStatusWinId',
+    },
 };
 
 export const previews = {
@@ -49,3 +56,4 @@ export const tutorials = {
 
 export const appContainer = "appContainerId";
 export const cloudsContainerBg = "cloudsContainerBgId";
+export const sceneSmv = "sceneSmvId";
