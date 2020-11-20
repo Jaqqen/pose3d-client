@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/pose3d-client/precache-manifest.949c482083da203574e540a05b23ccb1.js"
+  "/pose3d-client/precache-manifest.002bc97ad6e9910a1f84cc1368a0e580.js"
 );
 
 self.addEventListener('message', (event) => {
