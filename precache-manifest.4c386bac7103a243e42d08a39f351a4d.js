@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "79a5581fa13676e893e4eba144af2a24",
+    "revision": "dcef91f89f2ff2195ba4a58de25ced26",
     "url": "/pose3d-client/index.html"
   },
   {
-    "revision": "f08ce992d1d2ed157523",
+    "revision": "c4156e29153aff107bb9",
     "url": "/pose3d-client/static/css/main.8d84a95f.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/pose3d-client/static/js/2.ac5fca98.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "f08ce992d1d2ed157523",
-    "url": "/pose3d-client/static/js/main.a0b06c59.chunk.js"
+    "revision": "c4156e29153aff107bb9",
+    "url": "/pose3d-client/static/js/main.cbeccfa4.chunk.js"
   },
   {
     "revision": "fef0b20fd8961fac0648",
