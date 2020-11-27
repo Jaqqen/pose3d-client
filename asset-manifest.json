@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/pose3d-client/static/css/main.8d84a95f.chunk.css",
-    "main.js": "/pose3d-client/static/js/main.cbeccfa4.chunk.js",
-    "main.js.map": "/pose3d-client/static/js/main.cbeccfa4.chunk.js.map",
+    "main.js": "/pose3d-client/static/js/main.8079c8fd.chunk.js",
+    "main.js.map": "/pose3d-client/static/js/main.8079c8fd.chunk.js.map",
     "runtime-main.js": "/pose3d-client/static/js/runtime-main.39d3b9cf.js",
     "runtime-main.js.map": "/pose3d-client/static/js/runtime-main.39d3b9cf.js.map",
-    "static/js/2.ac5fca98.chunk.js": "/pose3d-client/static/js/2.ac5fca98.chunk.js",
-    "static/js/2.ac5fca98.chunk.js.map": "/pose3d-client/static/js/2.ac5fca98.chunk.js.map",
+    "static/js/2.cee83656.chunk.js": "/pose3d-client/static/js/2.cee83656.chunk.js",
+    "static/js/2.cee83656.chunk.js.map": "/pose3d-client/static/js/2.cee83656.chunk.js.map",
     "index.html": "/pose3d-client/index.html",
-    "precache-manifest.4c386bac7103a243e42d08a39f351a4d.js": "/pose3d-client/precache-manifest.4c386bac7103a243e42d08a39f351a4d.js",
+    "precache-manifest.9777de0b69f8421c94f00ee45a72ef1e.js": "/pose3d-client/precache-manifest.9777de0b69f8421c94f00ee45a72ef1e.js",
     "service-worker.js": "/pose3d-client/service-worker.js",
     "static/css/main.8d84a95f.chunk.css.map": "/pose3d-client/static/css/main.8d84a95f.chunk.css.map",
-    "static/js/2.ac5fca98.chunk.js.LICENSE.txt": "/pose3d-client/static/js/2.ac5fca98.chunk.js.LICENSE.txt",
+    "static/js/2.cee83656.chunk.js.LICENSE.txt": "/pose3d-client/static/js/2.cee83656.chunk.js.LICENSE.txt",
     "static/media/dURRLkVfHr7ZRqTSHeHTEj-1366-80.jpg": "/pose3d-client/static/media/dURRLkVfHr7ZRqTSHeHTEj-1366-80.95c13657.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.39d3b9cf.js",
-    "static/js/2.ac5fca98.chunk.js",
+    "static/js/2.cee83656.chunk.js",
     "static/css/main.8d84a95f.chunk.css",
-    "static/js/main.cbeccfa4.chunk.js"
+    "static/js/main.8079c8fd.chunk.js"
   ]
 }
