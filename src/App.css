@@ -1,13 +1,12 @@
 .App {
     margin: auto;
-    padding-top: 65px;
+    padding-top: 50px;
     width: fit-content;
 }
 
 .app-loading {
     opacity: 0;
 }
-
 
 .loading-screen {
     width: fit-content;
@@ -29,6 +28,16 @@
     margin: auto;
     width: fit-content;
 }
+.startpagemain-container p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: large;
+}
+.startpagemain-container img{
+    display: block;
+    margin: auto;
+    margin-top: 40px;
+    width: fit-content;
+}
 .startpagemain-button-container {
     margin: auto;
     margin-top: 40px;
@@ -43,13 +52,18 @@
 .canvas-container {
     opacity: 1;
 }
+.canvas-container-flipped {
+    opacity: 1;
+    transform: scaleX(-1);
+}
 
 /* ? Pose */
 .posemain-container {
     display: inline-block;
     margin: auto;
+    position: absolute;
     width: fit-content;
-
+    z-index: 1;
 }
 
 .posemain-container img{
@@ -58,7 +72,7 @@
     z-index: -1;
 }
 .posemain-container video{
-    opacity: 0.3;
+    opacity: 0;
     z-index: -1;
 }
 .posemain-container canvas{

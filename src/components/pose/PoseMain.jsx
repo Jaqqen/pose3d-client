@@ -1,27 +1,29 @@
+import * as CLASSNAME from 'shared/ClassName';
+
 import React, { Component } from 'react';
 import PoseCam from './PoseCam';
-import { getPosenetModel } from "components/pose/PoseHandler";
-import * as CLASSNAME from 'shared/ClassName';
 import PoseCanvas from 'components/pose/PoseCanvas';
 import PoseImg from 'components/pose/PoseImg';
+
+import { media } from 'shared/Indentifiers';
 
 export default class PoseMain extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            areJointsTracked: false,
+            _srcRef: null,
             container: {
                 height: 0,
                 width: 0,
             },
-            _posenetModel: null,
             hasImageSrcLoaded: false,
             hasVideoSrcLoaded: false,
-            _srcRef: null,
-            srcPanelIdentifier: 'video',
+            isMirrored: true,
+            srcPanelIdentifier: media.video,
         };
 
         //? bindings
-        this.getPosenetModel = this.getPosenetModel.bind(this);
         this.getImageSrcOnLoad = this.getImageSrcOnLoad.bind(this);
         this.getVideoSrcOnPlay = this.getVideoSrcOnPlay.bind(this);
         this.getPoseCanvas = this.getPoseCanvas.bind(this);
@@ -29,16 +31,6 @@ export default class PoseMain extends Component {
 
         //? references
         this.srcContainerRef = React.createRef();
-    }
-
-    componentDidMount() {
-        this.getPosenetModel();
-    }
-
-    async getPosenetModel() {
-        const posenetModel = await getPosenetModel();
-
-        this.setState({ _posenetModel: posenetModel, });
     }
 
     getImageSrcOnLoad(srcRef) {
@@ -82,18 +74,18 @@ export default class PoseMain extends Component {
     }
 
     getPoseCanvas() {
-        const { hasImageSrcLoaded, hasVideoSrcLoaded, _posenetModel, _srcRef } = this.state;
+        const { hasImageSrcLoaded, hasVideoSrcLoaded, _srcRef, isMirrored } = this.state;
 
         let srcType = null;
-        if (hasVideoSrcLoaded) srcType = 'video';
-        if (hasImageSrcLoaded) srcType = 'image';
+        if (hasVideoSrcLoaded) srcType = media.video;
+        if (hasImageSrcLoaded) srcType = media.image;
 
         if (srcType !== null) {
             return (
                 <PoseCanvas
+                    isMirrored={isMirrored}
                     srcType={srcType}
                     srcRef={_srcRef}
-                    _posenetModel={_posenetModel}
                 />
             );
         }
@@ -101,18 +93,19 @@ export default class PoseMain extends Component {
     }
 
     getSrcPanel() {
-        const { srcPanelIdentifier } = this.state;
+        const { srcPanelIdentifier, isMirrored } = this.state;
 
-        if (srcPanelIdentifier === 'image') {
+        if (srcPanelIdentifier === media.image) {
             return (
                 <PoseImg
                     getImageSrcOnLoad={this.getImageSrcOnLoad}
                 />
             );
-        } else if (srcPanelIdentifier === 'video') {
+        } else if (srcPanelIdentifier === media.video) {
             return (
                 <PoseCam
                     getVideoSrcOnPlay={this.getVideoSrcOnPlay}
+                    isMirrored={isMirrored}
                 />
             );
         } else {
@@ -121,21 +114,23 @@ export default class PoseMain extends Component {
     }
 
     getPoseMainContentPanel() {
-        const { _posenetModel, container } = this.state;
+        const { container, areJointsTracked } = this.state;
 
-        if (_posenetModel) {
-            return (
-                <div
-                    style={{ height: container.height + 'px', width: container.width + 'px'}}
-                    className={CLASSNAME.poseMainContainer}
-                >
-                    {this.getPoseCanvas()}
-                    {this.getSrcPanel()}
-                </div>
-            )
-        }
+        return (
+            <div
+                style={{ height: container.height + 'px', width: container.width + 'px'}}
+                className={CLASSNAME.poseMainContainer}
+            >
+                {
+                    areJointsTracked ? 
+                        this.getPoseCanvas()
+                        :
+                        null
+                }
 
-        return null;
+                {this.getSrcPanel()}
+            </div>
+        )
     }
 
     render() { return this.getPoseMainContentPanel(); }
