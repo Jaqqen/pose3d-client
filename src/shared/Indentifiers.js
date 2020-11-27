@@ -87,8 +87,12 @@ export const goLabels = {
     level: {
         one: {
             projectiles: {
-                meteor: '_meteorGoKey_',
-                tickKey: '_meteorTickKey_',
+                meteor: {
+                    tickKeyPrefix: '_meteorTickKeyPrefix_',
+                },
+                icicle: {
+                    tickKeyPrefix: '_icicleTickKeyPrefix_',
+                },
             },
         },
     },

@@ -25,3 +25,9 @@ export const getInterpolatedValues = (a, b, frac) => {
 
     return {x: nx, y: ny};
 };
+
+export const getRandomChoiceOfArray = (_array) => {
+    let rand = Math.random();
+    rand *= _array.length;
+    return _array[Math.round(rand)];
+};

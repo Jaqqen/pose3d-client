@@ -3,26 +3,25 @@ import * as PIXI from 'pixi.js';
 
 import { menuTopRight } from 'components/pixi.js/PixiJSMenu';
 import { menuCollRes } from 'components/pixi.js/PixiJSMenu';
-import { addPixiTick, addPixiTimeout, clearPixiTimeoutWithKey, removePixiTick } from 'components/pixi.js/SharedTicks';
+import {
+    addPixiTick, addPixiTimeout, clearPixiTimeoutWithKey, removePixiTick
+} from 'components/pixi.js/SharedTicks';
 import { viewConstant } from 'components/pixi.js/ViewConstants';
-import VoiceHandler from 'components/voice/VoiceHandler';
 
 import React, { Fragment, useEffect } from 'react'
 import { menu } from 'shared/IdConstants';
 import { assetRsrc, goLabels, listenerKeys, views } from 'shared/Indentifiers';
 import { logInfo } from 'shared/P3dcLogger';
-import { 
+import {
     getCloudsForScene, getCloudXDist, getGroundsByTypeForScene,
     defaultWorldAnimation, getFinishingFlag, runCharacterFinishAnimation, 
     runFlagEntryAnimation, runCharacterEntryAnimation, onScreenStartingX,
     removeCloudFromStageBeforeLevelStart, getLifeBars, lifeHandlerTick,
     onFinishLevel
 } from "components/pixi.js/PixiJSGameObjects";
-import { getRandomArbitrary, getRandomArbitraryInStep } from 'shared/Utils';
+import { getRandomArbitrary, getRandomArbitraryInStep, getRandomChoiceOfArray } from 'shared/Utils';
 import { checkCollision } from 'components/pixi.js/PixiJSCollision';
 import { menuTopRightSceneFn } from 'components/pixi.js/PixiJSMenu';
-import gsap from 'gsap/gsap-core';
-import { Linear } from 'gsap/gsap-core';
 
 export const PixiJSLevelOne = (props) => {
 
@@ -72,6 +71,9 @@ export const PixiJSLevelOne = (props) => {
                 const characterDummy = new PIXI.Sprite(resources[assetRsrc.character.dummy].texture);
 
                 //? interactive objects
+                const interactiveGOKey = goLabels.interactive.go;
+                const interactiveTickKey = goLabels.interactive.tick;
+
                 let meteors = [];
                 const amtMeteors = 4;
                 const meteorMaxXOffset = 50;
@@ -91,17 +93,12 @@ export const PixiJSLevelOne = (props) => {
                     max: 8000,
                     step: 1000,
                 };
-                const meteorPrefixKey = goLabels.level.one.projectiles.tickKey;
-                const interactiveGOKey = goLabels.interactive.go;
-                const interactiveTickKey = goLabels.interactive.tick;
+                const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
 
                 let icicles = [];
                 const amtIcicles = 3;
                 const iciclesAccelBounds = {
-                    x: {
-                        min: 0,
-                        max: 0,
-                    },
+                    x: worldTickSpeed * 0.9,
                     y: {
                         min: -2,
                         max: -2.4,
@@ -113,6 +110,11 @@ export const PixiJSLevelOne = (props) => {
                     max: 8000,
                     step: 1000,
                 };
+                const icicleTickKeyPrefix = goLabels.level.one.projectiles.icicle.tickKeyPrefix;
+                const icicleDistances = [
+                    onScreenStartingX + 400,
+                    onScreenStartingX + 660
+                ];
 
                 //? non-interactive, world objects
                 const groundWithDots = getGroundsByTypeForScene(
@@ -164,11 +166,11 @@ export const PixiJSLevelOne = (props) => {
                         [interactiveTickKey]: null,
                     });
                     tmpIcicle.scale.set(0.6);
-                    tmpIcicle.x = onScreenStartingX + getRandomArbitrary(180, 260);
+                    tmpIcicle.x = getRandomChoiceOfArray(icicleDistances);
                     tmpIcicle.y = -tmpIcicle.getBounds().height;
                     tmpIcicle.zIndex = -10;
                     tmpIcicle.acceleration = new PIXI.Point(
-                        iciclesAccelBounds.x.min,
+                        iciclesAccelBounds.x,
                         getRandomArbitrary(iciclesAccelBounds.y.min, iciclesAccelBounds.y.max)
                     );
                     appContainer.addChild(tmpIcicle);
@@ -220,6 +222,7 @@ export const PixiJSLevelOne = (props) => {
                                 },
                                 {
                                     [infiniteMeteorsKey]: infiniteMeteors,
+                                    [infiniteIciclesKey]: infiniteIcicles,
                                 },
                                 cleanUpOnFinish,
                                 () => onFinishLevel(
@@ -243,7 +246,8 @@ export const PixiJSLevelOne = (props) => {
                             meteorGo.x -= meteorGo.acceleration.x;
                             meteorGo.y -= meteorGo.acceleration.y;
                         };
-                        meteor[interactiveTickKey] = meteorPrefixKey + index;
+
+                        meteor[interactiveTickKey] = meteorTickKeyPrefix + index;
                         meteor[interactiveGOKey].id = interactiveGOKey;
 
                         const initMetId = setTimeout(() => {
@@ -259,35 +263,40 @@ export const PixiJSLevelOne = (props) => {
                         addPixiTimeout(meteor[interactiveTickKey], initMetId);
                     })
                 };
-                // const initiateIcicles = () => {
-                //     icicles.forEach((icicle, index) => {
-                //         const icicleTick = () => {
-                //             const icicleGo = icicle[interactiveGOKey];
 
-                //             const icicleInit = {y: -icicleGo.getBounds().height };
-                //             const characterIntroTick = () => {icicleGo.position.y = icicleInit.y};
+                const initiateIcicles = () => {
+                    icicles.forEach((icicle, index) => {
+                        const icicleTick = () => {
+                            const icicleGo = icicle[interactiveGOKey];
 
-                //             const initIcicleId = setTimeout(() => {
-                //                 gsap.to(icicleInit, {
-                //                     y: icicleGo.getBounds().height,
-                //                     duration: getRandomArbitrary(1.2,2.4),
-                //                     ease: Linear.easeIn
-                //                 });
-                //             },
-                //                 getRandomArbitraryInStep(
-                //                     icicleTimeoutRange.min,
-                //                     icicleTimeoutRange.max,
-                //                     icicleTimeoutRange.step
-                //                 )
-                //             );
+                            if (icicleGo.y < 0 && icicleGo.acceleration.y < 0) {
+                                icicleGo.y -= -(Math.abs((icicleGo.acceleration.y/2)));
+                            } else {
+                                icicleGo.x -= icicleGo.acceleration.x;
+                                icicleGo.y -= icicleGo.acceleration.y;
 
+                            }
+                        };
 
-                //             addPixiTick(app, listenerKeys.game.object);
-                //         }
-                //     });
-                // };
+                        icicle[interactiveTickKey] = icicleTickKeyPrefix + index;
+                        icicle[interactiveGOKey].id = interactiveGOKey;
+
+                        const initIcicleId = setTimeout(() => {
+                            addPixiTick(app, icicle[interactiveTickKey], icicleTick);
+                            clearPixiTimeoutWithKey(icicle[interactiveTickKey]);
+                        },
+                            getRandomArbitraryInStep(
+                                icicleTimeoutRange.min,
+                                icicleTimeoutRange.max,
+                                icicleTimeoutRange.step
+                            )
+                        );
+                        addPixiTimeout(icicle[interactiveTickKey], initIcicleId);
+                    });
+                };
                 const initiateProjectiles = () => {
                     initiateMeteors();
+                    initiateIcicles();
                 };
 
                 const infiniteMeteors = () => {
@@ -333,6 +342,52 @@ export const PixiJSLevelOne = (props) => {
                         });
                     }
                 };
+                const infiniteIcicles = () => {
+                    const lostIcicles = icicles.filter(
+                        icicle => (
+                            icicle[interactiveGOKey].y > (app.view.height - groundWithDots[0].getBounds().height + icicle[interactiveGOKey].getBounds().height) ||
+                            icicle[interactiveGOKey].y < (0 - icicle[interactiveGOKey].getBounds().height-5) ||
+                            icicle[interactiveGOKey].x < (0 - icicle[interactiveGOKey].getBounds().width) ||
+                            icicle[interactiveGOKey].x > app.view.width
+                        )
+                    );
+
+                    if (lostIcicles.length > 0) {
+                        lostIcicles.forEach(lostIcicle => {
+                            const icicleGo = lostIcicle[interactiveGOKey];
+                            const icicleKey = lostIcicle[interactiveTickKey];
+                            if (lastPartBeforeEndX - (app.view.width/2) < elapsedGroundWidth) {
+                                removePixiTick(app, icicleKey);
+                                appContainer.removeChild(icicleGo);
+                            } else {
+                                icicleGo.acceleration = new PIXI.Point(0);
+                                const isSmvOpen = app.stage.children.filter(
+                                    (child) => child.id === ID.sceneSmv
+                                );
+                                if (isSmvOpen.length <= 0) {
+                                    clearPixiTimeoutWithKey(icicleKey);
+                                    icicleGo.x = getRandomChoiceOfArray(icicleDistances);
+                                    icicleGo.y = -icicleGo.getBounds().height;
+
+                                    const resetIcicleId = setTimeout(() => {
+                                        icicleGo.acceleration.set(
+                                            iciclesAccelBounds.x,
+                                            getRandomArbitrary(iciclesAccelBounds.y.min, iciclesAccelBounds.y.max)
+                                        );
+                                        clearPixiTimeoutWithKey(icicleKey);
+                                    },
+                                        getRandomArbitraryInStep(
+                                            icicleTimeoutRange.minInTick,
+                                            icicleTimeoutRange.max,
+                                            icicleTimeoutRange.step
+                                        )
+                                    );
+                                    addPixiTimeout(icicleKey, resetIcicleId);
+                                }
+                            }
+                        });
+                    }
+                };
 
                 const cleanUpOnFinish = () => {
                     const lostAppContChildren = appContainer.children.filter(
@@ -356,6 +411,7 @@ export const PixiJSLevelOne = (props) => {
                         [infiniteCloudsKey]: infiniteClouds,
                         [infiniteGroundKey]: infiniteGround,
                         [infiniteMeteorsKey]: infiniteMeteors,
+                        [infiniteIciclesKey]: infiniteIcicles,
                     },
                     () => {
                         menuTopRightButton.visible = true;
@@ -367,13 +423,15 @@ export const PixiJSLevelOne = (props) => {
                 );
 
                 const interactiveGOs = [
-                    ...meteors
+                    ...meteors,
+                    ...icicles
                 ];
                 const worldGOs = {
                     [worldAnimKey]: worldAnimation,
                     [infiniteCloudsKey]: infiniteClouds,
                     [infiniteGroundKey]: infiniteGround,
                     [infiniteMeteorsKey]: infiniteMeteors,
+                    [infiniteIciclesKey]: infiniteIcicles,
                 };
 
                 const handGOs = {
@@ -382,7 +440,7 @@ export const PixiJSLevelOne = (props) => {
                 };
 
                 const openSmvLevelScene = () => menuTopRightSceneFn(
-                    app, appContainer, interactiveGOs, worldGOs,
+                    app, interactiveGOs, worldGOs,
                     [levelOneTickKey, levelOneTick],
                     handGOs,
                     () => exitViewFn(views.menu, resources),
@@ -414,8 +472,6 @@ export const PixiJSLevelOne = (props) => {
     }, [props, menuTopRightButton, lifeBars])
 
     return(
-        <Fragment>
-            <VoiceHandler />
-        </Fragment>
+        <Fragment></Fragment>
     );
 }

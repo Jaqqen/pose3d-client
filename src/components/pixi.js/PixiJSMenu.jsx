@@ -183,7 +183,7 @@ export const menuTopRightFn = (
     if (returnToMMFunction === null) {
         const {
             [smvRefs.container]:container,
-            [smvRefs.credits]:creditsBtn,
+            // [smvRefs.credits]:creditsBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
         } = getSubMenuView(app, true);
@@ -282,9 +282,9 @@ export const menuTopRightSceneFn = (
     addPixiTick(app, listenerKeys.menuView.smvTick, pixiJsSmvTick);
 };
 
-const creditsBtnFn = () => {
-    console.log('credits');
-};
+// const creditsBtnFn = () => {
+//     console.log('credits');
+// };
 export const quitBtnFn = () => {
     document.location.reload();
 }

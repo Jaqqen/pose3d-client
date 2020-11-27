@@ -2,8 +2,6 @@ import * as ID from 'shared/IdConstants';
 import { goLabels } from 'shared/Indentifiers';
 import { reduceLifeByOne } from './PixiJSGameObjects';
 
-// Test For Hit
-// A basic AABB check between two different squares
 export const testForAABB = (object1, object2) => {
     const b1 = object1.getBounds();
     const b2 = object2.getBounds();
@@ -13,10 +11,6 @@ export const testForAABB = (object1, object2) => {
 };
 
 export const checkCollision = (app, hand, collisionGOs, character, lifebarsContainer) => {
-    if (
-        app.view.width > hand.go.x && hand.go.x > 0 &&
-        app.view.height > hand.go.y && hand.go.y > 0
-    ) {
         const collGOsInFrame = collisionGOs.filter(collisionGo => (
             app.view.width > collisionGo[goLabels.interactive.go].x &&
             collisionGo[goLabels.interactive.go].x > 0 &&
@@ -24,16 +18,21 @@ export const checkCollision = (app, hand, collisionGOs, character, lifebarsConta
             collisionGo[goLabels.interactive.go].y > 0
         ));
         collGOsInFrame.forEach(gameObj => {
-            if (testForAABB(gameObj[goLabels.interactive.go], hand.go)) {
-                const hitGO = gameObj[goLabels.interactive.go];
+            if (
+                app.view.width > hand.go.x && hand.go.x > 0 &&
+                app.view.height > hand.go.y && hand.go.y > 0
+            ) {
+                if (testForAABB(gameObj[goLabels.interactive.go], hand.go)) {
+                    const hitGO = gameObj[goLabels.interactive.go];
 
-                let horizontalSpeed = -9;
-                if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
+                    let horizontalSpeed = -9;
+                    if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
 
-                let verticalSpeed = 9;
-                if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
+                    let verticalSpeed = 9;
+                    if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
 
-                hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
+                    hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
+                }
             }
 
             if (character.id !== ID.levels.charOnCooldown) {
@@ -42,7 +41,6 @@ export const checkCollision = (app, hand, collisionGOs, character, lifebarsConta
                 }
             }
         });
-    }
 };
 
 // let characterRef = useRef(null);

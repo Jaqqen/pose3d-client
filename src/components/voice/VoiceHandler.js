@@ -1,5 +1,5 @@
- 
-import React, { Fragment, useEffect } from 'react'
+import * as ID from 'shared/IdConstants';
+import React, { useEffect } from 'react'
 
 export default function VoiceHandler() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -47,6 +47,8 @@ export default function VoiceHandler() {
     }
 
     useEffect(() => {
+        let hasRecogTerminated = false;
+
         recognition.onstart = () => {
             console.log('VoiceHandler has entered: ONSTART');
         };
@@ -65,7 +67,9 @@ export default function VoiceHandler() {
 
         recognition.onend = () => {
             console.info('VOICE IS DYING....');
-            setSpeechRecogSession();
+            if (!hasRecogTerminated) {
+                setSpeechRecogSession();
+            }
         };
 
         recognition.onerror = (eventError) => {
@@ -73,9 +77,14 @@ export default function VoiceHandler() {
             if (eventError.error !== 'no-speech') console.error(eventError);
         };
 
+        return () => {
+            console.info('VOICE UNMOUNTING....');
+            hasRecogTerminated = true;
+            recognition.stop();
+        };
     });
 
     return (
-        <Fragment></Fragment>
+        <span id={ID.voiceHanlder}></span>
     )
 }

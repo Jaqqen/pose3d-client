@@ -93,13 +93,13 @@ export const runCharacterEntryAnimation = (
         duration: 3,
         ease: Linear.easeIn,
         onComplete: () => {
+            interactivesInitiation();
             for (let key of Object.keys(animations)) {
                 addPixiTick(app, key, animations[key]);
             }
             removePixiTick(app, listenerKeys.char.entry.own);
             showMenuAndLifebars();
             addMainTickToPixiTick();
-            interactivesInitiation();
             menuCollTick();
         },
     });
@@ -318,17 +318,17 @@ export const lifeHandlerTick = (
 
         const {
             [overlayerRefs.container]: container,
-            [overlayerRefs.retry]: retryBtn,
+            // [overlayerRefs.retry]: retryBtn,
             [overlayerRefs.mainMenu]: mainMenuBtn,
             [overlayerRefs.quit]: quitBtn
         } = getGameOverlayByStatus(app, ID.levels.status.gameOver);
         app.stage.addChild(container);
 
-        const retryFn = () => {
-            removePixiTick(app, listenerKeys.game.overlay.own);
-            app.stage.removeChild(container);
-            _retryFn();
-        };
+        // const retryFn = () => {
+        //     removePixiTick(app, listenerKeys.game.overlay.own);
+        //     app.stage.removeChild(container);
+        //     _retryFn();
+        // };
 
         const exitFn = () => {
             removePixiTick(app, listenerKeys.game.overlay.own);
@@ -369,17 +369,17 @@ export const onFinishLevel = (
 
     const {
         [overlayerRefs.container]: container,
-        [overlayerRefs.retry]: retryBtn,
+        // [overlayerRefs.retry]: retryBtn,
         [overlayerRefs.mainMenu]: mainMenuBtn,
         [overlayerRefs.quit]: quitBtn
     } = getGameOverlayByStatus(app, ID.levels.status.win);
     app.stage.addChild(container);
 
-    const retryFn = () => {
-        removePixiTick(app, listenerKeys.game.overlay.own);
-        app.stage.removeChild(container);
-        _retryFn();
-    };
+    // const retryFn = () => {
+    //     removePixiTick(app, listenerKeys.game.overlay.own);
+    //     app.stage.removeChild(container);
+    //     _retryFn();
+    // };
 
     const exitFn = () => {
         removePixiTick(app, listenerKeys.game.overlay.own);
