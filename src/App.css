@@ -44,7 +44,8 @@
     width: fit-content;
 }
 .startpagemain-button-container button{
-    font-size: 1.4em;
+    font-size: 1.2em;
+    margin: 0 50px;
     width: fit-content;
 }
 

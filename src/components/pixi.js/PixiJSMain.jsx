@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { asset, assetRsrc, body, views } from 'shared/Indentifiers';
 import { estimatePoseOnImage } from 'components/pose/PoseHandler';
 import { logDebug, logInfo } from 'shared/P3dcLogger';
-import { posenetModule } from 'components/pose/PosenetModelModule';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
 import { clearAllPixiTimeouts, pixiTicks, removePixiTick } from 'components/pixi.js/SharedTicks';
@@ -219,7 +218,7 @@ export default function PixiJSMain(props) {
     const renderHands = useCallback((src) => {
         src.onplay = () => {
             const step = async () => {
-                let coordinates = await estimatePoseOnImage(posenetModule, src);
+                let coordinates = await estimatePoseOnImage(src);
                 if (coordinates !== null) setHandsPositions(coordinates);
                 requestAnimationFrame(step);
             };

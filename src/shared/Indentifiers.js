@@ -1,3 +1,9 @@
+export const appMode = {
+    _START_PAGE_: '_START_PAGE_MODE_',
+    CONTROLLER: '_CONTROLLER_MODE_',
+    WEBCAM: '_WEBCAM_MODE_',
+};
+
 export const media = {
     image: 'IMAGE',
     video: 'VIDEO',
