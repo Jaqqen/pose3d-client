@@ -1,13 +1,12 @@
 .App {
     margin: auto;
-    padding-top: 65px;
+    padding-top: 50px;
     width: fit-content;
 }
 
 .app-loading {
     opacity: 0;
 }
-
 
 .loading-screen {
     width: fit-content;
@@ -29,39 +28,33 @@
     margin: auto;
     width: fit-content;
 }
+.startpagemain-container p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: large;
+}
+.startpagemain-container img{
+    display: block;
+    margin: auto;
+    margin-top: 40px;
+    width: fit-content;
+}
 .startpagemain-button-container {
     margin: auto;
     margin-top: 40px;
     width: fit-content;
 }
 .startpagemain-button-container button{
-    font-size: 1.4em;
+    font-size: 1.2em;
+    margin: 0 50px;
     width: fit-content;
 }
 
-/* ? Canvas */
-.canvas-container {
-    opacity: 1;
-}
-
-/* ? Pose */
-.posemain-container {
+#pose-webcam {
     display: inline-block;
-    margin: auto;
-    width: fit-content;
-
-}
-
-.posemain-container img{
-    margin: auto;
+    height: 88vh;
     position: absolute;
-    z-index: -1;
+    opacity: 0.2;
+    z-index: 2;
 }
-.posemain-container video{
-    opacity: 0.3;
-    z-index: -1;
-}
-.posemain-container canvas{
-    margin: auto;
-    position: absolute;
-}
+
+
