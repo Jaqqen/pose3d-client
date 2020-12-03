@@ -300,7 +300,7 @@ export const lifeHandlerTick = (
 ) => {
     if (lifeBarsContainer.children <= 0) {
         clearAllPixiTimeouts();
-        app.stage.children.find(elem => elem.name = ID.appContainer).removeChild(lifeBarsContainer);
+        app.stage.children.find(elem => elem.name = ID.appContainerName).removeChild(lifeBarsContainer);
 
         interactiveTickObjs.forEach(tickObj => {
             const _key = tickObj[goLabels.interactive.tick];

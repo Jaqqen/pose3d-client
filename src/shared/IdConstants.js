@@ -52,6 +52,7 @@ export const tutorials = {
     },
 };
 
-export const appContainer = "appContainerId";
+export const appContainerName = "appContainerName";
 export const cloudsContainerBg = "cloudsContainerBgId";
 export const sceneSmv = "sceneSmvId";
+export const startWebcamId = "startWebcamId";

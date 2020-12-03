@@ -2,6 +2,7 @@ import * as CLASSNAME from 'shared/ClassName';
 
 import React, { Component } from 'react'
 import { asset } from 'shared/Indentifiers';
+import { startWebcamId } from 'shared/IdConstants';
 
 export default class StartPageMain extends Component {
     render() {
@@ -28,7 +29,7 @@ export default class StartPageMain extends Component {
                     width: 'fit-content',
                 }}>Start with...</h2>
                 <div className={CLASSNAME.startpageMainButtonContainer}>
-                    <button autoFocus={true} onClick={renderAppWithWebcam}>
+                    <button id={startWebcamId} autoFocus={true} onClick={renderAppWithWebcam}>
                         Webcam
                     </button>
                     <button disabled={true} onClick={renderAppWithController}>

@@ -4,15 +4,6 @@ export const appMode = {
     WEBCAM: '_WEBCAM_MODE_',
 };
 
-export const media = {
-    image: 'IMAGE',
-    video: 'VIDEO',
-};
-
-export const interaction = {
-    arm: 'ARM',
-};
-
 export const body = {
     nose: 'nose',
     left: {

@@ -8,7 +8,7 @@ import Webcam from 'react-webcam';
 
 import { appMode } from 'shared/Indentifiers';
 import { getPosenetModel, setposenetModel } from 'components/pose/PoseHandler';
-import { poseWebcam } from 'shared/IdConstants';
+import { poseWebcam, startWebcamId } from 'shared/IdConstants';
 
 export default class App extends Component {
     constructor(props) {
@@ -29,6 +29,7 @@ export default class App extends Component {
     async renderAppWithWebcam() {
         const startWebcam = window.confirm("Enable Webcam to start tracking?");
         if (startWebcam) {
+            document.querySelector('#' + startWebcamId).disabled = true;
             const model = await getPosenetModel();
             setposenetModel(model);
             this.setState({ hasMainAppStarted: appMode.WEBCAM, });
@@ -54,7 +55,6 @@ export default class App extends Component {
                         ref={this.webcamRef}
                         screenshotFormat='image/jpeg'
                         screenshotQuality={1}
-                        width={document.body.clientWidth * 0.7}
                     />
                     <PixiJSMain
                         height={pixiJSMain.height}

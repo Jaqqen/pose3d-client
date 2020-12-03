@@ -1,10 +1,10 @@
-import * as ID from 'shared/IdConstants';
+import { cloudsContainerBg, pixiJsCanvas, pixiJsContainer, poseWebcam } from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { asset, assetRsrc, body, views } from 'shared/Indentifiers';
-import { estimatePoseOnImage } from 'components/pose/PoseHandler';
+import { asset, assetRsrc, views } from 'shared/Indentifiers';
+import { appContainerName } from "shared/IdConstants";
 import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
@@ -15,21 +15,22 @@ import { PixiJSLevelTwoPreview } from 'components/pixi.js/levels/previews/PixiJS
 import { PixiJSLevelThreePreview } from 'components/pixi.js/levels/previews/PixiJSLevelThreePreview';
 import { PixiJSTutorialHands } from 'components/pixi.js/tutorials/previews/PixiJSTutorialHands';
 import { PixiJSTutorialSpeech } from 'components/pixi.js/tutorials/previews/PixiJSTutorialSpeech';
-import { getRandomInt, getRandomArbitrary, getInterpolatedValues } from 'shared/Utils';
+import { getRandomInt, getRandomArbitrary } from 'shared/Utils';
 import { PixiJSLevelOne } from 'components/pixi.js/levels/scenes/PixiJSLevelOne';
+import { getHandByRsrcName, getHands, leftHand, renderHands, rightHand, setLeftHand, setRightHand } from './PixiJSHands';
 
 let app;
 let appContainer;
 
-let leftHand = {
-    go: null,
+const getCleanAppContainer = () => {
+    const _appContainer = new PIXI.Container();
+    _appContainer.sortableChildren = true;
+    _appContainer.name = appContainerName;
+
+    return _appContainer;
 };
 
-let rightHand = {
-    go: null,
-};
-
-let handSpriteCenter = {x: 0, y: 0,};
+const poseWebcamQry = '#' + poseWebcam
 
 export const getCloudsForBackground = (app, resources) => {
     const cloudsContainer = new PIXI.Container();
@@ -48,15 +49,15 @@ export const getCloudsForBackground = (app, resources) => {
         _cloud.y = getRandomInt(app.view.height - _cloud.height);
         cloudsContainer.addChild(_cloud);
     }
-    cloudsContainer.id = ID.cloudsContainerBg;
+    cloudsContainer.id = cloudsContainerBg;
     cloudsContainer.zIndex = -20;
 
     return cloudsContainer;
 };
 
 export default function PixiJSMain(props) {
+    const [areRsrcsLoaded, setAreRsrcsLoaded] = useState(false);
     const [areHandsStaged, setAreHandsStaged] = useState(false);
-    const [videoSrc] = useState(document.getElementById(ID.poseWebcam));
     const [viewState, setViewState] = useState(views.menu);
 
     const setView = (viewKey) => {
@@ -67,10 +68,7 @@ export default function PixiJSMain(props) {
                     <PixiJSLevelOne
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand,
-                            left: leftHand,
-                        }}
+                        hands={getHands(false)}
                         exitViewFn={changeViewOnLevelOrTutExit}
                     />
                 );
@@ -79,10 +77,7 @@ export default function PixiJSMain(props) {
                     <PixiJSLevelOnePreview
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -93,10 +88,7 @@ export default function PixiJSMain(props) {
                     <PixiJSLevelTwoPreview
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -107,10 +99,7 @@ export default function PixiJSMain(props) {
                     <PixiJSLevelThreePreview
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -119,10 +108,7 @@ export default function PixiJSMain(props) {
                     <PixiJSLevels 
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -131,10 +117,7 @@ export default function PixiJSMain(props) {
                     <PixiJSMenu
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -143,10 +126,7 @@ export default function PixiJSMain(props) {
                     <PixiJSTutorialHands
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -155,10 +135,7 @@ export default function PixiJSMain(props) {
                     <PixiJSTutorialSpeech
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -167,10 +144,7 @@ export default function PixiJSMain(props) {
                     <PixiJSTutorials
                         app={app}
                         appContainer={appContainer}
-                        hands={{
-                            right: rightHand.go,
-                            left: leftHand.go,
-                        }}
+                        hands={getHands()}
                         changeViewFn={changeView}
                     />
                 );
@@ -179,134 +153,71 @@ export default function PixiJSMain(props) {
         };
     }
 
-    const stageHand = (hand, handResource) => {
-        logDebug('Staging Hands');
-        hand.go = new PIXI.Sprite(handResource.texture);
-        hand.go.x = app.view.width/2;
-        hand.go.y = hand.go.height * (-1);
-        hand.go.zIndex = 99;
+    useEffect(() => {
+        if (!areRsrcsLoaded) {
+            const videoSrc = document.querySelector(poseWebcamQry);
+            videoSrc.onloadeddata = () => {
+                const stageProps = {
+                    antialias: true,
+                    backgroundColor: 0x1099bb,
+                    height: videoSrc.clientHeight,
+                    transparent: false,
+                    width: videoSrc.clientWidth,
+                };
+                app = new PIXI.Application({...stageProps});
+                app.view.id = pixiJsCanvas;
+                if (
+                    document.getElementById(pixiJsContainer) !== null &&
+                    document.getElementById(pixiJsCanvas) !== null
+                ) {
+                    document.getElementById(pixiJsCanvas).remove();
+                }
+                appContainer = getCleanAppContainer();
+                app.stage.addChild(appContainer);
+                app.stage.sortableChildren = true;
 
-        handSpriteCenter = {
-            x: hand.go._texture.baseTexture.width/2,
-            y: hand.go._texture.baseTexture.height/2,
-        };
+                logInfo('Loading asset textures');
 
-        return hand.go;
-    };
-
-    const setHandsPositions = useCallback((coordinates) => {
-        if (leftHand.go !== null) {
-            const {x: inX, y: inY} = getInterpolatedValues(
-                {x: leftHand.go.x, y: leftHand.go.y},
-                getCenterKPtOfHand(getHandPositions(coordinates, body.left.wrist)),
-                0.4
-            );
-            leftHand.go.x = inX;
-            leftHand.go.y = inY;
+                app.loader
+                    .add(assetRsrc.leftHand, asset.hand.left)
+                    .add(assetRsrc.rightHand, asset.hand.right)
+                    .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
+                    .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
+                    .add(assetRsrc.env.ground.flying, asset.env.ground.flying)
+                    .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
+                    .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
+                    .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
+                    .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
+                    .add(assetRsrc.character.dummy, asset.character.dummy)
+                    .load(() => { setAreRsrcsLoaded(true); });
+            }
         }
-        if (rightHand.go !== null) {
-            const {x: inX, y: inY} = getInterpolatedValues(
-                {x: rightHand.go.x, y: rightHand.go.y},
-                getCenterKPtOfHand(getHandPositions(coordinates, body.right.wrist)),
-                0.4
-            );
-            rightHand.go.x = inX;
-            rightHand.go.y = inY;
-        }
-    }, []);
-
-    const renderHands = useCallback((src) => {
-        src.onplay = () => {
-            const step = async () => {
-                let coordinates = await estimatePoseOnImage(src);
-                if (coordinates !== null) setHandsPositions(coordinates);
-                requestAnimationFrame(step);
-            };
-            step();
-        };
-    }, [setHandsPositions]);
-
-    const getCenterKPtOfHand = (keypoint) => {
-        if (keypoint !== null) {
-            return {
-                x: keypoint.x - handSpriteCenter.x,
-                y: keypoint.y - handSpriteCenter.y
-            };
-        }
-
-        return {x: app.view.width/2, y: (leftHand.go.height * (-1)),};
-    };
-
-    const getHandPositions = (coordinates, handType) => {
-        const kPWrist = coordinates.keypoints.filter(kPt => kPt.part === handType )[0];
-        if (kPWrist.score > 0.6) return kPWrist.position;
-
-        return null;
-    };
-
-    if (!areHandsStaged) {
-        const stageProps = {
-            antialias: true,
-            backgroundColor: 0x1099bb,
-            height: props.height,
-            transparent: false,
-            width: props.width,
-        };
-        app = new PIXI.Application({...stageProps});
-        app.view.id = ID.pixiJsCanvas;
-        if (
-            document.getElementById(ID.pixiJsContainer) !== null &&
-            document.getElementById(ID.pixiJsCanvas) !== null
-        ) {
-            document.getElementById(ID.pixiJsCanvas).remove();
-        }
-        appContainer = new PIXI.Container();
-        appContainer.sortableChildren = true;
-        appContainer.name = ID.appContainer;
-        app.stage.addChild(appContainer);
-        app.stage.sortableChildren = true;
-
-        logDebug('Before APPLoader for Staging Hands');
-
-        app.loader
-            .add(assetRsrc.leftHand, asset.hand.left)
-            .add(assetRsrc.rightHand, asset.hand.right)
-            .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
-            .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
-            .add(assetRsrc.env.ground.flying, asset.env.ground.flying)
-            .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
-            .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
-            .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
-            .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
-            .add(assetRsrc.character.dummy, asset.character.dummy)
-            .load((loader, resources) => {
-                logDebug('Inside APPLoader for Staging Hands');
-
-                app.stage.addChild(getCloudsForBackground(app, resources));
-
-                app.stage.addChild(stageHand(leftHand, resources[assetRsrc.leftHand]));
-                app.stage.addChild(stageHand(rightHand, resources[assetRsrc.rightHand]));
-
-                setAreHandsStaged(true);
-            });
-    }
-
+    });
 
     //? stage Interaction-Controllers
     useEffect (() => {
-        if (!areHandsStaged) {
+        if (areRsrcsLoaded) {
             logInfo('Logging 1st useEffect');
-            document.getElementById(ID.pixiJsContainer).appendChild(app.view);
+            document.getElementById(pixiJsContainer).appendChild(app.view);
+            app.stage.addChild(getCloudsForBackground(app, PIXI.utils.TextureCache));
+
+            setLeftHand(getHandByRsrcName(app, assetRsrc.leftHand));
+            setRightHand(getHandByRsrcName(app, assetRsrc.rightHand));
+
+            app.stage.addChild(leftHand.go);
+            app.stage.addChild(rightHand.go);
+            setAreHandsStaged(true);
         }
-    }, [areHandsStaged,]);
+    }, [areRsrcsLoaded,]);
 
     //? requestAnimationFrames with videoSrc
     useEffect(() => {
-        if (!areHandsStaged) {
+        if (areRsrcsLoaded) {
             logInfo('Logging 2nd useEffect');
+            const videoSrc = document.querySelector(poseWebcamQry);
             renderHands(videoSrc);
         }
-    }, [areHandsStaged, renderHands, videoSrc]);
+    }, [areRsrcsLoaded]);
 
     const changeView = (viewKey) => {
         logDebug('changing View with', viewKey);
@@ -314,9 +225,7 @@ export default function PixiJSMain(props) {
             removePixiTick(app, _tickKey);
         }
         appContainer.destroy({children: true, texture: false, baseTexture: false});
-        appContainer = new PIXI.Container();
-        appContainer.sortableChildren = true;
-        appContainer.name = ID.appContainer;
+        appContainer = getCleanAppContainer();
         app.stage.addChild(appContainer);
         setViewState(viewKey);
     };
@@ -330,9 +239,7 @@ export default function PixiJSMain(props) {
         }
 
         appContainer.destroy({children: true, texture: false, baseTexture: false});
-        appContainer = new PIXI.Container();
-        appContainer.sortableChildren = true;
-        appContainer.name = ID.appContainer;
+        appContainer = getCleanAppContainer();
         app.stage.addChild(getCloudsForBackground(app, resources));
 
         app.stage.addChild(appContainer);
@@ -342,9 +249,9 @@ export default function PixiJSMain(props) {
     };
 
     return (
-        <div id={ID.pixiJsContainer}>
+        <div id={pixiJsContainer}>
             {
-                areHandsStaged ?
+                areRsrcsLoaded && areHandsStaged ?
                     setView(viewState)
                     :
                     null
