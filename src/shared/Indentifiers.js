@@ -1,10 +1,7 @@
-export const media = {
-    image: 'IMAGE',
-    video: 'VIDEO',
-};
-
-export const interaction = {
-    arm: 'ARM',
+export const appMode = {
+    _START_PAGE_: '_START_PAGE_MODE_',
+    CONTROLLER: '_CONTROLLER_MODE_',
+    WEBCAM: '_WEBCAM_MODE_',
 };
 
 export const body = {
@@ -33,26 +30,26 @@ export const body = {
 
 export const asset = {
     character: {
-        dummy: require('static/assets/pixi.js/img/character_dummy.png'),
+        dummy: require('static/assets/pixi.js/img/character_dummy.png').default,
     },
     env: {
         ground: {
-            dots: require('static/assets/pixi.js/img/envs/ground_dots.png'),
-            noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png'),
-            flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png'),
+            dots: require('static/assets/pixi.js/img/envs/ground_dots.png').default,
+            noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png').default,
+            flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png').default,
         },
         cloud: {
-            one: require('static/assets/pixi.js/img/envs/cloudOne.png'),
-            two: require('static/assets/pixi.js/img/envs/cloudTwo.png'),
+            one: require('static/assets/pixi.js/img/envs/cloudOne.png').default,
+            two: require('static/assets/pixi.js/img/envs/cloudTwo.png').default,
         },
     },
     hand: {
-        left: require('static/assets/pixi.js/img/bodyparts/leftHand.png'),
-        right: require('static/assets/pixi.js/img/bodyparts/rightHand.png'),
+        left: require('static/assets/pixi.js/img/bodyparts/leftHand.png').default,
+        right: require('static/assets/pixi.js/img/bodyparts/rightHand.png').default,
     },
     projectile: {
-        icicle: require('static/assets/pixi.js/img/projectiles/icicle.png'),
-        meteor: require('static/assets/pixi.js/img/projectiles/meteor.png'),
+        icicle: require('static/assets/pixi.js/img/projectiles/icicle.png').default,
+        meteor: require('static/assets/pixi.js/img/projectiles/meteor.png').default,
     },
 };
 

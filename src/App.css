@@ -44,38 +44,15 @@
     width: fit-content;
 }
 .startpagemain-button-container button{
-    font-size: 1.4em;
+    font-size: 1.2em;
+    margin: 0 50px;
     width: fit-content;
 }
 
-/* ? Canvas */
-.canvas-container {
-    opacity: 1;
-}
-.canvas-container-flipped {
-    opacity: 1;
-    transform: scaleX(-1);
-}
-
-/* ? Pose */
-.posemain-container {
+#pose-webcam {
     display: inline-block;
-    margin: auto;
+    height: 88vh;
     position: absolute;
-    width: fit-content;
-    z-index: 1;
-}
-
-.posemain-container img{
-    margin: auto;
-    position: absolute;
-    z-index: -1;
-}
-.posemain-container video{
     opacity: 0;
-    z-index: -1;
-}
-.posemain-container canvas{
-    margin: auto;
-    position: absolute;
+    z-index: 2;
 }

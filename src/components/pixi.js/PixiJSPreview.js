@@ -80,7 +80,7 @@ export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, 
         h: viewConstant.menuBtnDim.h - 50,
     };
     const returnButton = defaultMenuButton(
-        'Return', previews.button.return, 0, 0,
+        'Back', previews.button.return, 0, 0,
         previewButtonDim
     );
     returnButton.x = viewConstant.previewDim.w/4 - returnButton.getBounds().width/2;

@@ -251,7 +251,8 @@ export const menuTopRightSceneFn = (
     container.id = ID.sceneSmv;
 
     const returnFn = () => {
-        for (let key of Object.keys(cachedPixiTicksFromScene)) {
+        const cachedPixiTicksFromSceneKeys = Object.keys(cachedPixiTicksFromScene);
+        for (let key of cachedPixiTicksFromSceneKeys) {
             addPixiTick(app, key, cachedPixiTicksFromScene[key]);
             removeCachedPixiTickFromScene(key);
         }

@@ -1,7 +1,8 @@
 import * as posenet from "@tensorflow-models/posenet";
 
-import { posenetModule } from "components/pose/PosenetModelModule";
 import { logError } from "shared/P3dcLogger";
+
+let posenetModel = null;
 
 export const getPosenetModel = async () => {
     return await posenet.load({
@@ -12,18 +13,22 @@ export const getPosenetModel = async () => {
     });
 };
 
-export let estimatePoseOnImage = (poseNet, imageElement) => {
+export const setposenetModel = (model) => {
+    posenetModel = model;
+};
+
+export let estimatePoseOnImage = (imageElement) => {
     try {
         if ((imageElement !== null && imageElement !== undefined) &&
-            (poseNet !== null && poseNet !== undefined)) {
+            (posenetModel !== null && posenetModel !== undefined)) {
             const p = new Promise((resolve) => {
                 resolve(
-                    poseNet.estimateSinglePose(imageElement, {
+                    posenetModel.estimateSinglePose(imageElement, {
                         flipHorizontal: true,
                     })
                 );
             });
-    
+
             return p;
         }
     } catch (error) {
@@ -32,19 +37,4 @@ export let estimatePoseOnImage = (poseNet, imageElement) => {
     }
 
     return null;
-};
-
-export const captureVideo = async (ctx, dimensions, _srcRef, renderFunction) => {
-    _srcRef.onplay = () => {
-        const step = async () => {
-            let coordinates = await estimatePoseOnImage(posenetModule, _srcRef);
-            if (coordinates !== null) {
-                ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-                renderFunction(coordinates, ctx)
-            }
-            requestAnimationFrame(step);
-        };
-
-        requestAnimationFrame(step);
-    };
 };

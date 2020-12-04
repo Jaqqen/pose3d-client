@@ -1,8 +1,6 @@
 export const pixiJsCanvas = "pixijs-canvas";
 export const pixiJsContainer = "pixijs-container";
 export const poseWebcam = "pose-webcam";
-export const voiceHanlder = "voice-handler";
-
 
 //? PixiJS IDs
 export const menu = {
@@ -54,6 +52,7 @@ export const tutorials = {
     },
 };
 
-export const appContainer = "appContainerId";
+export const appContainerName = "appContainerName";
 export const cloudsContainerBg = "cloudsContainerBgId";
 export const sceneSmv = "sceneSmvId";
+export const startWebcamId = "startWebcamId";
