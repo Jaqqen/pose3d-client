@@ -1,7 +1,5 @@
 export let pixiTicks = {};
 
-export let cachedPixiTicksFromScene = {};
-
 export const addPixiTick = (app, _key, tickFunction) => {
     pixiTicks = {
         ...pixiTicks,
@@ -17,6 +15,8 @@ export const removePixiTick = (app, _key) => {
     delete pixiTicks[_key];
 };
 
+export let cachedPixiTicksFromScene = {};
+
 export const addPixiTickFromSceneToCache = (_key, tickFunction) => {
     cachedPixiTicksFromScene = {
         ...cachedPixiTicksFromScene,
@@ -28,6 +28,13 @@ export const removeCachedPixiTickFromScene = (_key) => {
     delete cachedPixiTicksFromScene[_key];
 };
 
+export const clearAllCachedPixiTicksFromScene = () => {
+    const cachedTickKeys = Object.keys(cachedPixiTicksFromScene);
+    // for(let _key of cachedTickKeys) {
+
+    //     delete pixiTimeouts[_key];
+    // }
+};
 
 export let pixiTimeouts = {};
 
@@ -39,7 +46,8 @@ export const addPixiTimeout = (_key, timeoutId) => {
 };
 
 export const clearAllPixiTimeouts = () => {
-    for(let _key of Object.keys(pixiTimeouts)) {
+    const pixiTimeoutKeys = Object.keys(pixiTimeouts);
+    for(let _key of pixiTimeoutKeys) {
         clearTimeout(pixiTimeouts[_key]);
         delete pixiTimeouts[_key];
     }

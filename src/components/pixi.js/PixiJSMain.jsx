@@ -9,7 +9,9 @@ import { appContainerName } from "shared/IdConstants";
 import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
-import { clearAllPixiTimeouts, pixiTicks, removePixiTick } from 'components/pixi.js/SharedTicks';
+import {
+    cachedPixiTicksFromScene, clearAllPixiTimeouts, pixiTicks, removePixiTick
+} from 'components/pixi.js/SharedTicks';
 import { PixiJSTutorials } from 'components/pixi.js/tutorials/PixiJSTutorials';
 import { PixiJSLevelOnePreview } from 'components/pixi.js/levels/previews/PixiJSLevelOnePreview';
 import { PixiJSLevelTwoPreview } from 'components/pixi.js/levels/previews/PixiJSLevelTwoPreview';
@@ -188,11 +190,11 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
                     .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
                     .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
-                    // .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
-                    // .add(assetRsrc.env.ground.flying, asset.env.ground.flying)
-                    // .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
-                    // .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
-                    // .add(assetRsrc.character.dummy, asset.character.dummy)
+                    .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
+                    .add(assetRsrc.env.ground.flying, asset.env.ground.flying)
+                    .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
+                    .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
+                    .add(assetRsrc.character.dummy, asset.character.dummy)
                     .load(() => { setAreRsrcsLoaded(true); });
             }
         }
@@ -223,7 +225,6 @@ export default function PixiJSMain(props) {
 
             my_gui = new GUI();
             guiVideo = my_gui.addFolder('VIDEO');
-            guiVideo.open();
             const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
             videoOpacity.setValue("0");
         }
@@ -241,10 +242,12 @@ export default function PixiJSMain(props) {
     };
 
     const changeViewOnLevelOrTutExit = (viewKey, resources) => {
-        app.ticker.stop()
+        app.ticker.stop();
         clearAllPixiTimeouts();
+        const cacheTicks = cachedPixiTicksFromScene;
         logDebug('changing View with', viewKey);
-        for (let _tickKey of Object.keys(pixiTicks)) {
+        const pixiTickKeys = Object.keys(pixiTicks);
+        for (let _tickKey of pixiTickKeys) {
             removePixiTick(app, _tickKey);
         }
 
