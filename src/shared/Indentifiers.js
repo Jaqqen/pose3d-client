@@ -1,3 +1,9 @@
+import _left_Hand_ from "static/assets/pixi.js/img/bodyparts/leftHand.png";
+import _right_Hand_ from "static/assets/pixi.js/img/bodyparts/rightHand.png";
+import _cloud_One_ from "static/assets/pixi.js/img/envs/cloudOne.png";
+import _cloud_Two_ from "static/assets/pixi.js/img/envs/cloudTwo.png";
+import _ground_Dots_ from "static/assets/pixi.js/img/envs/ground_dots.png";
+
 export const appMode = {
     _START_PAGE_: '_START_PAGE_MODE_',
     CONTROLLER: '_CONTROLLER_MODE_',
@@ -34,18 +40,18 @@ export const asset = {
     },
     env: {
         ground: {
-            dots: require('static/assets/pixi.js/img/envs/ground_dots.png'),
+            dots: _ground_Dots_,
             noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png'),
             flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png'),
         },
         cloud: {
-            one: require('static/assets/pixi.js/img/envs/cloudOne.png'),
-            two: require('static/assets/pixi.js/img/envs/cloudTwo.png'),
+            one: _cloud_One_,
+            two: _cloud_Two_,
         },
     },
     hand: {
-        left: require('static/assets/pixi.js/img/bodyparts/leftHand.png'),
-        right: require('static/assets/pixi.js/img/bodyparts/rightHand.png'),
+        left: _left_Hand_,
+        right: _right_Hand_,
     },
     projectile: {
         icicle: require('static/assets/pixi.js/img/projectiles/icicle.png'),

@@ -53,8 +53,6 @@
     display: inline-block;
     height: 88vh;
     position: absolute;
-    opacity: 0.2;
+    opacity: 0;
     z-index: 2;
 }
-
-

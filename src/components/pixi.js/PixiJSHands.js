@@ -26,7 +26,7 @@ export const getHandByRsrcName = (app, rsrcName) => {
     hand.go.y = hand.go.height * (-1);
     hand.go.zIndex = 99;
     if (rsrcName === assetRsrc.leftHand && leftHand === null) {
-        leftHandBaseTexture = utils.BaseTextureCache[assetRsrc.leftHand];
+        leftHandBaseTexture = utils.BaseTextureCache[rsrcName];
         appViewDimension = {
             height: app.view.height,
             width: app.view.width,
@@ -65,7 +65,7 @@ export const renderHands = (src) => {
 }
 
 const setHandsPositions = (coordinates) => {
-    if (leftHand.go !== null) {
+    if (leftHand !== null) {
         const {x: inX, y: inY} = getInterpolatedValues(
             {x: leftHand.go.x, y: leftHand.go.y},
             getCenterKPtOfHand(getHandPositions(coordinates, body.left.wrist)),
@@ -74,7 +74,7 @@ const setHandsPositions = (coordinates) => {
         leftHand.go.x = inX;
         leftHand.go.y = inY;
     }
-    if (rightHand.go !== null) {
+    if (rightHand !== null) {
         const {x: inX, y: inY} = getInterpolatedValues(
             {x: rightHand.go.x, y: rightHand.go.y},
             getCenterKPtOfHand(getHandPositions(coordinates, body.right.wrist)),

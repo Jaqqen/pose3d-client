@@ -1,5 +1,6 @@
 import { cloudsContainerBg, pixiJsCanvas, pixiJsContainer, poseWebcam } from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
+import { GUI } from 'dat.gui';
 
 import React, { useEffect, useState } from 'react';
 
@@ -22,6 +23,9 @@ import { getHandByRsrcName, getHands, leftHand, renderHands, rightHand, setLeftH
 let app;
 let appContainer;
 
+let my_gui;
+let guiVideo;
+
 const getCleanAppContainer = () => {
     const _appContainer = new PIXI.Container();
     _appContainer.sortableChildren = true;
@@ -37,12 +41,12 @@ export const getCloudsForBackground = (app, resources) => {
     cloudsContainer.x = 0;
     cloudsContainer.y = 0;
 
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 9; i++) {
         let assetType;
         if (i % 3 === 0) { assetType = assetRsrc.env.cloud.one; }
         else { assetType = assetRsrc.env.cloud.two; }
 
-        const _cloud = new PIXI.Sprite(resources[assetType].texture);
+        const _cloud = new PIXI.Sprite(resources[assetType]);
         _cloud.scale.set(getRandomArbitrary(0.9, 1.3))
 
         _cloud.x = getRandomInt(app.view.width - _cloud.width);
@@ -182,13 +186,13 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.leftHand, asset.hand.left)
                     .add(assetRsrc.rightHand, asset.hand.right)
                     .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
-                    .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
-                    .add(assetRsrc.env.ground.flying, asset.env.ground.flying)
                     .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
                     .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
-                    .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
-                    .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
-                    .add(assetRsrc.character.dummy, asset.character.dummy)
+                    // .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
+                    // .add(assetRsrc.env.ground.flying, asset.env.ground.flying)
+                    // .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
+                    // .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
+                    // .add(assetRsrc.character.dummy, asset.character.dummy)
                     .load(() => { setAreRsrcsLoaded(true); });
             }
         }
@@ -216,8 +220,14 @@ export default function PixiJSMain(props) {
             logInfo('Logging 2nd useEffect');
             const videoSrc = document.querySelector(poseWebcamQry);
             renderHands(videoSrc);
+
+            my_gui = new GUI();
+            guiVideo = my_gui.addFolder('VIDEO');
+            guiVideo.open();
+            const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
+            videoOpacity.setValue("0");
         }
-    }, [areRsrcsLoaded]);
+    }, [areRsrcsLoaded, ]);
 
     const changeView = (viewKey) => {
         logDebug('changing View with', viewKey);

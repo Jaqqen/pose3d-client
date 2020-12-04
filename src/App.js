@@ -4,7 +4,6 @@ import * as CLASSNAME from 'shared/ClassName';
 import PixiJSMain from 'components/pixi.js/PixiJSMain';
 import React, { Component } from 'react';
 import StartPageMain from 'components/startpage/StartPageMain';
-import DatGui from "shared/DatGui";
 import Webcam from 'react-webcam';
 
 import { appMode } from 'shared/Indentifiers';

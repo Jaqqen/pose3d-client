@@ -1,7 +1,7 @@
 import * as CLASSNAME from 'shared/ClassName';
+import { asset } from 'shared/Indentifiers';
 
 import React, { Component } from 'react'
-import { asset } from 'shared/Indentifiers';
 import { startWebcamId } from 'shared/IdConstants';
 
 export default class StartPageMain extends Component {
