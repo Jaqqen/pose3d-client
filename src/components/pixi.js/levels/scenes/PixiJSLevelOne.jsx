@@ -443,7 +443,7 @@ export const PixiJSLevelOne = (props) => {
                     app, interactiveGOs, worldGOs,
                     [levelOneTickKey, levelOneTick],
                     handGOs,
-                    () => exitViewFn(views.menu, resources),
+                    () => exitViewFn(views.menu),
                     [menuCollTickKey, menuCollTick]
                 );
 
@@ -459,8 +459,8 @@ export const PixiJSLevelOne = (props) => {
                         app, interactiveGOs, worldGOs,
                         [levelOneTickKey, levelOneTick],
                         handGOs,
-                        () => exitViewFn(views.levelN, resources),
-                        () => exitViewFn(views.menu, resources),
+                        () => exitViewFn(views.levelN),
+                        () => exitViewFn(views.menu),
                         [menuCollTickKey, menuCollTick],
                         lifeBars
                     );

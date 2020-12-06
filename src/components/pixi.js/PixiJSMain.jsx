@@ -10,7 +10,7 @@ import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
 import {
-    cachedPixiTicksFromScene, clearAllPixiTimeouts, pixiTicks, removePixiTick
+    clearAllPixiTimeouts, pixiTicks, removePixiTick, clearAllCachedPixiTicksFromScene
 } from 'components/pixi.js/SharedTicks';
 import { PixiJSTutorials } from 'components/pixi.js/tutorials/PixiJSTutorials';
 import { PixiJSLevelOnePreview } from 'components/pixi.js/levels/previews/PixiJSLevelOnePreview';
@@ -38,7 +38,7 @@ const getCleanAppContainer = () => {
 
 const poseWebcamQry = '#' + poseWebcam
 
-export const getCloudsForBackground = (app, resources) => {
+export const getCloudsForBackground = (app) => {
     const cloudsContainer = new PIXI.Container();
     cloudsContainer.x = 0;
     cloudsContainer.y = 0;
@@ -48,7 +48,7 @@ export const getCloudsForBackground = (app, resources) => {
         if (i % 3 === 0) { assetType = assetRsrc.env.cloud.one; }
         else { assetType = assetRsrc.env.cloud.two; }
 
-        const _cloud = new PIXI.Sprite(resources[assetType]);
+        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType]);
         _cloud.scale.set(getRandomArbitrary(0.9, 1.3))
 
         _cloud.x = getRandomInt(app.view.width - _cloud.width);
@@ -241,10 +241,10 @@ export default function PixiJSMain(props) {
         setViewState(viewKey);
     };
 
-    const changeViewOnLevelOrTutExit = (viewKey, resources) => {
+    const changeViewOnLevelOrTutExit = (viewKey) => {
         app.ticker.stop();
         clearAllPixiTimeouts();
-        const cacheTicks = cachedPixiTicksFromScene;
+        clearAllCachedPixiTicksFromScene(app);
         logDebug('changing View with', viewKey);
         const pixiTickKeys = Object.keys(pixiTicks);
         for (let _tickKey of pixiTickKeys) {
@@ -253,7 +253,7 @@ export default function PixiJSMain(props) {
 
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = getCleanAppContainer();
-        app.stage.addChild(getCloudsForBackground(app, resources));
+        app.stage.addChild(getCloudsForBackground(app));
 
         app.stage.addChild(appContainer);
         app.ticker.start();
