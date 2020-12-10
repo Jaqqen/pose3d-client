@@ -13,7 +13,7 @@ export const getPosenetModel = async () => {
     });
 };
 
-export const setposenetModel = (model) => {
+export const setPosenetModel = (model) => {
     posenetModel = model;
 };
 

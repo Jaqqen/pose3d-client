@@ -28,6 +28,16 @@ export const body = {
     },
 };
 
+export const client_ui = {
+    icon: {
+        close: require('static/img/ui/close.png').default,
+        controller: require('static/img/ui/controller.png').default,
+        controllerDisconnected: require('static/img/ui/controller_disconnected.png').default,
+        pause: require('static/img/ui/pause.png').default,
+        play: require('static/img/ui/play.png').default,
+    },
+}
+
 export const asset = {
     character: {
         dummy: require('static/assets/pixi.js/img/character_dummy.png').default,

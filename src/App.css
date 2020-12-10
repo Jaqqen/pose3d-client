@@ -22,6 +22,20 @@
     }
 }
 
+#controllerContainer {
+    position: absolute;
+    left: 55px;
+    top: 10px;
+    transform: scale(0.7);
+}
+.controllerClass {
+    position: absolute;
+    opacity: 0;
+}
+.showClass {
+    opacity: 1;
+}
+
 /* ? Startpage */
 .startpagemain-container {
     padding-top: 110px;

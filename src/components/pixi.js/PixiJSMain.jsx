@@ -4,7 +4,7 @@ import { GUI } from 'dat.gui';
 
 import React, { useEffect, useState } from 'react';
 
-import { asset, assetRsrc, views } from 'shared/Indentifiers';
+import { appMode, asset, assetRsrc, views } from 'shared/Indentifiers';
 import { appContainerName } from "shared/IdConstants";
 import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
@@ -20,13 +20,15 @@ import { PixiJSTutorialHands } from 'components/pixi.js/tutorials/previews/PixiJ
 import { PixiJSTutorialSpeech } from 'components/pixi.js/tutorials/previews/PixiJSTutorialSpeech';
 import { getRandomInt, getRandomArbitrary } from 'shared/Utils';
 import { PixiJSLevelOne } from 'components/pixi.js/levels/scenes/PixiJSLevelOne';
-import { getHandByRsrcName, getHands, leftHand, renderHands, rightHand, setLeftHand, setRightHand } from './PixiJSHands';
+import {
+    getHandByRsrcName, getHands, leftHand, renderHands, renderHandsWithController, rightHand,
+    setLeftHand, setRightHand
+} from './PixiJSHands';
 
 let app;
 let appContainer;
 
-let my_gui;
-let guiVideo;
+let my_gui = null;
 
 const getCleanAppContainer = () => {
     const _appContainer = new PIXI.Container();
@@ -161,15 +163,15 @@ export default function PixiJSMain(props) {
 
     useEffect(() => {
         if (!areRsrcsLoaded) {
-            const videoSrc = document.querySelector(poseWebcamQry);
-            videoSrc.onloadeddata = () => {
-                const stageProps = {
-                    antialias: true,
-                    backgroundColor: 0x1099bb,
-                    height: videoSrc.clientHeight,
-                    transparent: false,
-                    width: videoSrc.clientWidth,
-                };
+            let stageProps = {
+                antialias: true,
+                backgroundColor: 0x1099bb,
+                height: document.documentElement.clientHeight * 0.9,
+                transparent: false,
+                width: document.documentElement.clientWidth * 0.7,
+            };
+
+            const initialStage = () => {
                 app = new PIXI.Application({...stageProps});
                 app.view.id = pixiJsCanvas;
                 if (
@@ -196,6 +198,20 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
                     .add(assetRsrc.character.dummy, asset.character.dummy)
                     .load(() => { setAreRsrcsLoaded(true); });
+            };
+
+            if (props.appMode === appMode.WEBCAM) {
+                const videoSrc = document.querySelector(poseWebcamQry);
+                videoSrc.onloadeddata = () => {
+                    stageProps = {
+                        ...stageProps,
+                        height: videoSrc.clientHeight,
+                        width: videoSrc.clientWidth,
+                    };
+                    initialStage();
+                }
+            } else if (props.appMode === appMode.CONTROLLER) {
+                initialStage();
             }
         }
     });
@@ -203,32 +219,41 @@ export default function PixiJSMain(props) {
     //? stage Interaction-Controllers
     useEffect (() => {
         if (areRsrcsLoaded) {
-            logInfo('Logging 1st useEffect');
+            logInfo('Building and staging view, clouds and hands');
             document.getElementById(pixiJsContainer).appendChild(app.view);
             app.stage.addChild(getCloudsForBackground(app, PIXI.utils.TextureCache));
 
-            setLeftHand(getHandByRsrcName(app, assetRsrc.leftHand));
-            setRightHand(getHandByRsrcName(app, assetRsrc.rightHand));
+            setLeftHand(getHandByRsrcName(app, assetRsrc.leftHand, props.appMode));
+            setRightHand(getHandByRsrcName(app, assetRsrc.rightHand, props.appMode));
 
             app.stage.addChild(leftHand.go);
             app.stage.addChild(rightHand.go);
             setAreHandsStaged(true);
         }
-    }, [areRsrcsLoaded,]);
+    }, [areRsrcsLoaded, props.appMode, ]);
 
-    //? requestAnimationFrames with videoSrc
+    //? requestAnimationFrames with videoSrc or controller
     useEffect(() => {
         if (areRsrcsLoaded) {
-            logInfo('Logging 2nd useEffect');
-            const videoSrc = document.querySelector(poseWebcamQry);
-            renderHands(videoSrc);
+            if (props.appMode === appMode.WEBCAM) {
+                logInfo('Logging Webcam-Render');
+                const videoSrc = document.querySelector(poseWebcamQry);
+                renderHands(videoSrc);
 
-            my_gui = new GUI();
-            guiVideo = my_gui.addFolder('VIDEO');
-            const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
-            videoOpacity.setValue("0");
+                my_gui = new GUI();
+                const guiVideo = my_gui.addFolder('VIDEO');
+                const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
+                videoOpacity.setValue("0");
+            } else if (props.appMode === appMode.CONTROLLER) {
+                logInfo('Logging Controller-rendering');
+
+                my_gui = new GUI();
+                const guiHands = my_gui.addFolder('HANDS');
+
+                renderHandsWithController(guiHands);
+            }
         }
-    }, [areRsrcsLoaded, ]);
+    }, [areRsrcsLoaded, props.appMode, ]);
 
     const changeView = (viewKey) => {
         logDebug('changing View with', viewKey);

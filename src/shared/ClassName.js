@@ -6,3 +6,5 @@ export const loadingScreen = "loading-screen";
 export const poseMainContainer = "posemain-container";
 export const startpageMainButtonContainer = "startpagemain-button-container";
 export const startpageMainContainer = "startpagemain-container";
+export const controllerClass = "controllerClass";
+export const showClass = "showClass";

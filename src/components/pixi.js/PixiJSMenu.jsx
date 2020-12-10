@@ -117,7 +117,7 @@ const loadingConfigurator = {
         const tmpLoadingTween = gsap.to(arcParam, {
             angle: 280,
             delay: 0.6,
-            duration: 1.5,
+            duration: 1.0,
             ease: Linear.easeNone,
             onComplete: onCompleteLoading,
         });
