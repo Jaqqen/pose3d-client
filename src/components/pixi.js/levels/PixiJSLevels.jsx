@@ -6,6 +6,7 @@ import { menuTopRight, menuTopRightFn, menuCollRes } from 'components/pixi.js/Pi
 import { logInfo } from 'shared/P3dcLogger';
 import { addPixiTick } from '../SharedTicks';
 import { viewConstant } from '../ViewConstants';
+import { changeAudio } from '../PixiJSAudio';
 
 export const PixiJSLevels = (props) => {
 
@@ -29,6 +30,8 @@ export const PixiJSLevels = (props) => {
         menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
     );
 
+    changeAudio(views.levels);
+
     useEffect(() => {
         logInfo('Logging PixiJSLevels useEffect');
 
@@ -39,9 +42,12 @@ export const PixiJSLevels = (props) => {
         appContainer.addChild(menuTopRightButton);
 
         let pixiJsLevelsTick;
+        // const openSmv2 = () => menuTopRightFn(
+        //     app, pixiJsLevelsTick, hands, listenerKeys.levelsView.mainTick,
+        //     () => changeViewFn(views.menu)
+        // );
         const openSmv2 = () => menuTopRightFn(
-            app, pixiJsLevelsTick, hands, listenerKeys.levelsView.mainTick,
-            () => changeViewFn(views.menu)
+            app, pixiJsLevelsTick, hands, listenerKeys.levelsView.mainTick, null
         );
 
         const levelMenuGOs = [

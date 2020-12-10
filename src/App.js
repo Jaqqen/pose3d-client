@@ -1,14 +1,15 @@
 import 'App.css';
-import { appClassName, controllerClass, showClass } from 'shared/ClassName';
+import { appClassName, audioClass, controllerClass, showAudioClass, showClass } from 'shared/ClassName';
 
 import PixiJSMain from 'components/pixi.js/PixiJSMain';
 import React, { Component } from 'react';
 import StartPageMain from 'components/startpage/StartPageMain';
 import Webcam from 'react-webcam';
 
-import { appMode, client_ui } from 'shared/Indentifiers';
+import { appMode, client } from 'shared/Indentifiers';
 import { getPosenetModel, setPosenetModel } from 'components/pose/PoseHandler';
-import { controllerId, poseWebcam, startWebcamId } from 'shared/IdConstants';
+import { audioId, controllerId, poseWebcam, startWebcamId } from 'shared/IdConstants';
+import { audioOnClick } from 'components/pixi.js/PixiJSAudio';
 
 export default class App extends Component {
     constructor(props) {
@@ -78,12 +79,26 @@ export default class App extends Component {
                         <img
                             id={controllerId.connected} alt={"controller"}
                             className={`${controllerClass}`}
-                            src={client_ui.icon.controller}
+                            src={client.icon.controller}
                         />
                         <img
                             id={controllerId.disconnected} alt={"controller disabled"}
                             className={`${controllerClass} ${showClass}`}
-                            src={client_ui.icon.controllerDisconnected}
+                            src={client.icon.controllerDisconnected}
+                        />
+                    </div>
+                    <div id={audioId.container}>
+                        <img
+                            id={audioId.paused} alt={"audio"}
+                            className={`${audioClass} ${showAudioClass}`}
+                            src={client.icon.pause}
+                            onClick={audioOnClick.pause}
+                        />
+                        <img
+                            id={audioId.playing} alt={"audio"}
+                            className={`${audioClass}`}
+                            src={client.icon.play}
+                            onClick={audioOnClick.play}
                         />
                     </div>
                     <PixiJSMain

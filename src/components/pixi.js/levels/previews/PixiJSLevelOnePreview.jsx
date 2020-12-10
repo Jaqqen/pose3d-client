@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from 'react';
-import { listenerKeys, preview, views } from 'shared/Indentifiers';
+import { listenerKeys, preview, views, viewsMain } from 'shared/Indentifiers';
 import { menuTopRightFn, menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import { logInfo } from 'shared/P3dcLogger';
 import { getPixiJsPreviewContainer } from "components/pixi.js/PixiJSPreview";
@@ -31,7 +31,7 @@ export const PixiJSLevelOnePreview = (props) => {
         let pixiJsPreviewTick;
         const openSmv2 = () => menuTopRightFn(
             app, pixiJsPreviewTick, hands, listenerKeys.levelOnePreview.mainTick,
-            () => changeViewFn(views.menu)
+            () => changeViewFn(viewsMain)
         );
 
         const previewMenuGOs = [

@@ -1,3 +1,6 @@
+import snowMagic from 'static/assets/pixi.js/audio/arthur-vyncke-snow-and-magic.mp3';
+import divisionBlade from 'static/assets/pixi.js/audio/schematist-division-blade.mp3';
+
 export const appMode = {
     _START_PAGE_: '_START_PAGE_MODE_',
     CONTROLLER: '_CONTROLLER_MODE_',
@@ -28,7 +31,7 @@ export const body = {
     },
 };
 
-export const client_ui = {
+export const client = {
     icon: {
         close: require('static/img/ui/close.png').default,
         controller: require('static/img/ui/controller.png').default,
@@ -39,6 +42,12 @@ export const client_ui = {
 }
 
 export const asset = {
+    audio: {
+        bgm: {
+            menu: snowMagic,
+            levelScene: divisionBlade,
+        },
+    },
     character: {
         dummy: require('static/assets/pixi.js/img/character_dummy.png').default,
     },
@@ -127,6 +136,24 @@ export const views = {
     tutHands: 'tutHandsView',
     tutSpeech: 'tutSpeechView',
     tutorials: 'tutorialsView',
+};
+export const viewsMain = views.levels;
+
+export const menuViews = {
+    menu: 'menuView',
+    levelHPrev: 'levelHardPreview',
+    levelNPrev: 'levelNormalPreview',
+    levelXPrev: 'levelExtremePreview',
+    levels: 'levelsView',
+    tutHands: 'tutHandsView',
+    tutSpeech: 'tutSpeechView',
+    tutorials: 'tutorialsView',
+};
+
+export const levelSceneViews = {
+    levelH: 'levelHardView',
+    levelN: 'levelNormalView',
+    levelX: 'levelExtremeView',
 };
 
 export const smvRefs = {

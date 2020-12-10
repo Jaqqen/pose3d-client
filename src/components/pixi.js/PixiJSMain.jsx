@@ -24,6 +24,7 @@ import {
     getHandByRsrcName, getHands, leftHand, renderHands, renderHandsWithController, rightHand,
     setLeftHand, setRightHand
 } from './PixiJSHands';
+import { changeAudio } from './PixiJSAudio';
 
 let app;
 let appContainer;
@@ -66,7 +67,7 @@ export const getCloudsForBackground = (app) => {
 export default function PixiJSMain(props) {
     const [areRsrcsLoaded, setAreRsrcsLoaded] = useState(false);
     const [areHandsStaged, setAreHandsStaged] = useState(false);
-    const [viewState, setViewState] = useState(views.menu);
+    const [viewState, setViewState] = useState(views.levels);
 
     const setView = (viewKey) => {
         logDebug('setting View with', viewKey);
@@ -252,6 +253,8 @@ export default function PixiJSMain(props) {
 
                 renderHandsWithController(guiHands);
             }
+
+            changeAudio(null);
         }
     }, [areRsrcsLoaded, props.appMode, ]);
 

@@ -63,3 +63,9 @@ export const controllerId = {
     connected: "controllerConnected",
     disconnected: "controllerDisabled",
 };
+
+export const audioId = {
+    container: "audioContainer",
+    playing: "audioPlayingId",
+    paused: "audioPausedId",
+};

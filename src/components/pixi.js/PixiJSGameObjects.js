@@ -12,6 +12,7 @@ import { viewConstant } from './ViewConstants';
 import { getPixiJsText } from './PixiJSText';
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
 import { menuCollRes } from './PixiJSMenu';
+import { changeAudio } from './PixiJSAudio';
 
 const cloudInitDist = 272;
 export const getCloudXDist = () => { return cloudInitDist + getRandomArbitrary(-55, 55); }
@@ -83,7 +84,7 @@ export const getFinishingFlag = () => {
 export const onScreenStartingX = 220;
 export const runCharacterEntryAnimation = (
     app, characterDummy, animations, showMenuAndLifebars, addMainTickToPixiTick, interactivesInitiation,
-    menuCollTick
+    menuCollTick, levelView
 ) => {
     const characterInit = {x: -70};
     const characterIntroTick = () => {characterDummy.position.x = characterInit.x};
@@ -92,6 +93,7 @@ export const runCharacterEntryAnimation = (
         x: onScreenStartingX,
         duration: 3,
         ease: Linear.easeIn,
+        onStart: () => { changeAudio(levelView) },
         onComplete: () => {
             interactivesInitiation();
             for (let key of Object.keys(animations)) {

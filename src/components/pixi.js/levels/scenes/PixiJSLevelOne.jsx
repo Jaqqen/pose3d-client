@@ -10,7 +10,7 @@ import { viewConstant } from 'components/pixi.js/ViewConstants';
 
 import React, { Fragment, useEffect } from 'react'
 import { menu } from 'shared/IdConstants';
-import { assetRsrc, goLabels, listenerKeys, views } from 'shared/Indentifiers';
+import { assetRsrc, goLabels, listenerKeys, views, viewsMain } from 'shared/Indentifiers';
 import { logInfo } from 'shared/P3dcLogger';
 import {
     getCloudsForScene, getCloudXDist, getGroundsByTypeForScene,
@@ -230,7 +230,7 @@ export const PixiJSLevelOne = (props) => {
                                     [levelOneTickKey, levelOneTick],
                                     handGOs,
                                     () => exitViewFn(views.levelN, resources),
-                                    () => exitViewFn(views.menu, resources),
+                                    () => exitViewFn(viewsMain, resources),
                                     [menuCollTickKey, menuCollTick]
                                 )
                             );
@@ -419,7 +419,8 @@ export const PixiJSLevelOne = (props) => {
                     },
                     () => addPixiTick(app, levelOneTickKey, levelOneTick),
                     initiateProjectiles,
-                    () => addPixiTick(app, menuCollTickKey, menuCollTick)
+                    () => addPixiTick(app, menuCollTickKey, menuCollTick),
+                    views.levelN
                 );
 
                 const interactiveGOs = [
@@ -443,7 +444,7 @@ export const PixiJSLevelOne = (props) => {
                     app, interactiveGOs, worldGOs,
                     [levelOneTickKey, levelOneTick],
                     handGOs,
-                    () => exitViewFn(views.menu),
+                    () => exitViewFn(viewsMain),
                     [menuCollTickKey, menuCollTick]
                 );
 
@@ -460,7 +461,7 @@ export const PixiJSLevelOne = (props) => {
                         [levelOneTickKey, levelOneTick],
                         handGOs,
                         () => exitViewFn(views.levelN),
-                        () => exitViewFn(views.menu),
+                        () => exitViewFn(viewsMain),
                         [menuCollTickKey, menuCollTick],
                         lifeBars
                     );

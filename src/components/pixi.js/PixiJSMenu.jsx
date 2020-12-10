@@ -15,6 +15,7 @@ import {
 import { viewConstant } from './ViewConstants';
 import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
+import { changeAudio } from './PixiJSAudio';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -403,10 +404,10 @@ export const PixiJSMenu = (props) => {
         'Levels', menu.button.levelsId, viewConstant.initCoord.x, viewConstant.initCoord.y
     );
 
-    const tutorialsButton = defaultMenuButton(
-        'Tutorials', menu.button.tutorialsId,
-        viewConstant.initCoord.x, (viewConstant.initCoord.y + viewConstant.menuBtnDim.h + viewConstant.offset.h[80])
-    );
+    // const tutorialsButton = defaultMenuButton(
+    //     'Tutorials', menu.button.tutorialsId,
+    //     viewConstant.initCoord.x, (viewConstant.initCoord.y + viewConstant.menuBtnDim.h + viewConstant.offset.h[80])
+    // );
 
     const savesButton = disabledMenuButton(
         'Saves', menu.button.savesId,
@@ -417,12 +418,14 @@ export const PixiJSMenu = (props) => {
         menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
     );
 
+    changeAudio(views.menu);
+
     useEffect(() => {
         logInfo('Logging PixiJSMenu useEffect');
 
         const { app, appContainer, hands, changeViewFn } = props;
         appContainer.addChild(startLevelsButton);
-        appContainer.addChild(tutorialsButton);
+        // appContainer.addChild(tutorialsButton);
         appContainer.addChild(savesButton);
         appContainer.addChild(menuTopRightButton);
 
@@ -433,7 +436,7 @@ export const PixiJSMenu = (props) => {
 
         const menuGOs = [
             [() => changeViewFn(views.levels), startLevelsButton],
-            [() => changeViewFn(views.tutorials), tutorialsButton],
+            // [() => changeViewFn(views.tutorials), tutorialsButton],
             [openSmv, menuTopRightButton]
         ];
 
@@ -441,7 +444,7 @@ export const PixiJSMenu = (props) => {
         addPixiTick(app, listenerKeys.menuView.mainTick, pixiJsMenuTick);
     },[
         props,
-        startLevelsButton, tutorialsButton, savesButton, menuTopRightButton
+        startLevelsButton, savesButton, menuTopRightButton, 
     ]);
 
     return (
