@@ -38,7 +38,9 @@ export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, 
 
     let previewImg;
     if (img !== null) {
-        // code to write
+        previewImg = new PIXI.Sprite(PIXI.Texture.fromLoader(img, 'previewImg'));
+        previewImg.width = 500;
+        previewImg.height = 370;
     } else {
         previewImg = new PIXI.Sprite(PIXI.Texture.WHITE);
         previewImg.width = 500;
@@ -65,7 +67,7 @@ export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, 
         descriptionText,
         {
             [pJsTxtOptions.removeShadow]: true,
-            [pJsTxtOptions.mediumSize]: true,
+            [pJsTxtOptions.customFontSize]: 22,
             [pJsTxtOptions.wordWrap]: (viewConstant.previewDim.w/3) - 50,
         }
     );

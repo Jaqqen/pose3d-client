@@ -63,8 +63,20 @@ export const asset = {
         },
     },
     hand: {
-        left: require('static/assets/pixi.js/img/bodyparts/leftHand.png').default,
-        right: require('static/assets/pixi.js/img/bodyparts/rightHand.png').default,
+        left: {
+            default: require('static/assets/pixi.js/img/bodyparts/leftHand.png').default,
+            crack_1: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_1.png').default,
+            crack_2: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_2.png').default,
+            crack_3: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_3.png').default,
+            crack_4: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_4.png').default,
+        },
+        right: {
+            default: require('static/assets/pixi.js/img/bodyparts/rightHand.png').default,
+            crack_1: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_1.png').default,
+            crack_2: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_2.png').default,
+            crack_3: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_3.png').default,
+            crack_4: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_4.png').default,
+        },
     },
     projectile: {
         icicle: require('static/assets/pixi.js/img/projectiles/icicle.png').default,
@@ -76,8 +88,20 @@ export const assetRsrc = {
     character: {
         dummy: 'dummyCharacterRsrc',
     },
-    leftHand: 'leftHandRsrc',
-    rightHand: 'rightHandRsrc',
+    leftHand: {
+        default: 'leftHandRsrc',
+        crack_1: 'leftHandCrack_1Rsrc',
+        crack_2: 'leftHandCrack_2Rsrc',
+        crack_3: 'leftHandCrack_3Rsrc',
+        crack_4: 'leftHandCrack_4Rsrc',
+    },
+    rightHand: {
+        default: 'rightHandRsrc',
+        crack_1: 'rightHandCrack_1Rsrc',
+        crack_2: 'rightHandCrack_2Rsrc',
+        crack_3: 'rightHandCrack_3Rsrc',
+        crack_4: 'rightHandCrack_4Rsrc',
+    },
     env: {
         ground: {
             dots: 'groundDotsRsrc',
@@ -98,7 +122,8 @@ export const assetRsrc = {
 export const goLabels = {
     interactive: {
         go: '_interactiveGoKey_',
-        tick: '_interactiveTickKey_'
+        tick: '_interactiveTickKey_',
+        collDis: '_interactiveCollisionDisabledKey_',
     },
     level: {
         one: {

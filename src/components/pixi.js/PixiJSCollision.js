@@ -22,8 +22,12 @@ export const checkCollision = (app, hand, collisionGOs, character, lifebarsConta
                 app.view.width > hand.go.x && hand.go.x > 0 &&
                 app.view.height > hand.go.y && hand.go.y > 0
             ) {
-                if (testForAABB(gameObj[goLabels.interactive.go], hand.go)) {
+                if (
+                    testForAABB(gameObj[goLabels.interactive.go], hand.go) &&
+                    gameObj[goLabels.interactive.go].id === goLabels.interactive.go
+                ) {
                     const hitGO = gameObj[goLabels.interactive.go];
+                    hitGO.id = goLabels.interactive.collDis;
 
                     let horizontalSpeed = -9;
                     if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
@@ -32,6 +36,8 @@ export const checkCollision = (app, hand, collisionGOs, character, lifebarsConta
                     if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
 
                     hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
+
+                    // hand.lifeCounter++;
                 }
             }
 

@@ -128,7 +128,6 @@ export const runCharacterFinishAnimation = (
                 removePixiTick(app, key);
             }
 
-            console.log('finished level one');
             removePixiTick(app, listenerKeys.char.finish.own);
             cleanUpFn();
 
@@ -151,7 +150,6 @@ export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHe
         duration: 2,
         ease: Linear.easeIn,
         onComplete: () => {
-            console.log('flag here');
             removePixiTick(app, listenerKeys.game.object.flag.own);
         },
     });

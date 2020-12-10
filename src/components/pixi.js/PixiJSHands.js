@@ -21,6 +21,7 @@ let appViewDimension = {
 export const getHandByRsrcName = (app, rsrcName, _appMode) => {
     const hand = {
         go: null,
+        lifeCounter: 0,
     };
 
     hand.go = new Sprite(utils.TextureCache[rsrcName]);
@@ -30,14 +31,14 @@ export const getHandByRsrcName = (app, rsrcName, _appMode) => {
         hand.go.y = hand.go.height * (-1);
     } else if (_appMode === appMode.CONTROLLER) {
         hand.go.x = app.view.width/2 + hand.go.getBounds().width;
-        if (rsrcName === assetRsrc.leftHand) {
+        if (rsrcName === assetRsrc.leftHand.default) {
             hand.go.x = (app.view.width/2) - (hand.go.getBounds().width * 2);
         }
         hand.go.y = app.view.height/2 + 20;
     }
 
     hand.go.zIndex = 99;
-    if (rsrcName === assetRsrc.leftHand && leftHand === null) {
+    if (rsrcName === assetRsrc.leftHand.default && leftHand === null) {
         leftHandBaseTexture = utils.BaseTextureCache[rsrcName];
         appViewDimension = {
             height: app.view.height,
@@ -151,3 +152,22 @@ const getHandPositions = (coordinates, handType) => {
 
     return null;
 };
+
+// export const manageHandLife = (hand) => {
+//     switch (hand.lifeCounter) {
+//         case 1:
+//             hand.go.texture = utils.TextureCache[assetRsrc.han]
+//             break;
+//         case 2:
+            
+//             break;
+//         case 3:
+            
+//             break;
+//         case 4:
+            
+//             break;
+//         default:
+//             break;
+//     }
+// };

@@ -188,8 +188,16 @@ export default function PixiJSMain(props) {
                 logInfo('Loading asset textures');
 
                 app.loader
-                    .add(assetRsrc.leftHand, asset.hand.left)
-                    .add(assetRsrc.rightHand, asset.hand.right)
+                    .add(assetRsrc.leftHand.default, asset.hand.left.default)
+                    .add(assetRsrc.leftHand.crack_1, asset.hand.left)
+                    .add(assetRsrc.leftHand.crack_2, asset.hand.left)
+                    .add(assetRsrc.leftHand.crack_3, asset.hand.left)
+                    .add(assetRsrc.leftHand.crack_4, asset.hand.left)
+                    .add(assetRsrc.rightHand.default, asset.hand.right.default)
+                    .add(assetRsrc.rightHand.crack_1, asset.hand.right)
+                    .add(assetRsrc.rightHand.crack_2, asset.hand.right)
+                    .add(assetRsrc.rightHand.crack_3, asset.hand.right)
+                    .add(assetRsrc.rightHand.crack_4, asset.hand.right)
                     .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
                     .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
                     .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
@@ -224,8 +232,8 @@ export default function PixiJSMain(props) {
             document.getElementById(pixiJsContainer).appendChild(app.view);
             app.stage.addChild(getCloudsForBackground(app, PIXI.utils.TextureCache));
 
-            setLeftHand(getHandByRsrcName(app, assetRsrc.leftHand, props.appMode));
-            setRightHand(getHandByRsrcName(app, assetRsrc.rightHand, props.appMode));
+            setLeftHand(getHandByRsrcName(app, assetRsrc.leftHand.default, props.appMode));
+            setRightHand(getHandByRsrcName(app, assetRsrc.rightHand.default, props.appMode));
 
             app.stage.addChild(leftHand.go);
             app.stage.addChild(rightHand.go);

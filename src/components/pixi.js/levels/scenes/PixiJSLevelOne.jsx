@@ -323,6 +323,7 @@ export const PixiJSLevelOne = (props) => {
                                 );
                                 if (isSmvOpen.length <= 0) {
                                     clearPixiTimeoutWithKey(meteorKey);
+                                    meteorGo.id = interactiveGOKey;
                                     meteorGo.x = app.view.width + getRandomArbitrary(20, meteorMaxXOffset);
                                     meteorGo.y = getRandomArbitrary(-30, (app.view.height/4));
 
@@ -366,6 +367,7 @@ export const PixiJSLevelOne = (props) => {
                                 );
                                 if (isSmvOpen.length <= 0) {
                                     clearPixiTimeoutWithKey(icicleKey);
+                                    icicleGo.id = interactiveGOKey;
                                     icicleGo.x = getRandomChoiceOfArray(icicleDistances);
                                     icicleGo.y = -icicleGo.getBounds().height;
 

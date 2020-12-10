@@ -19,8 +19,8 @@ export default class StartPageMain extends Component {
                     Please use <b>both hands</b> to navigate throughout the menu.
                 </p>
                 <div style={{display: 'flex',}}>
-                    <img alt="leftHand" src={asset.hand.left} />
-                    <img alt="rightHand" src={asset.hand.right} />
+                    <img alt="leftHand" src={asset.hand.left.default} />
+                    <img alt="rightHand" src={asset.hand.right.default} />
                 </div>
                 <h2 style={{
                     fontSize: '2em',

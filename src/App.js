@@ -57,6 +57,20 @@ export default class App extends Component {
         if (hasMainAppStarted === appMode.WEBCAM) {
             return (
                 <div className={appClassName}>
+                    <div id={audioId.container}>
+                        <img
+                            id={audioId.paused} alt={"audio"}
+                            className={`${audioClass} ${showAudioClass}`}
+                            src={client.icon.pause}
+                            onClick={audioOnClick.pause}
+                        />
+                        <img
+                            id={audioId.playing} alt={"audio"}
+                            className={`${audioClass}`}
+                            src={client.icon.play}
+                            onClick={audioOnClick.play}
+                        />
+                    </div>
                     <Webcam
                         audio={false}
                         id={poseWebcam}

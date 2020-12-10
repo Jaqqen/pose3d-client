@@ -12,6 +12,7 @@ export const changeAudio = (_currentView) => {
         my_audio.element.src = asset.audio.bgm.menu;
         my_audio.element.loop = true;
         my_audio.element.load();
+        my_audio.currentView = _currentView;
     } else {
         const foundMV = Object.keys(menuViews).find(k => menuViews[k] === _currentView);
         if (foundMV !== undefined) {
@@ -22,6 +23,7 @@ export const changeAudio = (_currentView) => {
                 my_audio.element.pause();
                 my_audio.element.load();
                 my_audio.element.play();
+                my_audio.currentView = _currentView;
             }
         } else {
             const foundLScV = Object.keys(levelSceneViews).find(k => levelSceneViews[k] === _currentView);
@@ -33,6 +35,7 @@ export const changeAudio = (_currentView) => {
                     my_audio.element.pause();
                     my_audio.element.load();
                     my_audio.element.play();
+                    my_audio.currentView = _currentView;
                 }
             }
         }

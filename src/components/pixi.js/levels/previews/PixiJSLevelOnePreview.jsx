@@ -7,6 +7,7 @@ import { addPixiTick } from 'components/pixi.js/SharedTicks';
 import { menuTopRight } from 'components/pixi.js/PixiJSMenu';
 import { menu } from 'shared/IdConstants';
 import { viewConstant } from 'components/pixi.js/ViewConstants';
+import previewImg from "static/assets/pixi.js/img/previewImg/PreviewLevelOne.png";
 
 export const PixiJSLevelOnePreview = (props) => {
 
@@ -14,7 +15,11 @@ export const PixiJSLevelOnePreview = (props) => {
         [preview.level.container]: prevContainer,
         [preview.level.returnBtn]: returnButton,
         [preview.level.startBtn]: startButton,
-    } = getPixiJsPreviewContainer('Normal');
+    } = getPixiJsPreviewContainer(
+        'Normal',
+        'Ein simples, kleines Level bei dem man Projektile abwehren muss, um den Charackter erfolgreich zu seinem Ziel zu führen. Wichtig ist, immer einsatzbereit zu sein.',
+        previewImg
+    );
 
     const menuTopRightButton = menuTopRight(
         menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
