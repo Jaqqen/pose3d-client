@@ -25,6 +25,7 @@ export const getHandByRsrcName = (app, rsrcName, _appMode) => {
     };
 
     hand.go = new Sprite(utils.TextureCache[rsrcName]);
+    hand.go.anchor.set(0.5);
 
     if (_appMode === appMode.WEBCAM) {
         hand.go.x = app.view.width/2;
@@ -138,8 +139,8 @@ const setHandsPositions = (coordinates) => {
 const getCenterKPtOfHand = (keypoint) => {
     if (keypoint !== null) {
         return {
-            x: keypoint.x - (leftHandBaseTexture.width/2),
-            y: keypoint.y - (leftHandBaseTexture.height * 1.5)
+            x: keypoint.x,
+            y: keypoint.y,
         };
     }
 
@@ -148,7 +149,7 @@ const getCenterKPtOfHand = (keypoint) => {
 
 const getHandPositions = (coordinates, handType) => {
     const kPWrist = coordinates.keypoints.find(kPt => kPt.part === handType );
-    if (kPWrist.score > 0.6) return kPWrist.position;
+    if (kPWrist.score > 0.4) return kPWrist.position;
 
     return null;
 };

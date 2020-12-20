@@ -9,7 +9,7 @@ export const getPosenetModel = async () => {
         architecture: 'ResNet50',
         outputStride: 32,
         inputResolution: { width: 200, height: 180 },
-        quantBytes: 2,
+        quantBytes: 1,
     });
 };
 
