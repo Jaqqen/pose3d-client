@@ -22,6 +22,35 @@
     }
 }
 
+#controllerContainer {
+    position: absolute;
+    left: 55px;
+    top: 10px;
+    transform: scale(0.7);
+}
+.controllerClass {
+    position: absolute;
+    opacity: 0;
+}
+.showClass {
+    opacity: 1;
+}
+#audioContainer {
+    position: absolute;
+    left: 70px;
+    top: 120px;
+    transform: scale(0.5);
+}
+.audioClass {
+    position: absolute;
+    opacity: 0;
+    display: none;
+}
+.showAudioClass {
+    opacity: 1;
+    display: block;
+}
+
 /* ? Startpage */
 .startpagemain-container {
     padding-top: 110px;

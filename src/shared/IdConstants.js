@@ -56,3 +56,16 @@ export const appContainerName = "appContainerName";
 export const cloudsContainerBg = "cloudsContainerBgId";
 export const sceneSmv = "sceneSmvId";
 export const startWebcamId = "startWebcamId";
+
+export const controllerId = {
+    start: "startControllerId",
+    container: "controllerContainer",
+    connected: "controllerConnected",
+    disconnected: "controllerDisabled",
+};
+
+export const audioId = {
+    container: "audioContainer",
+    playing: "audioPlayingId",
+    paused: "audioPausedId",
+};

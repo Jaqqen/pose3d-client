@@ -2,7 +2,7 @@ import * as CLASSNAME from 'shared/ClassName';
 import { asset } from 'shared/Indentifiers';
 
 import React, { Component } from 'react'
-import { startWebcamId } from 'shared/IdConstants';
+import { controllerId, startWebcamId } from 'shared/IdConstants';
 
 export default class StartPageMain extends Component {
     render() {
@@ -19,8 +19,8 @@ export default class StartPageMain extends Component {
                     Please use <b>both hands</b> to navigate throughout the menu.
                 </p>
                 <div style={{display: 'flex',}}>
-                    <img alt="leftHand" src={asset.hand.left} />
-                    <img alt="rightHand" src={asset.hand.right} />
+                    <img alt="leftHand" src={asset.hand.left.default} />
+                    <img alt="rightHand" src={asset.hand.right.default} />
                 </div>
                 <h2 style={{
                     fontSize: '2em',
@@ -32,7 +32,7 @@ export default class StartPageMain extends Component {
                     <button id={startWebcamId} autoFocus={true} onClick={renderAppWithWebcam}>
                         Webcam
                     </button>
-                    <button disabled={true} onClick={renderAppWithController}>
+                    <button id={controllerId.start} onClick={renderAppWithController}>
                         Controller
                     </button>
                 </div>

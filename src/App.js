@@ -1,14 +1,15 @@
 import 'App.css';
-import * as CLASSNAME from 'shared/ClassName';
+import { appClassName, audioClass, controllerClass, showAudioClass, showClass } from 'shared/ClassName';
 
 import PixiJSMain from 'components/pixi.js/PixiJSMain';
 import React, { Component } from 'react';
 import StartPageMain from 'components/startpage/StartPageMain';
 import Webcam from 'react-webcam';
 
-import { appMode } from 'shared/Indentifiers';
-import { getPosenetModel, setposenetModel } from 'components/pose/PoseHandler';
-import { poseWebcam, startWebcamId } from 'shared/IdConstants';
+import { appMode, client } from 'shared/Indentifiers';
+import { getPosenetModel, setPosenetModel } from 'components/pose/PoseHandler';
+import { audioId, controllerId, poseWebcam, startWebcamId } from 'shared/IdConstants';
+import { audioOnClick } from 'components/pixi.js/PixiJSAudio';
 
 export default class App extends Component {
     constructor(props) {
@@ -30,16 +31,24 @@ export default class App extends Component {
         const startWebcam = window.confirm("Enable Webcam to start tracking?");
         if (startWebcam) {
             document.querySelector('#' + startWebcamId).disabled = true;
+            document.querySelector('#' + controllerId.start).disabled = true;
+
             const model = await getPosenetModel();
-            setposenetModel(model);
+            setPosenetModel(model);
             this.setState({ hasMainAppStarted: appMode.WEBCAM, });
         }
     }
 
     async renderAppWithController() {
-        const model = await getPosenetModel();
-        setposenetModel(model);
-        this.setState({ hasMainAppStarted: appMode.CONTROLLER, });
+        const startController = window.confirm("Start playing with a controller?");
+        if (startController) {
+            document.querySelector('#' + startWebcamId).disabled = true;
+            document.querySelector('#' + controllerId.start).disabled = true;
+
+            const model = await getPosenetModel();
+            setPosenetModel(model);
+            this.setState({ hasMainAppStarted: appMode.CONTROLLER, });
+        }
     }
 
     getContentPanel() {
@@ -47,7 +56,21 @@ export default class App extends Component {
 
         if (hasMainAppStarted === appMode.WEBCAM) {
             return (
-                <div className={CLASSNAME.appClassName}>
+                <div className={appClassName}>
+                    <div id={audioId.container}>
+                        <img
+                            id={audioId.paused} alt={"audio"}
+                            className={`${audioClass} ${showAudioClass}`}
+                            src={client.icon.pause}
+                            onClick={audioOnClick.pause}
+                        />
+                        <img
+                            id={audioId.playing} alt={"audio"}
+                            className={`${audioClass}`}
+                            src={client.icon.play}
+                            onClick={audioOnClick.play}
+                        />
+                    </div>
                     <Webcam
                         audio={false}
                         id={poseWebcam}
@@ -59,15 +82,43 @@ export default class App extends Component {
                     <PixiJSMain
                         height={pixiJSMain.height}
                         width={pixiJSMain.width}
+                        appMode={appMode.WEBCAM}
                     />
                 </div>
             );
         } else if (hasMainAppStarted === appMode.CONTROLLER) {
             return (
-                <div className={CLASSNAME.appClassName}>
+                <div className={appClassName}>
+                    <div id={controllerId.container}>
+                        <img
+                            id={controllerId.connected} alt={"controller"}
+                            className={`${controllerClass}`}
+                            src={client.icon.controller}
+                        />
+                        <img
+                            id={controllerId.disconnected} alt={"controller disabled"}
+                            className={`${controllerClass} ${showClass}`}
+                            src={client.icon.controllerDisconnected}
+                        />
+                    </div>
+                    <div id={audioId.container}>
+                        <img
+                            id={audioId.paused} alt={"audio"}
+                            className={`${audioClass} ${showAudioClass}`}
+                            src={client.icon.pause}
+                            onClick={audioOnClick.pause}
+                        />
+                        <img
+                            id={audioId.playing} alt={"audio"}
+                            className={`${audioClass}`}
+                            src={client.icon.play}
+                            onClick={audioOnClick.play}
+                        />
+                    </div>
                     <PixiJSMain
                         height={pixiJSMain.height}
                         width={pixiJSMain.width}
+                        appMode={appMode.CONTROLLER}
                     />
                 </div>
             );

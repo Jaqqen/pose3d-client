@@ -28,12 +28,12 @@ export const removeCachedPixiTickFromScene = (_key) => {
     delete cachedPixiTicksFromScene[_key];
 };
 
-export const clearAllCachedPixiTicksFromScene = () => {
+export const clearAllCachedPixiTicksFromScene = (app) => {
     const cachedTickKeys = Object.keys(cachedPixiTicksFromScene);
-    // for(let _key of cachedTickKeys) {
-
-    //     delete pixiTimeouts[_key];
-    // }
+    for(let _key of cachedTickKeys) {
+        removePixiTick(app, pixiTicks[_key]);
+        delete cachedPixiTicksFromScene[_key];
+    }
 };
 
 export let pixiTimeouts = {};

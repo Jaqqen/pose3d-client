@@ -36,6 +36,9 @@ export const getPixiJsText = (
     } else if (options[pJsTxtOptions.mediumSize] !== undefined) {
         style = { ...style, fontSize: options[pJsTxtOptions.mediumSize], };
     }
+    if (options[pJsTxtOptions.customFontSize] !== undefined) {
+        style = { ...style, fontSize: options[pJsTxtOptions.customFontSize], };
+    }
     if (options[pJsTxtOptions.wordWrap] !== undefined) {
         style = { ...style, wordWrapWidth: options[pJsTxtOptions.wordWrap], };
     }

@@ -1,3 +1,6 @@
+import snowMagic from 'static/assets/pixi.js/audio/arthur-vyncke-snow-and-magic.mp3';
+import divisionBlade from 'static/assets/pixi.js/audio/schematist-division-blade.mp3';
+
 export const appMode = {
     _START_PAGE_: '_START_PAGE_MODE_',
     CONTROLLER: '_CONTROLLER_MODE_',
@@ -28,7 +31,23 @@ export const body = {
     },
 };
 
+export const client = {
+    icon: {
+        close: require('static/img/ui/close.png').default,
+        controller: require('static/img/ui/controller.png').default,
+        controllerDisconnected: require('static/img/ui/controller_disconnected.png').default,
+        pause: require('static/img/ui/pause.png').default,
+        play: require('static/img/ui/play.png').default,
+    },
+}
+
 export const asset = {
+    audio: {
+        bgm: {
+            menu: snowMagic,
+            levelScene: divisionBlade,
+        },
+    },
     character: {
         dummy: require('static/assets/pixi.js/img/character_dummy.png').default,
     },
@@ -44,8 +63,20 @@ export const asset = {
         },
     },
     hand: {
-        left: require('static/assets/pixi.js/img/bodyparts/leftHand.png').default,
-        right: require('static/assets/pixi.js/img/bodyparts/rightHand.png').default,
+        left: {
+            default: require('static/assets/pixi.js/img/bodyparts/leftHand.png').default,
+            crack_1: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_1.png').default,
+            crack_2: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_2.png').default,
+            crack_3: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_3.png').default,
+            crack_4: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_4.png').default,
+        },
+        right: {
+            default: require('static/assets/pixi.js/img/bodyparts/rightHand.png').default,
+            crack_1: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_1.png').default,
+            crack_2: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_2.png').default,
+            crack_3: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_3.png').default,
+            crack_4: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_4.png').default,
+        },
     },
     projectile: {
         icicle: require('static/assets/pixi.js/img/projectiles/icicle.png').default,
@@ -57,8 +88,20 @@ export const assetRsrc = {
     character: {
         dummy: 'dummyCharacterRsrc',
     },
-    leftHand: 'leftHandRsrc',
-    rightHand: 'rightHandRsrc',
+    leftHand: {
+        default: 'leftHandRsrc',
+        crack_1: 'leftHandCrack_1Rsrc',
+        crack_2: 'leftHandCrack_2Rsrc',
+        crack_3: 'leftHandCrack_3Rsrc',
+        crack_4: 'leftHandCrack_4Rsrc',
+    },
+    rightHand: {
+        default: 'rightHandRsrc',
+        crack_1: 'rightHandCrack_1Rsrc',
+        crack_2: 'rightHandCrack_2Rsrc',
+        crack_3: 'rightHandCrack_3Rsrc',
+        crack_4: 'rightHandCrack_4Rsrc',
+    },
     env: {
         ground: {
             dots: 'groundDotsRsrc',
@@ -79,7 +122,8 @@ export const assetRsrc = {
 export const goLabels = {
     interactive: {
         go: '_interactiveGoKey_',
-        tick: '_interactiveTickKey_'
+        tick: '_interactiveTickKey_',
+        collDis: '_interactiveCollisionDisabledKey_',
     },
     level: {
         one: {
@@ -117,6 +161,24 @@ export const views = {
     tutHands: 'tutHandsView',
     tutSpeech: 'tutSpeechView',
     tutorials: 'tutorialsView',
+};
+export const viewsMain = views.levels;
+
+export const menuViews = {
+    menu: 'menuView',
+    levelHPrev: 'levelHardPreview',
+    levelNPrev: 'levelNormalPreview',
+    levelXPrev: 'levelExtremePreview',
+    levels: 'levelsView',
+    tutHands: 'tutHandsView',
+    tutSpeech: 'tutSpeechView',
+    tutorials: 'tutorialsView',
+};
+
+export const levelSceneViews = {
+    levelH: 'levelHardView',
+    levelN: 'levelNormalView',
+    levelX: 'levelExtremeView',
 };
 
 export const smvRefs = {

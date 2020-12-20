@@ -10,7 +10,7 @@ import { viewConstant } from 'components/pixi.js/ViewConstants';
 
 import React, { Fragment, useEffect } from 'react'
 import { menu } from 'shared/IdConstants';
-import { assetRsrc, goLabels, listenerKeys, views } from 'shared/Indentifiers';
+import { assetRsrc, goLabels, listenerKeys, views, viewsMain } from 'shared/Indentifiers';
 import { logInfo } from 'shared/P3dcLogger';
 import {
     getCloudsForScene, getCloudXDist, getGroundsByTypeForScene,
@@ -230,7 +230,7 @@ export const PixiJSLevelOne = (props) => {
                                     [levelOneTickKey, levelOneTick],
                                     handGOs,
                                     () => exitViewFn(views.levelN, resources),
-                                    () => exitViewFn(views.menu, resources),
+                                    () => exitViewFn(viewsMain, resources),
                                     [menuCollTickKey, menuCollTick]
                                 )
                             );
@@ -323,6 +323,7 @@ export const PixiJSLevelOne = (props) => {
                                 );
                                 if (isSmvOpen.length <= 0) {
                                     clearPixiTimeoutWithKey(meteorKey);
+                                    meteorGo.id = interactiveGOKey;
                                     meteorGo.x = app.view.width + getRandomArbitrary(20, meteorMaxXOffset);
                                     meteorGo.y = getRandomArbitrary(-30, (app.view.height/4));
 
@@ -366,6 +367,7 @@ export const PixiJSLevelOne = (props) => {
                                 );
                                 if (isSmvOpen.length <= 0) {
                                     clearPixiTimeoutWithKey(icicleKey);
+                                    icicleGo.id = interactiveGOKey;
                                     icicleGo.x = getRandomChoiceOfArray(icicleDistances);
                                     icicleGo.y = -icicleGo.getBounds().height;
 
@@ -419,7 +421,8 @@ export const PixiJSLevelOne = (props) => {
                     },
                     () => addPixiTick(app, levelOneTickKey, levelOneTick),
                     initiateProjectiles,
-                    () => addPixiTick(app, menuCollTickKey, menuCollTick)
+                    () => addPixiTick(app, menuCollTickKey, menuCollTick),
+                    views.levelN
                 );
 
                 const interactiveGOs = [
@@ -443,7 +446,7 @@ export const PixiJSLevelOne = (props) => {
                     app, interactiveGOs, worldGOs,
                     [levelOneTickKey, levelOneTick],
                     handGOs,
-                    () => exitViewFn(views.menu, resources),
+                    () => exitViewFn(viewsMain),
                     [menuCollTickKey, menuCollTick]
                 );
 
@@ -459,8 +462,8 @@ export const PixiJSLevelOne = (props) => {
                         app, interactiveGOs, worldGOs,
                         [levelOneTickKey, levelOneTick],
                         handGOs,
-                        () => exitViewFn(views.levelN, resources),
-                        () => exitViewFn(views.menu, resources),
+                        () => exitViewFn(views.levelN),
+                        () => exitViewFn(viewsMain),
                         [menuCollTickKey, menuCollTick],
                         lifeBars
                     );
