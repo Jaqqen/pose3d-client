@@ -1,5 +1,5 @@
 import 'App.css';
-import { appClassName, audioClass, controllerClass, showAudioClass, showClass } from 'shared/ClassName';
+import { appClassName, controllerClass, showClass } from 'shared/ClassName';
 
 import PixiJSMain from 'components/pixi.js/PixiJSMain';
 import React, { Component } from 'react';
@@ -9,7 +9,7 @@ import Webcam from 'react-webcam';
 import { appMode, client } from 'shared/Indentifiers';
 import { getPosenetModel, setPosenetModel } from 'components/pose/PoseHandler';
 import { audioId, controllerId, poseWebcam, startWebcamId } from 'shared/IdConstants';
-import { audioOnClick } from 'components/pixi.js/PixiJSAudio';
+import { audioOnClick, getShowAudioClassByLocalStorage } from 'components/pixi.js/PixiJSAudio';
 
 export default class App extends Component {
     constructor(props) {
@@ -60,13 +60,13 @@ export default class App extends Component {
                     <div id={audioId.container}>
                         <img
                             id={audioId.paused} alt={"audio"}
-                            className={`${audioClass} ${showAudioClass}`}
+                            className={getShowAudioClassByLocalStorage().pauseImg}
                             src={client.icon.pause}
                             onClick={audioOnClick.pause}
                         />
                         <img
                             id={audioId.playing} alt={"audio"}
-                            className={`${audioClass}`}
+                            className={getShowAudioClassByLocalStorage().playImg}
                             src={client.icon.play}
                             onClick={audioOnClick.play}
                         />
@@ -104,13 +104,13 @@ export default class App extends Component {
                     <div id={audioId.container}>
                         <img
                             id={audioId.paused} alt={"audio"}
-                            className={`${audioClass} ${showAudioClass}`}
+                            className={getShowAudioClassByLocalStorage().pauseImg}
                             src={client.icon.pause}
                             onClick={audioOnClick.pause}
                         />
                         <img
                             id={audioId.playing} alt={"audio"}
-                            className={`${audioClass}`}
+                            className={getShowAudioClassByLocalStorage().playImg}
                             src={client.icon.play}
                             onClick={audioOnClick.play}
                         />

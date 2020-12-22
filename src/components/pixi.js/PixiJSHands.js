@@ -2,8 +2,10 @@ import { estimatePoseOnImage } from "components/pose/PoseHandler";
 import { Sprite, utils } from "pixi.js";
 import { showClass } from "shared/ClassName";
 import { controllerId } from "shared/IdConstants";
-import { appMode, assetRsrc, body } from "shared/Indentifiers";
-import { getInterpolatedValues } from "shared/Utils";
+import { appMode, assetRsrc, body, localStorageKeys } from "shared/Indentifiers";
+import { 
+    getInterpolatedValues, setDatGuiControllerListener, setDatGuiControllerValWithLocalStorage 
+} from "shared/Utils";
 
 export let leftHand = null;
 export const setLeftHand = (_leftHand) => { leftHand = _leftHand; };
@@ -98,8 +100,11 @@ const controllerFn = () => {
 };
 
 export const renderHandsWithController = (guiHands) => {
-    const guiHandsSpeed = guiHands.add(handsController, 'speed');
-    guiHandsSpeed.setValue(handsController.speed);
+    const guiHandsSpeed = guiHands.add(handsController, 'speed', 0, 30, 1);
+    const guiHandsSpeedKey = localStorageKeys.handsSpeed;
+    setDatGuiControllerListener(guiHandsSpeed, guiHandsSpeedKey);
+    setDatGuiControllerValWithLocalStorage(guiHandsSpeed, guiHandsSpeedKey, handsController.speed);
+
     window.addEventListener("gamepadconnected", function (e) {
         document.querySelector("#" + controllerId.connected).classList.add(showClass);
         document.querySelector("#" + controllerId.disconnected).classList.remove(showClass);
