@@ -31,3 +31,20 @@ export const getRandomChoiceOfArray = (_array) => {
     rand *= _array.length;
     return _array[Math.round(rand)];
 };
+
+export const setDatGuiControllerListener = (guiController, storageKey) => {
+    guiController.onFinishChange(() => {
+        localStorage.setItem(storageKey, guiController.getValue());
+    });
+};
+
+export const setDatGuiControllerValWithLocalStorage = (guiController, storageKey, elseValue) => {
+    const storageValue = localStorage.getItem(storageKey);
+    if (storageValue !== null) {
+        guiController.setValue(storageValue);
+        return true;
+    }
+
+    guiController.setValue(elseValue);
+    return false;
+};

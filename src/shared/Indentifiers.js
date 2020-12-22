@@ -268,3 +268,10 @@ export const overlayerRefs = {
     mainMenu: 'overlayMainMenuRef',
     quit: 'overlayQuitRef',
 }
+
+export const localStorageKeys = {
+    videoOpacity: 'videoOpacity',
+    handsSpeed: 'handsSpeed',
+    isAudioPlaying: 'isMusicPlaying',
+    audioVolume: 'musicVolume',
+};

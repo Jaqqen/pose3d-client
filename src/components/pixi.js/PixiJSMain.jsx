@@ -4,7 +4,7 @@ import { GUI } from 'dat.gui';
 
 import React, { useEffect, useState } from 'react';
 
-import { appMode, asset, assetRsrc, views } from 'shared/Indentifiers';
+import { appMode, asset, assetRsrc, localStorageKeys, views } from 'shared/Indentifiers';
 import { appContainerName } from "shared/IdConstants";
 import { logDebug, logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
@@ -18,13 +18,16 @@ import { PixiJSLevelTwoPreview } from 'components/pixi.js/levels/previews/PixiJS
 import { PixiJSLevelThreePreview } from 'components/pixi.js/levels/previews/PixiJSLevelThreePreview';
 import { PixiJSTutorialHands } from 'components/pixi.js/tutorials/previews/PixiJSTutorialHands';
 import { PixiJSTutorialSpeech } from 'components/pixi.js/tutorials/previews/PixiJSTutorialSpeech';
-import { getRandomInt, getRandomArbitrary } from 'shared/Utils';
+import { 
+    getRandomInt, getRandomArbitrary, setDatGuiControllerListener, 
+    setDatGuiControllerValWithLocalStorage 
+} from 'shared/Utils';
 import { PixiJSLevelOne } from 'components/pixi.js/levels/scenes/PixiJSLevelOne';
 import {
     getHandByRsrcName, getHands, leftHand, renderHands, renderHandsWithController, rightHand,
     setLeftHand, setRightHand
 } from './PixiJSHands';
-import { changeAudio } from './PixiJSAudio';
+import { audioInitVolume, changeAudio, my_audio } from './PixiJSAudio';
 
 let app;
 let appContainer;
@@ -252,7 +255,10 @@ export default function PixiJSMain(props) {
                 my_gui = new GUI();
                 const guiVideo = my_gui.addFolder('VIDEO');
                 const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
-                videoOpacity.setValue("0");
+                const videoOpacityKey = localStorageKeys.videoOpacity;
+                setDatGuiControllerListener(videoOpacity, videoOpacityKey);
+                setDatGuiControllerValWithLocalStorage(videoOpacity, videoOpacityKey, "0");
+
             } else if (props.appMode === appMode.CONTROLLER) {
                 logInfo('Logging Controller-rendering');
 
@@ -263,6 +269,11 @@ export default function PixiJSMain(props) {
             }
 
             changeAudio(null);
+            const guiAudio = my_gui.addFolder('AUDIO');
+            const audioVolume = guiAudio.add(my_audio.element, 'volume', 0, 1, 0.01);
+            const audioVolumeKey = localStorageKeys.audioVolume;
+            setDatGuiControllerListener(audioVolume, audioVolumeKey);
+            setDatGuiControllerValWithLocalStorage(audioVolume, audioVolumeKey, audioInitVolume);
         }
     }, [areRsrcsLoaded, props.appMode, ]);
 
