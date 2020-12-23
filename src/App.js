@@ -8,7 +8,7 @@ import Webcam from 'react-webcam';
 
 import { appMode, client } from 'shared/Indentifiers';
 import { getPosenetModel, setPosenetModel } from 'components/pose/PoseHandler';
-import { audioId, controllerId, poseWebcam, startWebcamId } from 'shared/IdConstants';
+import { audioId, controllerId, kbAndMouse, poseWebcam, startWebcamId } from 'shared/IdConstants';
 import { audioOnClick, getShowAudioClassByLocalStorage } from 'components/pixi.js/PixiJSAudio';
 
 export default class App extends Component {
@@ -23,15 +23,22 @@ export default class App extends Component {
         };
         this.state = { ...this.initState };
 
-        this.renderAppWithWebcam = this.renderAppWithWebcam.bind(this);
+        this.disableButtonsWhenOptionConfirmed = this.disableButtonsWhenOptionConfirmed.bind(this);
         this.renderAppWithController = this.renderAppWithController.bind(this);
+        this.renderAppWithKbAndMouse = this.renderAppWithKbAndMouse.bind(this);
+        this.renderAppWithWebcam = this.renderAppWithWebcam.bind(this);
+    }
+
+    disableButtonsWhenOptionConfirmed() {
+        document.querySelector('#' + startWebcamId).disabled = true;
+        document.querySelector('#' + kbAndMouse.start).disabled = true;
+        document.querySelector('#' + controllerId.start).disabled = true;
     }
 
     async renderAppWithWebcam() {
         const startWebcam = window.confirm("Enable Webcam to start tracking?");
         if (startWebcam) {
-            document.querySelector('#' + startWebcamId).disabled = true;
-            document.querySelector('#' + controllerId.start).disabled = true;
+            this.disableButtonsWhenOptionConfirmed();
 
             const model = await getPosenetModel();
             setPosenetModel(model);
@@ -42,12 +49,22 @@ export default class App extends Component {
     async renderAppWithController() {
         const startController = window.confirm("Start playing with a controller?");
         if (startController) {
-            document.querySelector('#' + startWebcamId).disabled = true;
-            document.querySelector('#' + controllerId.start).disabled = true;
+            this.disableButtonsWhenOptionConfirmed();
 
             const model = await getPosenetModel();
             setPosenetModel(model);
             this.setState({ hasMainAppStarted: appMode.CONTROLLER, });
+        }
+    }
+
+    async renderAppWithKbAndMouse() {
+        const startKbAndMouse = window.confirm("Start playing with keyboard and mouse?");
+        if (startKbAndMouse) {
+            this.disableButtonsWhenOptionConfirmed();
+
+            const model = await getPosenetModel();
+            setPosenetModel(model);
+            this.setState({ hasMainAppStarted: appMode.KB_AND_MOUSE, });
         }
     }
 
@@ -122,12 +139,43 @@ export default class App extends Component {
                     />
                 </div>
             );
+        } else if (hasMainAppStarted === appMode.KB_AND_MOUSE) {
+            return (
+                <div className={appClassName}>
+                    <div id={kbAndMouse.container}>
+                        <img
+                            id={kbAndMouse.default} alt={"keyboard_and_mouse"}
+                            src={client.icon.keyboardAndMouse}
+                        />
+                    </div>
+                    <div id={audioId.container}>
+                        <img
+                            id={audioId.paused} alt={"audio"}
+                            className={getShowAudioClassByLocalStorage().pauseImg}
+                            src={client.icon.pause}
+                            onClick={audioOnClick.pause}
+                        />
+                        <img
+                            id={audioId.playing} alt={"audio"}
+                            className={getShowAudioClassByLocalStorage().playImg}
+                            src={client.icon.play}
+                            onClick={audioOnClick.play}
+                        />
+                    </div>
+                    <PixiJSMain
+                        height={pixiJSMain.height}
+                        width={pixiJSMain.width}
+                        appMode={appMode.CONTROLLER}
+                    />
+                </div>
+            );
         }
 
         return (
             <StartPageMain
                 renderAppWithWebcam={this.renderAppWithWebcam}
                 renderAppWithController={this.renderAppWithController}
+                renderAppWithKbAndMouse={this.renderAppWithKbAndMouse}
             />
         );
     }

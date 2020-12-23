@@ -2,11 +2,11 @@ import * as CLASSNAME from 'shared/ClassName';
 import { asset } from 'shared/Indentifiers';
 
 import React, { Component } from 'react'
-import { controllerId, startWebcamId } from 'shared/IdConstants';
+import { controllerId, kbAndMouse, startWebcamId } from 'shared/IdConstants';
 
 export default class StartPageMain extends Component {
     render() {
-        const { renderAppWithWebcam, renderAppWithController, } = this.props;
+        const { renderAppWithWebcam, renderAppWithController, renderAppWithKbAndMouse, } = this.props;
 
         return (
             <div className={CLASSNAME.startpageMainContainer}>
@@ -34,6 +34,9 @@ export default class StartPageMain extends Component {
                     </button>
                     <button id={controllerId.start} onClick={renderAppWithController}>
                         Controller
+                    </button>
+                    <button id={kbAndMouse.start} onClick={renderAppWithKbAndMouse}>
+                        KeyBoard & Mouse
                     </button>
                 </div>
             </div>

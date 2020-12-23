@@ -69,3 +69,9 @@ export const audioId = {
     playing: "audioPlayingId",
     paused: "audioPausedId",
 };
+
+export const kbAndMouse = {
+    container: "keyboardAndMouseContainer",
+    default: "keyboardAndMouseDefault",
+    start: "startKeyboardAndMouseId",
+}
