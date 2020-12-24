@@ -21,6 +21,12 @@
         transform: rotate(360deg);
     }
 }
+#keyboardAndMouseContainer {
+    position: absolute;
+    left: 50px;
+    top: 0px;
+    transform: scale(0.7);
+}
 
 #controllerContainer {
     position: absolute;

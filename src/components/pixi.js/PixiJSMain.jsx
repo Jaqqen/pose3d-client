@@ -24,8 +24,8 @@ import {
 } from 'shared/Utils';
 import { PixiJSLevelOne } from 'components/pixi.js/levels/scenes/PixiJSLevelOne';
 import {
-    getHandByRsrcName, getHands, leftHand, renderHands, renderHandsWithController, rightHand,
-    setLeftHand, setRightHand
+    getHandByRsrcName, getHands, leftHand, renderHands, renderHandsWithController, 
+    renderHandsWithKeyboardAndMouse, rightHand, setLeftHand, setRightHand
 } from './PixiJSHands';
 import { audioInitVolume, changeAudio, my_audio } from './PixiJSAudio';
 
@@ -175,7 +175,7 @@ export default function PixiJSMain(props) {
                 width: document.documentElement.clientWidth * 0.7,
             };
 
-            const initialStage = () => {
+            const initializeStage = () => {
                 app = new PIXI.Application({...stageProps});
                 app.view.id = pixiJsCanvas;
                 if (
@@ -220,10 +220,12 @@ export default function PixiJSMain(props) {
                         height: videoSrc.clientHeight,
                         width: videoSrc.clientWidth,
                     };
-                    initialStage();
+                    initializeStage();
                 }
             } else if (props.appMode === appMode.CONTROLLER) {
-                initialStage();
+                initializeStage();
+            } else if (props.appMode === appMode.KB_AND_MOUSE) {
+                initializeStage();
             }
         }
     });
@@ -260,12 +262,19 @@ export default function PixiJSMain(props) {
                 setDatGuiControllerValWithLocalStorage(videoOpacity, videoOpacityKey, "0");
 
             } else if (props.appMode === appMode.CONTROLLER) {
-                logInfo('Logging Controller-rendering');
+                logInfo('Logging Controller-Render');
 
                 my_gui = new GUI();
                 const guiHands = my_gui.addFolder('HANDS');
 
                 renderHandsWithController(guiHands);
+            } else if (props.appMode === appMode.KB_AND_MOUSE) {
+                logInfo('Logging KB and Mouse-Render');
+
+                my_gui = new GUI();
+                const guiHands = my_gui.addFolder('HANDS');
+
+                renderHandsWithKeyboardAndMouse(app, guiHands);
             }
 
             changeAudio(null);

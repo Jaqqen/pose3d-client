@@ -1,7 +1,7 @@
 import { estimatePoseOnImage } from "components/pose/PoseHandler";
 import { Sprite, utils } from "pixi.js";
 import { showClass } from "shared/ClassName";
-import { controllerId } from "shared/IdConstants";
+import { controllerId, pixiJsCanvas } from "shared/IdConstants";
 import { appMode, assetRsrc, body, localStorageKeys } from "shared/Indentifiers";
 import { 
     getInterpolatedValues, setDatGuiControllerListener, setDatGuiControllerValWithLocalStorage 
@@ -29,15 +29,21 @@ export const getHandByRsrcName = (app, rsrcName, _appMode) => {
     hand.go = new Sprite(utils.TextureCache[rsrcName]);
     hand.go.anchor.set(0.5);
 
-    if (_appMode === appMode.WEBCAM) {
-        hand.go.x = app.view.width/2;
-        hand.go.y = hand.go.height * (-1);
-    } else if (_appMode === appMode.CONTROLLER) {
+    const initializeHandsForNonWebcam = () => {
         hand.go.x = app.view.width/2 + hand.go.getBounds().width;
         if (rsrcName === assetRsrc.leftHand.default) {
             hand.go.x = (app.view.width/2) - (hand.go.getBounds().width * 2);
         }
         hand.go.y = app.view.height/2 + 20;
+    };
+
+    if (_appMode === appMode.WEBCAM) {
+        hand.go.x = app.view.width/2;
+        hand.go.y = hand.go.height * (-1);
+    } else if (_appMode === appMode.CONTROLLER) {
+        initializeHandsForNonWebcam()
+    } else if (_appMode === appMode.KB_AND_MOUSE) {
+        initializeHandsForNonWebcam();
     }
 
     hand.go.zIndex = 99;
@@ -83,18 +89,41 @@ export const renderHands = (src) => {
 let controllerRAF;
 const handsController = {
     speed: 11,
+    driftTreshold: 0.1
 };
 const controllerFn = () => {
     const axes = navigator.getGamepads()[0].axes;
 
     if (leftHand !== null) {
-        if (axes[0] !== 0) { leftHand.go.x += axes[0] * handsController.speed; }
-        if (axes[1] !== 0) { leftHand.go.y += axes[1] * handsController.speed; }
+        if (
+            appViewDimension.width > leftHand.go.x || leftHand.go.x > 0 ||
+            appViewDimension.height > leftHand.go.y || leftHand.go.y > 0
+        ) {
+            if (
+                axes[0] >= handsController.driftTreshold ||
+                axes[0] <= -handsController.driftTreshold
+            ) { leftHand.go.x += axes[0] * handsController.speed; }
+            if (
+                axes[1] >= handsController.driftTreshold ||
+                axes[1] <= -handsController.driftTreshold
+            ) { leftHand.go.y += axes[1] * handsController.speed; }
+        }
     }
 
     if (rightHand !== null) {
-        if (axes[2] !== 0) { rightHand.go.x += axes[2] * handsController.speed; }
-        if (axes[3] !== 0) { rightHand.go.y += axes[3] * handsController.speed; }
+        if (
+            appViewDimension.width > rightHand.go.x || rightHand.go.x > 0 ||
+            appViewDimension.height > rightHand.go.y || rightHand.go.y > 0
+        ) {
+            if (
+                axes[2] >= handsController.driftTreshold ||
+                axes[2] <= -handsController.driftTreshold
+            ) { rightHand.go.x += axes[2] * handsController.speed; }
+            if (
+                axes[3] >= handsController.driftTreshold ||
+                axes[3] <= -handsController.driftTreshold
+            ) { rightHand.go.y += axes[3] * handsController.speed; }
+        }
     }
     controllerRAF = requestAnimationFrame(controllerFn);
 };
@@ -104,6 +133,15 @@ export const renderHandsWithController = (guiHands) => {
     const guiHandsSpeedKey = localStorageKeys.handsSpeed;
     setDatGuiControllerListener(guiHandsSpeed, guiHandsSpeedKey);
     setDatGuiControllerValWithLocalStorage(guiHandsSpeed, guiHandsSpeedKey, handsController.speed);
+
+    const guiHandsDriftTreshold = guiHands.add(handsController, 'driftTreshold', 0, 1, 0.01);
+    const guiHandsDriftTresholdKey = localStorageKeys.handsDriftTreshold;
+    setDatGuiControllerListener(guiHandsDriftTreshold, guiHandsDriftTresholdKey);
+    setDatGuiControllerValWithLocalStorage(
+        guiHandsDriftTreshold, guiHandsDriftTresholdKey, handsController.driftTreshold
+    );
+
+
 
     window.addEventListener("gamepadconnected", function (e) {
         document.querySelector("#" + controllerId.connected).classList.add(showClass);
@@ -118,6 +156,85 @@ export const renderHandsWithController = (guiHands) => {
 
         console.log("Gamepad disconnected");
     });
+};
+
+const handsKbAndMouse = {
+    keyboard: {
+        speed: 10,
+        isKeydownRAFTriggered: false,
+    },
+};
+let leftHandKbAndMouseRAF = null;
+export const renderHandsWithKeyboardAndMouse = (app, guiHands) => {
+    const guiKbHandSpeed = guiHands.add(handsKbAndMouse.keyboard, 'speed', 0, 30, 1);
+    const guiKbHandSpeedKey = localStorageKeys.kbAndMouse.kbHandSpeed;
+    setDatGuiControllerListener(guiKbHandSpeed, guiKbHandSpeedKey);
+    setDatGuiControllerValWithLocalStorage(guiKbHandSpeed, guiKbHandSpeedKey, handsKbAndMouse.keyboard.speed);
+
+    document.querySelector('#' + pixiJsCanvas).onmousemove = () => {
+        if (rightHand !== null) {
+            const mouseCoords = app.renderer.plugins.interaction.mouse.global;
+
+            if (
+                appViewDimension.width > mouseCoords.x || mouseCoords.x > 0 ||
+                appViewDimension.height > mouseCoords.y || mouseCoords.y > 0
+            ) {
+                rightHand.go.x = mouseCoords.x;
+                rightHand.go.y = mouseCoords.y;
+            }
+        }
+    };
+
+    const pressedKeys = {};
+
+    document.onkeydown = (e) => {
+        if (leftHand !== null) {
+            if (
+                appViewDimension.width > leftHand.go.x || leftHand.go.x > 0 ||
+                appViewDimension.height > leftHand.go.y || leftHand.go.y > 0
+            ) {
+                const coordsRAF = () => {
+                    let _y_ = 0;
+                    let _x_ = 0;
+
+                    if (pressedKeys.KeyW) {
+                        _y_ = -handsKbAndMouse.keyboard.speed;
+                    }
+                    if (pressedKeys.KeyS) {
+                        _y_ = handsKbAndMouse.keyboard.speed;
+                    }
+
+                    if(pressedKeys.KeyA) {
+                        _x_ = -handsKbAndMouse.keyboard.speed;
+                    }
+                    if (pressedKeys.KeyD) {
+                        _x_ = handsKbAndMouse.keyboard.speed;
+                    }
+                    leftHand.go.x += parseInt(_x_);
+                    leftHand.go.y += parseInt(_y_);
+
+                    leftHandKbAndMouseRAF = requestAnimationFrame(coordsRAF);
+                }
+
+                pressedKeys[e.code] = true;
+                if (!handsKbAndMouse.keyboard.isKeydownRAFTriggered) {
+                    coordsRAF();
+                    handsKbAndMouse.keyboard.isKeydownRAFTriggered = true;
+                };
+            }
+        }
+    }
+
+    document.onkeyup = (e) => {
+        if (leftHandKbAndMouseRAF !== null) {
+            cancelAnimationFrame(leftHandKbAndMouseRAF);
+        };
+        handsKbAndMouse.keyboard.isKeydownRAFTriggered = false;
+        pressedKeys[e.code] = false;
+
+        const found = Object.values(pressedKeys).find(element => element === true);
+        if (found !== undefined) document.dispatchEvent(new KeyboardEvent('keydown'));
+    }
 };
 
 const setHandsPositions = (coordinates) => {

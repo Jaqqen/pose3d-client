@@ -5,6 +5,7 @@ export const appMode = {
     _START_PAGE_: '_START_PAGE_MODE_',
     CONTROLLER: '_CONTROLLER_MODE_',
     WEBCAM: '_WEBCAM_MODE_',
+    KB_AND_MOUSE: '_KB_AND_MOUSE_',
 };
 
 export const body = {
@@ -36,6 +37,7 @@ export const client = {
         close: require('static/img/ui/close.png').default,
         controller: require('static/img/ui/controller.png').default,
         controllerDisconnected: require('static/img/ui/controller_disconnected.png').default,
+        keyboardAndMouse: require('static/img/ui/keyboard_and_mouse.png').default,
         pause: require('static/img/ui/pause.png').default,
         play: require('static/img/ui/play.png').default,
     },
@@ -270,8 +272,12 @@ export const overlayerRefs = {
 }
 
 export const localStorageKeys = {
-    videoOpacity: 'videoOpacity',
-    handsSpeed: 'handsSpeed',
-    isAudioPlaying: 'isMusicPlaying',
     audioVolume: 'musicVolume',
+    handsSpeed: 'handsSpeed',
+    handsDriftTreshold: 'handsDriftTreshold',
+    isAudioPlaying: 'isMusicPlaying',
+    kbAndMouse: {
+        kbHandSpeed: 'kbHandSpeed',
+    },
+    videoOpacity: 'videoOpacity',
 };
