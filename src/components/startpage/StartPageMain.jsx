@@ -10,14 +10,16 @@ export default class StartPageMain extends Component {
 
         return (
             <div className={CLASSNAME.startpageMainContainer}>
-                <h1 style={{fontSize: '2.5em',}}> Welcome to Pose3D </h1>
-                <p>
-                    Please follow the instructions before clicking on <b>Start</b>
-                </p>
-                <br/>
-                <p>
-                    Please use <b>both hands</b> to navigate throughout the menu.
-                </p>
+                <div style={{margin: 'auto', width: 'fit-content',}}>
+                    <h1 style={{fontSize: '2.5em',}}> Welcome to Pose3D </h1>
+                    <p>
+                        Please follow the instructions before clicking on <b>Start</b>
+                    </p>
+                    <br/>
+                    <p>
+                        Please use <b>both hands</b> to navigate throughout the menu.
+                    </p>
+                </div>
                 <div style={{display: 'flex',}}>
                     <img alt="leftHand" src={asset.hand.left.default} />
                     <img alt="rightHand" src={asset.hand.right.default} />
@@ -36,7 +38,7 @@ export default class StartPageMain extends Component {
                         Controller
                     </button>
                     <button id={kbAndMouse.start} onClick={renderAppWithKbAndMouse}>
-                        KeyBoard & Mouse
+                        Keyboard & Mouse
                     </button>
                 </div>
             </div>

@@ -272,8 +272,12 @@ export const overlayerRefs = {
 }
 
 export const localStorageKeys = {
-    videoOpacity: 'videoOpacity',
-    handsSpeed: 'handsSpeed',
-    isAudioPlaying: 'isMusicPlaying',
     audioVolume: 'musicVolume',
+    handsSpeed: 'handsSpeed',
+    handsDriftTreshold: 'handsDriftTreshold',
+    isAudioPlaying: 'isMusicPlaying',
+    kbAndMouse: {
+        kbHandSpeed: 'kbHandSpeed',
+    },
+    videoOpacity: 'videoOpacity',
 };

@@ -165,7 +165,7 @@ export default class App extends Component {
                     <PixiJSMain
                         height={pixiJSMain.height}
                         width={pixiJSMain.width}
-                        appMode={appMode.CONTROLLER}
+                        appMode={appMode.KB_AND_MOUSE}
                     />
                 </div>
             );
