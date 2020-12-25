@@ -2,7 +2,9 @@ import React, { useEffect, Fragment } from 'react';
 import { listenerKeys, preview, views, viewsMain } from 'shared/Indentifiers';
 import { menuTopRightFn, menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import { logInfo } from 'shared/P3dcLogger';
-import { getPixiJsPreviewContainer } from "components/pixi.js/PixiJSPreview";
+import { 
+    getPixiJsPreviewContainer, removePreviewTextureFromCache 
+} from "components/pixi.js/PixiJSPreview";
 import { addPixiTick } from 'components/pixi.js/SharedTicks';
 import { menuTopRight } from 'components/pixi.js/PixiJSMenu';
 import { menu } from 'shared/IdConstants';
@@ -48,6 +50,9 @@ export const PixiJSLevelOnePreview = (props) => {
         pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands);
         addPixiTick(app, listenerKeys.levelOnePreview.mainTick, pixiJsPreviewTick);
 
+        return(() => {
+            removePreviewTextureFromCache();
+        });
     },[props, prevContainer, returnButton, startButton, menuTopRightButton]);
 
     return (

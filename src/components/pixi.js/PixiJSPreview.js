@@ -6,6 +6,12 @@ import { viewConstant } from 'components/pixi.js/ViewConstants';
 import { pJsTxtOptions, preview } from 'shared/Indentifiers';
 import { previews } from "shared/IdConstants";
 
+export const previewImgId = 'previewImg';
+
+export const removePreviewTextureFromCache = () => {
+    PIXI.utils.TextureCache[previewImgId].destroy(true);
+}
+
 export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, img=null) => {
     const prevContainer = new PIXI.Container();
     prevContainer.x = viewConstant.initCoord.x;
@@ -38,7 +44,7 @@ export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, 
 
     let previewImg;
     if (img !== null) {
-        previewImg = new PIXI.Sprite(PIXI.Texture.fromLoader(img, 'previewImg'));
+        previewImg = new PIXI.Sprite(PIXI.Texture.fromLoader(img, previewImgId));
         previewImg.width = 500;
         previewImg.height = 370;
     } else {

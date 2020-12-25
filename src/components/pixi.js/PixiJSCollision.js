@@ -1,6 +1,7 @@
 import * as ID from 'shared/IdConstants';
 import { goLabels } from 'shared/Indentifiers';
 import { reduceLifeByOne } from './PixiJSGameObjects';
+import { appViewDimension } from './PixiJSMain';
 
 export const testForAABB = (object1, object2) => {
     const b1 = object1.getBounds();
@@ -10,17 +11,17 @@ export const testForAABB = (object1, object2) => {
             b1.y < b2.y + b2.height && b1.y + b1.height > b2.y;
 };
 
-export const checkCollision = (app, hand, collisionGOs, character, lifebarsContainer) => {
+export const checkCollision = (hand, collisionGOs, character, lifebarsContainer) => {
         const collGOsInFrame = collisionGOs.filter(collisionGo => (
-            app.view.width > collisionGo[goLabels.interactive.go].x &&
+            appViewDimension.width > collisionGo[goLabels.interactive.go].x &&
             collisionGo[goLabels.interactive.go].x > 0 &&
-            app.view.height > collisionGo[goLabels.interactive.go].y &&
+            appViewDimension.height > collisionGo[goLabels.interactive.go].y &&
             collisionGo[goLabels.interactive.go].y > 0
         ));
         collGOsInFrame.forEach(gameObj => {
             if (
-                app.view.width > hand.go.x && hand.go.x > 0 &&
-                app.view.height > hand.go.y && hand.go.y > 0
+                appViewDimension.width > hand.go.x && hand.go.x > 0 &&
+                appViewDimension.height > hand.go.y && hand.go.y > 0
             ) {
                 if (
                     testForAABB(gameObj[goLabels.interactive.go], hand.go) &&

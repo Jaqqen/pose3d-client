@@ -13,6 +13,7 @@ import { getPixiJsText } from './PixiJSText';
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
 import { menuCollRes } from './PixiJSMenu';
 import { changeAudio } from './PixiJSAudio';
+import { appViewDimension } from './PixiJSMain';
 
 const cloudInitDist = 272;
 export const getCloudXDist = () => { return cloudInitDist + getRandomArbitrary(-55, 55); }
@@ -108,13 +109,14 @@ export const runCharacterEntryAnimation = (
     addPixiTick(app, listenerKeys.char.entry.own, characterIntroTick);
 };
 
+const flagPosition = () => { return appViewDimension.width - 300 };
 export const runCharacterFinishAnimation = (
     app, character, onStartAnimations, onCompleteAnimations, cleanUpFn, initiateFinishOverlay
 ) => {
     const characterInScreenPos = {x: onScreenStartingX};
     const characterFinishingTick = () => {character.x = characterInScreenPos.x}
     gsap.to(characterInScreenPos, {
-        x: app.view.width - 300,
+        x: flagPosition(),
         duration: 3,
         ease: Linear.easeInOut,
         onStart: () => {
@@ -139,7 +141,7 @@ export const runCharacterFinishAnimation = (
 
 export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHeight, offset=0) => {
     flagContainer.zIndex = -10;
-    flagContainer.x = app.view.width - 300;
+    flagContainer.x = flagPosition();
     flagContainer.y = groundHeight - offset;
     appContainer.addChild(flagContainer);
 
@@ -203,13 +205,13 @@ export const reduceLifeByOne = (lifebarsContainer, character) => {
     }
 };
 
-const getGameOverlayByStatus = (app, gameStatus) => {
+const getGameOverlayByStatus = (gameStatus) => {
     const gameOverlayContainer = new PIXI.Container();
     gameOverlayContainer.sortableChildren = true;
     gameOverlayContainer.zIndex = 49;
 
-    const gameOverlayHeight = app.view.height;
-    const gameOverlayWidth = app.view.width;
+    const gameOverlayHeight = appViewDimension.height;
+    const gameOverlayWidth = appViewDimension.width;
 
     const dimming = new PIXI.Graphics();
     dimming.beginFill(0x444444);
@@ -242,13 +244,13 @@ const getGameOverlayByStatus = (app, gameStatus) => {
         }
     );
     overlayLabel.anchor.set(0.5);
-    overlayLabel.x = app.view.width/2;
-    overlayLabel.y = app.view.height * (2/5);
+    overlayLabel.x = appViewDimension.width/2;
+    overlayLabel.y = appViewDimension.height * (2/5);
     overlayLabel.zIndex = 52;
     gameOverlayContainer.addChild(overlayLabel);
 
     const buttonConstraints = {
-        y: (app.view.height * (2.5/5)),
+        y: (appViewDimension.height * (2.5/5)),
         dim: { w: viewConstant.overlayBtnDim.w, h: viewConstant.overlayBtnDim.h, },
         textScale: 0.7,
     };
@@ -321,7 +323,7 @@ export const lifeHandlerTick = (
             // [overlayerRefs.retry]: retryBtn,
             [overlayerRefs.mainMenu]: mainMenuBtn,
             [overlayerRefs.quit]: quitBtn
-        } = getGameOverlayByStatus(app, ID.levels.status.gameOver);
+        } = getGameOverlayByStatus(ID.levels.status.gameOver);
         app.stage.addChild(container);
 
         // const retryFn = () => {
@@ -372,7 +374,7 @@ export const onFinishLevel = (
         // [overlayerRefs.retry]: retryBtn,
         [overlayerRefs.mainMenu]: mainMenuBtn,
         [overlayerRefs.quit]: quitBtn
-    } = getGameOverlayByStatus(app, ID.levels.status.win);
+    } = getGameOverlayByStatus(ID.levels.status.win);
     app.stage.addChild(container);
 
     // const retryFn = () => {

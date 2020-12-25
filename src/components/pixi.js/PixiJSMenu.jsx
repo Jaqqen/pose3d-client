@@ -16,6 +16,7 @@ import { viewConstant } from './ViewConstants';
 import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 import { changeAudio } from './PixiJSAudio';
+import { appViewDimension } from './PixiJSMain';
 
 let loading = {
     circle: new PIXI.Graphics(),
@@ -187,7 +188,7 @@ export const menuTopRightFn = (
             // [smvRefs.credits]:creditsBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
-        } = getSubMenuView(app, true);
+        } = getSubMenuView(true);
         app.stage.addChild(container);
 
         smvGOs = [
@@ -201,7 +202,7 @@ export const menuTopRightFn = (
             [smvRefs.mainMenu]:mainMenuBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
-        } = getSubMenuView(app, false);
+        } = getSubMenuView(false);
         app.stage.addChild(container);
 
         const returnFn = () => returnBtnFn(
@@ -247,7 +248,7 @@ export const menuTopRightSceneFn = (
         [smvRefs.mainMenu]:mainMenuBtn,
         [smvRefs.quit]:quitBtn,
         [smvRefs.returnBack]:returnBtn
-    } = getSubMenuView(app, false);
+    } = getSubMenuView(false);
     app.stage.addChild(container);
     container.id = ID.sceneSmv;
 
@@ -297,13 +298,13 @@ const returnBtnFn = (app, smvTickKey, container, mainTick, mainTickKey) => {
     addPixiTick(app, mainTickKey, mainTick);
 }
 
-const getSubMenuView = (app, isMainMenu) => {
+const getSubMenuView = (isMainMenu) => {
     const subMenuContainer = new PIXI.Container();
     subMenuContainer.sortableChildren = true;
     subMenuContainer.zIndex = 49;
 
-    const subMenuViewHeight = app.view.height;
-    const subMenuViewWidth = app.view.width;
+    const subMenuViewHeight = appViewDimension.height;
+    const subMenuViewWidth = appViewDimension.width;
     const subMenuStartX = subMenuViewWidth * 0.65;
 
     const dimming = new PIXI.Graphics();

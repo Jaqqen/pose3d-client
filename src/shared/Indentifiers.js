@@ -41,6 +41,8 @@ export const client = {
         pause: require('static/img/ui/pause.png').default,
         play: require('static/img/ui/play.png').default,
         webcam: require('static/img/ui/webcam.png').default,
+        return: require('static/img/ui/return.png').default,
+        power: require('static/img/ui/power.png').default,
     },
 }
 
@@ -119,6 +121,12 @@ export const assetRsrc = {
     projectile: {
         icicle: 'icicleRsrc',
         meteor: 'meteorRsrc',
+    },
+    ui: {
+        pause: 'pauseRsrc',
+        play: 'playRsrc',
+        power: 'powerRsrc',
+        return: 'returnRsrc',
     },
 };
 

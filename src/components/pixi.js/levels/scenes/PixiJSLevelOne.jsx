@@ -22,9 +22,9 @@ import {
 import { getRandomArbitrary, getRandomArbitraryInStep, getRandomChoiceOfArray } from 'shared/Utils';
 import { checkCollision } from 'components/pixi.js/PixiJSCollision';
 import { menuTopRightSceneFn } from 'components/pixi.js/PixiJSMenu';
+import { appViewDimension } from 'components/pixi.js/PixiJSMain';
 
 export const PixiJSLevelOne = (props) => {
-
     const menuTopRightButton = menuTopRight(
         menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
     );
@@ -52,8 +52,8 @@ export const PixiJSLevelOne = (props) => {
         app.loader
             .load((loader, resources) => {
                 //? measures and tracking variables
-                const worldWidth = app.view.width * 5;
-                const lastPartBeforeEndX = worldWidth - app.view.width;
+                const worldWidth = appViewDimension.width * 5;
+                const lastPartBeforeEndX = worldWidth - appViewDimension.width;
                 const amountOfClouds = 7;
                 const worldTickSpeed = 3;
                 let elapsedGroundWidth = 0;
@@ -123,7 +123,7 @@ export const PixiJSLevelOne = (props) => {
                 const clouds = getCloudsForScene(amountOfClouds, resources);
                 const flagContainer = getFinishingFlag();
 
-                const aboveGroundHeight = app.view.height - groundWithDots[0].getBounds().height - 16;
+                const aboveGroundHeight = appViewDimension.height - groundWithDots[0].getBounds().height - 16;
 
                 //? setup of scene
                 characterDummy.position.y = aboveGroundHeight;
@@ -131,14 +131,14 @@ export const PixiJSLevelOne = (props) => {
 
                 clouds.forEach((cloud, index) => {
                     cloud.x = index * getCloudXDist();
-                    cloud.y = Math.floor(getRandomArbitrary(0, (app.view.height/3) - cloud.height));
+                    cloud.y = Math.floor(getRandomArbitrary(0, (appViewDimension.height/3) - cloud.height));
                     cloud.zIndex = -20;
                     appContainer.addChild(cloud);
                 });
 
                 groundWithDots.forEach((ground, index) => {
                     ground.x = index * ground.getBounds().width;
-                    ground.y = app.view.height - ground.getBounds().height + 15;
+                    ground.y = appViewDimension.height - ground.getBounds().height + 15;
                     ground.zIndex = -3;
                     appContainer.addChild(ground);
                 });
@@ -150,8 +150,8 @@ export const PixiJSLevelOne = (props) => {
                         [interactiveTickKey]: null,
                     });
                     tmpMeteor.scale.set(0.6);
-                    tmpMeteor.x = app.view.width + getRandomArbitrary(20, meteorMaxXOffset);
-                    tmpMeteor.y = getRandomArbitrary(-30, (app.view.height/4));
+                    tmpMeteor.x = appViewDimension.width + getRandomArbitrary(20, meteorMaxXOffset);
+                    tmpMeteor.y = getRandomArbitrary(-30, (appViewDimension.height/4));
                     tmpMeteor.zIndex = -10;
                     tmpMeteor.acceleration = new PIXI.Point(
                         getRandomArbitrary(meteorAccelBounds.x.min, meteorAccelBounds.x.max),
@@ -302,10 +302,10 @@ export const PixiJSLevelOne = (props) => {
                 const infiniteMeteors = () => {
                     const lostMeteors = meteors.filter(
                         meteor => (
-                            meteor[interactiveGOKey].y > (app.view.height - groundWithDots[0].getBounds().height + meteor[interactiveGOKey].getBounds().height) ||
+                            meteor[interactiveGOKey].y > (appViewDimension.height - groundWithDots[0].getBounds().height + meteor[interactiveGOKey].getBounds().height) ||
                             meteor[interactiveGOKey].y < (0 - meteor[interactiveGOKey].getBounds().height) ||
                             meteor[interactiveGOKey].x < (0 - meteor[interactiveGOKey].getBounds().width) ||
-                            meteor[interactiveGOKey].x > (app.view.width + meteorMaxXOffset)
+                            meteor[interactiveGOKey].x > (appViewDimension.width + meteorMaxXOffset)
                         )
                     );
 
@@ -313,7 +313,7 @@ export const PixiJSLevelOne = (props) => {
                         lostMeteors.forEach(lostMeteor => {
                             const meteorGo = lostMeteor[interactiveGOKey];
                             const meteorKey = lostMeteor[interactiveTickKey];
-                            if (lastPartBeforeEndX - (app.view.width/2) < elapsedGroundWidth) {
+                            if (lastPartBeforeEndX - (appViewDimension.width/2) < elapsedGroundWidth) {
                                 removePixiTick(app, meteorKey);
                                 appContainer.removeChild(meteorGo);
                             } else {
@@ -324,8 +324,8 @@ export const PixiJSLevelOne = (props) => {
                                 if (isSmvOpen.length <= 0) {
                                     clearPixiTimeoutWithKey(meteorKey);
                                     meteorGo.id = interactiveGOKey;
-                                    meteorGo.x = app.view.width + getRandomArbitrary(20, meteorMaxXOffset);
-                                    meteorGo.y = getRandomArbitrary(-30, (app.view.height/4));
+                                    meteorGo.x = appViewDimension.width + getRandomArbitrary(20, meteorMaxXOffset);
+                                    meteorGo.y = getRandomArbitrary(-30, (appViewDimension.height/4));
 
                                     const resetMeteorId = setTimeout(() => {
                                         meteorGo.acceleration.set(
@@ -346,10 +346,10 @@ export const PixiJSLevelOne = (props) => {
                 const infiniteIcicles = () => {
                     const lostIcicles = icicles.filter(
                         icicle => (
-                            icicle[interactiveGOKey].y > (app.view.height - groundWithDots[0].getBounds().height + icicle[interactiveGOKey].getBounds().height) ||
+                            icicle[interactiveGOKey].y > (appViewDimension.height - groundWithDots[0].getBounds().height + icicle[interactiveGOKey].getBounds().height) ||
                             icicle[interactiveGOKey].y < (0 - icicle[interactiveGOKey].getBounds().height-5) ||
                             icicle[interactiveGOKey].x < (0 - icicle[interactiveGOKey].getBounds().width) ||
-                            icicle[interactiveGOKey].x > app.view.width
+                            icicle[interactiveGOKey].x > appViewDimension.width
                         )
                     );
 
@@ -357,7 +357,7 @@ export const PixiJSLevelOne = (props) => {
                         lostIcicles.forEach(lostIcicle => {
                             const icicleGo = lostIcicle[interactiveGOKey];
                             const icicleKey = lostIcicle[interactiveTickKey];
-                            if (lastPartBeforeEndX - (app.view.width/2) < elapsedGroundWidth) {
+                            if (lastPartBeforeEndX - (appViewDimension.width/2) < elapsedGroundWidth) {
                                 removePixiTick(app, icicleKey);
                                 appContainer.removeChild(icicleGo);
                             } else {
@@ -394,10 +394,10 @@ export const PixiJSLevelOne = (props) => {
                 const cleanUpOnFinish = () => {
                     const lostAppContChildren = appContainer.children.filter(
                         child => (
-                            child.y > (app.view.height - groundWithDots[0].getBounds().height + child.getBounds().height) ||
+                            child.y > (appViewDimension.height - groundWithDots[0].getBounds().height + child.getBounds().height) ||
                             child.y < (0 - child.getBounds().height) ||
                             child.x < (0 - child.getBounds().width) ||
-                            child.x > (app.view.width + child.getBounds().width) ||
+                            child.x > (appViewDimension.width + child.getBounds().width) ||
                             child.id === interactiveGOKey
                         )
                     );
@@ -456,8 +456,8 @@ export const PixiJSLevelOne = (props) => {
 
                 menuCollTick = () => menuCollRes(app, levelGOs, handGOs);
                 levelOneTick = () => {
-                    checkCollision(app, hands.left, interactiveGOs, characterDummy, lifeBars);
-                    checkCollision(app, hands.right, interactiveGOs, characterDummy, lifeBars);
+                    checkCollision(hands.left, interactiveGOs, characterDummy, lifeBars);
+                    checkCollision(hands.right, interactiveGOs, characterDummy, lifeBars);
                     lifeHandlerTick(
                         app, interactiveGOs, worldGOs,
                         [levelOneTickKey, levelOneTick],
