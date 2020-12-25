@@ -8,7 +8,9 @@ import Webcam from 'react-webcam';
 
 import { appMode, client } from 'shared/Indentifiers';
 import { getPosenetModel, setPosenetModel } from 'components/pose/PoseHandler';
-import { audioId, controllerId, kbAndMouse, poseWebcam, startWebcamId } from 'shared/IdConstants';
+import { 
+    audioId, controllerId, kbAndMouse, poseWebcam, startWebcamId, webcamId 
+} from 'shared/IdConstants';
 import { audioOnClick, getShowAudioClassByLocalStorage } from 'components/pixi.js/PixiJSAudio';
 
 export default class App extends Component {
@@ -74,6 +76,12 @@ export default class App extends Component {
         if (hasMainAppStarted === appMode.WEBCAM) {
             return (
                 <div className={appClassName}>
+                    <div id={webcamId.container}>
+                        <img
+                            id={webcamId.default} alt={"webcam"}
+                            src={client.icon.webcam}
+                        />
+                    </div>
                     <div id={audioId.container}>
                         <img
                             id={audioId.paused} alt={"audio"}

@@ -74,4 +74,9 @@ export const kbAndMouse = {
     container: "keyboardAndMouseContainer",
     default: "keyboardAndMouseDefault",
     start: "startKeyboardAndMouseId",
-}
+};
+
+export const webcamId = {
+    container: "webcamContainer",
+    default: "webcamDefault",
+};

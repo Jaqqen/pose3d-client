@@ -40,6 +40,7 @@ export const client = {
         keyboardAndMouse: require('static/img/ui/keyboard_and_mouse.png').default,
         pause: require('static/img/ui/pause.png').default,
         play: require('static/img/ui/play.png').default,
+        webcam: require('static/img/ui/webcam.png').default,
     },
 }
 

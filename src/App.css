@@ -27,7 +27,12 @@
     top: 0px;
     transform: scale(0.7);
 }
-
+#webcamContainer {
+    position: absolute;
+    left: 55px;
+    top: 10px;
+    transform: scale(0.7);
+}
 #controllerContainer {
     position: absolute;
     left: 55px;
