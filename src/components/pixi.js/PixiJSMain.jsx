@@ -217,6 +217,7 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.ui.play, client.icon.play)
                     .add(assetRsrc.ui.power, client.icon.power)
                     .add(assetRsrc.ui.return, client.icon.return)
+                    .add(assetRsrc.ui.dollar, client.icon.dollar)
                     .load(() => {
                         appViewDimension.width = app.view.width;
                         appViewDimension.height = app.view.height;

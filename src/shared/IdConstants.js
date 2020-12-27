@@ -9,7 +9,14 @@ export const menu = {
         tutorialsId: 'tutorialsId',
         savesId: 'savesId',
         topRight: 'topRightId',
-    }
+        ui: {
+            idPrefix: 'uiMenuButtonIdPrefix_',
+            shadowCircleName: 'shadowCircleName',
+        },
+    },
+    container: {
+        ui: '_menu_container_ui_id_',
+    },
 };
 
 export const subMenu = {

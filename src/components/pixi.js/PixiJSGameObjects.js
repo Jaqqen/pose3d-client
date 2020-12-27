@@ -14,6 +14,7 @@ import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
 import { menuCollRes } from './PixiJSMenu';
 import { changeAudio } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
+import { logError } from 'shared/P3dcLogger';
 
 const cloudInitDist = 272;
 export const getCloudXDist = () => { return cloudInitDist + getRandomArbitrary(-55, 55); }
@@ -397,3 +398,76 @@ export const onFinishLevel = (
     const overlayTick = () => menuCollRes(app, overlayGOs, hands);
     addPixiTick(app, listenerKeys.game.overlay.own, overlayTick);
 };
+
+const btnProp = goLabels.menu.ui.element.button;
+const btnFunc = goLabels.menu.ui.element.func;
+export class UiMenu {
+    constructor(container=[]) {
+        this.container = container;
+    }
+
+    addMenuItem(elementObj=null) {
+        try {
+            if (elementObj === null) {
+                return this.container;
+            }
+            if (elementObj.hasOwnProperty(btnProp) && elementObj.hasOwnProperty(btnFunc)) {
+                const orderNum = (this.container.length > 0)
+                    ? Math.max(...this.container.map(o => o.orderN))
+                    : 0;
+                const uiMenuObj = {
+                    [btnProp]: elementObj[btnProp],
+                    orderN: orderNum + 1,
+                    [btnFunc]: elementObj[btnFunc],
+                };
+                const offsetH = 80;
+                const offsetW = 60;
+                uiMenuObj[btnProp].x = appViewDimension.width - uiMenuObj[btnProp].width/2 - offsetW;
+                const halfHeightAndOffset =  ((uiMenuObj[btnProp].height/2) + offsetH);
+                if (uiMenuObj.orderN === 1) {
+                    uiMenuObj[btnProp].y = uiMenuObj.orderN * halfHeightAndOffset;
+                } else {
+                    uiMenuObj[btnProp].y = orderNum * uiMenuObj[btnProp].height + halfHeightAndOffset + offsetH;
+                }
+
+                this.container.push(uiMenuObj);
+            }
+
+            return this.container;
+        } catch (error) {
+            logError(error);
+        }
+    }
+
+    addMenuItemsArray(elementArray=null) {
+        try {
+            if (elementArray === null) {
+                return this.container;
+            }
+            if (Array.isArray(elementArray)) {
+                for (let childElem of elementArray) {
+                    this.addMenuItem(childElem);
+                }
+            }
+
+            return this.container;
+        } catch (error) {
+            logError(error);
+        }
+    }
+
+    getAsMenuGOs() {
+        return this.container.map(child => [child[btnFunc], child[btnProp]]);
+    }
+
+    getContainerAsPixiContainer(_id) {
+        const pixiMenuContainer = new PIXI.Container();
+        pixiMenuContainer.id = _id;
+
+        this.container.forEach(uiMenuObj => {
+            pixiMenuContainer.addChild(uiMenuObj[btnProp]);
+        });
+
+        return pixiMenuContainer;
+    }
+}

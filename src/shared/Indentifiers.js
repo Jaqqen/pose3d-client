@@ -43,6 +43,7 @@ export const client = {
         webcam: require('static/img/ui/webcam.png').default,
         return: require('static/img/ui/return.png').default,
         power: require('static/img/ui/power.png').default,
+        dollar: require('static/img/ui/dollar.png').default,
     },
 }
 
@@ -127,6 +128,7 @@ export const assetRsrc = {
         play: 'playRsrc',
         power: 'powerRsrc',
         return: 'returnRsrc',
+        dollar: 'dollarRsrc',
     },
 };
 
@@ -145,6 +147,14 @@ export const goLabels = {
                 icicle: {
                     tickKeyPrefix: '_icicleTickKeyPrefix_',
                 },
+            },
+        },
+    },
+    menu: {
+        ui: {
+            element: {
+                button: 'button',
+                func: 'func',
             },
         },
     },
@@ -262,6 +272,9 @@ export const listenerKeys = {
         overlay: {
             own: 'gameOverlayTickKey',
         },
+    },
+    menu: {
+        decreaseBlurTick: 'menuDecreaseBlurTickKey',
     },
 };
 
