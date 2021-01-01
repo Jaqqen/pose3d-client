@@ -17,7 +17,6 @@ import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJS
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 import { changeAudio } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
-import { isPullerOrButtonHovered } from './UiMenu';
 
 const loading = {
     circle: new PIXI.Graphics(),
@@ -42,7 +41,7 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
         const collisionGOsRight = otherGOs.filter(otherGO => testForAABB(handGOs.right, otherGO[1]));
         const isMenuCollisionSingle = collisionGOsRight.length === 1;
 
-        if (collisionGOs.length + collisionGOsRight.length === 1 && !isPullerOrButtonHovered) {
+        if (collisionGOs.length + collisionGOsRight.length === 1) {
             if (isSingleCollision) {
                 const currentlyHoveredMenuItem = collisionGOs[0][1].id;
                 if (storedHoverMenuItem !== currentlyHoveredMenuItem) {

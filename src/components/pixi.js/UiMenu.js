@@ -13,7 +13,6 @@ const btnProp = goLabels.menu.ui.element.button;
 const btnFunc = goLabels.menu.ui.element.func;
 const TRIGGERED = 'PULLER_TRIGGERED';
 const NOT_TRIGGERED = 'PULLER_NOT_TRIGGERED';
-export let isPullerOrButtonHovered = false;
 export class UiMenu {
     constructor(container=[]) {
         this.container = container;
@@ -132,12 +131,10 @@ export class UiMenu {
                 const isOnTriggerdPosition = (this.radialAccessButton.x <= appViewDimension.width
                     - this.radialAccessButton.width/2 - 20
                 );
-                !isPullerOrButtonHovered && (isPullerOrButtonHovered = true);
                 if (isOnTriggerdPosition) {
                     this.radialAccessPuller.state = TRIGGERED;
                     (this.main.tickKey === null) && (this.main.tickKey = mainTickKey);
                     (this.main.tickFn === null) && (this.main.tickFn = currentMainTick);
-                    isPullerOrButtonHovered = false;
                     const radialOnCompleteOpening = () => {
                         this.openRadialMenuOnComplete(app, mainTickKey, hands);
                     };
@@ -154,7 +151,6 @@ export class UiMenu {
                 }
             }
         } else {
-            isPullerOrButtonHovered && (isPullerOrButtonHovered = false);
             if (!this.isMenuOpen) {
                 if ((
                     this.radialAccessButton.x 
@@ -169,6 +165,20 @@ export class UiMenu {
                         addPixiTick(app, mainTickKey, currentMainTick);
                     }
                     this.radialAccessButton.x += 5;
+                    const currentBlur = this.radialAccessButton.children
+                        .find(shadow => 
+                            shadow && shadow.name && shadow.name === menu.button.ui.shadowCircleName
+                        )
+                        .filters[0].blur;
+                    if (currentBlur >= 12) {
+                        this.radialAccessButton.children
+                            .find(shadow => 
+                                shadow &&
+                                shadow.name &&
+                                shadow.name === menu.button.ui.shadowCircleName
+                            )
+                            .filters[0].blur += -4
+                    }
                 }
             }
         }
