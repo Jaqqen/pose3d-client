@@ -27,8 +27,8 @@ export const PixiJSLevels = (props) => {
         thirdMenuBtnX, viewConstant.initCoord.y
     );
 
-    const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix');
-    const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix');
+    const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
+    const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
 
     changeAudio(views.levels);
 

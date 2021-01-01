@@ -171,6 +171,7 @@ export const pJsTxtOptions = {
     wordWrapWidth: 'wordWrapWidth',
     fill: 'fill',
     customFontSize: 'customFontSize',
+    fontWeight: 'bold',
 };
 
 export const views = {
@@ -282,7 +283,8 @@ export const listenerKeys = {
         openingMenuTick: 'openingMenuTickKey',
         closingMenuTick: 'closingMenuTickKey',
         uiMenuViewTick: 'uiMenuViewTickKey',
-        uiMenuPullerTick: 'uiMenuPullerTick',
+        uiMenuPullerTick: 'uiMenuPullerTickKey',
+        uiMenuShowTextTick: 'uiMenuShowTextTickKey'
     },
 };
 

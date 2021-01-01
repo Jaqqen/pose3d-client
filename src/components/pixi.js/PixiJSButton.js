@@ -109,7 +109,7 @@ export const previewMenuBtn = (buttonName, id=null, x=null, y=null, dimensions={
     return buttonContainer;
 };
 
-export const uiMenuButton = (rsrcName, id_suffix, _x=null, _y=null, ) => {
+export const uiMenuButton = (rsrcName, id_suffix, _buttonText=null, _x=null, _y=null) => {
     const buttonContainer = new PIXI.Container();
 
     const uiIcon = new PIXI.Sprite(PIXI.utils.TextureCache[rsrcName]);
@@ -132,9 +132,23 @@ export const uiMenuButton = (rsrcName, id_suffix, _x=null, _y=null, ) => {
     shadowCircle.endFill();
     shadowCircle.filters = [new PIXI.filters.BlurFilter(12, 7)];
 
+    const buttonText = getPixiJsText(_buttonText, {
+        [pJsTxtOptions.removeShadow]: true,
+        [pJsTxtOptions.customFontSize]: 16,
+        [pJsTxtOptions.wordWrap]: (viewConstant.previewDim.w/3) - 50,
+        [pJsTxtOptions.fill]: '#ffffff',
+        [pJsTxtOptions.fontWeight]: 'normal',
+    });
+    buttonText.name = menu.button.ui.buttonName + id_suffix;
+    buttonText.anchor.set(0.5);
+    buttonText.alpha = 0;
+
     buttonContainer.addChild(shadowCircle);
     buttonContainer.addChild(buttonCircle);
     buttonContainer.addChild(uiIcon);
+    buttonContainer.addChild(buttonText);
+
+    buttonText.y = -buttonContainer.height/2 - 20;
 
     _x && (buttonContainer.x = _x);
     _y && (buttonContainer.y = _y);

@@ -84,6 +84,12 @@ export class UiMenu {
         return this.container.map(child => [child[btnFunc], child[btnProp]]);
     }
 
+    getMenuItemsAsArray() {
+        const menuItemsArray = this.container.map(child => child[btnProp]);
+        menuItemsArray.push(this.radialAccessButton);
+        return menuItemsArray;
+    }
+
     getContainerAsPixiContainer(_id) {
         const pixiMenuContainer = new Container();
         pixiMenuContainer.sortableChildren = true;
@@ -165,27 +171,25 @@ export class UiMenu {
                         addPixiTick(app, mainTickKey, currentMainTick);
                     }
                     this.radialAccessButton.x += 5;
-                    const currentBlur = this.radialAccessButton.children
+                    let currentBlur = this.radialAccessButton.children
                         .find(shadow => 
                             shadow && shadow.name && shadow.name === menu.button.ui.shadowCircleName
                         )
                         .filters[0].blur;
                     if (currentBlur >= 12) {
-                        this.radialAccessButton.children
-                            .find(shadow => 
-                                shadow &&
-                                shadow.name &&
-                                shadow.name === menu.button.ui.shadowCircleName
-                            )
-                            .filters[0].blur += -4
+                        currentBlur += 4
                     }
+
+                    const _radialAccessBtnName = this.radialAccessButton.children
+                        .find(child => child.name && child.name.includes(menu.button.ui.buttonName));
+                    (_radialAccessBtnName.alpha > 0 ) && (_radialAccessBtnName.alpha += -0.2);
                 }
             }
         }
     }
 
     getRadialAccessButton() {
-        this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix');
+        this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Cancel');
         this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
         this.radialAccessButton.y = appViewDimension.height/2;
 
@@ -194,7 +198,6 @@ export class UiMenu {
 
     openRadialMenuOnComplete(app, mainTickKey, hands) {
         removePixiTick(app, mainTickKey);
-
         this.isMenuOpen = true;
 
         const uiMenuPixiContainer = this.getContainerAsPixiContainer(menu.container.ui);
@@ -204,7 +207,6 @@ export class UiMenu {
             .forEach(uiBtn => (
                 uiBtn.x = appViewDimension.width - uiBtn.width - 3*uiMenuViewConstants.offsetW
             ));
-
         app.stage.addChild(uiMenuPixiContainer);
 
         this.setRadialAccessButtonByState(app, this.isMenuOpen);
@@ -213,16 +215,22 @@ export class UiMenu {
             ...this.getAsMenuGOs(),
             [() => this.closeRadialMenuOnComplete(app, uiMenuPixiContainer), this.radialAccessButton]
         ];
-
         const uiMenuTick = () => {
             menuCollRes(app, uiMenuGOs, hands);
         };
 
         addPixiTick(app, listenerKeys.menu.uiMenuViewTick, uiMenuTick);
+
+        const _onMenuItemHoverTick = () => {
+            this.onMenuItemHoverTick(app, this.getMenuItemsAsArray(), hands);
+        };
+        addPixiTick(app, listenerKeys.menu.uiMenuShowTextTick, _onMenuItemHoverTick);
     }
 
     closeRadialMenuOnComplete(app, uiMenuContainer) {
+        removePixiTick(app, listenerKeys.menu.uiMenuShowTextTick);
         removePixiTick(app, listenerKeys.menu.uiMenuViewTick);
+
         app.stage.removeChild(uiMenuContainer);
 
         this.isMenuOpen = false;
@@ -250,6 +258,60 @@ export class UiMenu {
             app.stage.children
                 .find(stageChild => stageChild && stageChild.name === appContainerName)
                 .addChild(this.radialAccessButton);
+        }
+    }
+
+    onMenuItemHoverTick(app, menuItems, hands) {
+        const menuItemsOnLeftHand = menuItems.filter(item => testForAABB(hands.left, item));
+        const menuItemsOnRightHand = menuItems.filter(item => testForAABB(hands.right, item));
+
+        if (menuItemsOnLeftHand.length + menuItemsOnRightHand.length === 1) {
+            if (menuItemsOnLeftHand.length === 1) {
+                const menuText = menuItemsOnLeftHand[0].children
+                    .find(child => 
+                        child && child.name && child.name.includes(menu.button.ui.buttonName)
+                    )
+                if (menuText !== undefined && menuText.alpha !== 1) {
+                    menuText.alpha += 0.2;
+                }
+            }
+
+            if (menuItemsOnRightHand.length === 1) {
+                const menuText = menuItemsOnRightHand[0].children
+                    .find(child => 
+                        child && child.name && child.name.includes(menu.button.ui.buttonName)
+                    )
+                if (menuText !== undefined && menuText.alpha !== 1) {
+                    menuText.alpha += 0.2;
+                }
+            }
+        }
+
+        if (menuItemsOnLeftHand.length + menuItemsOnRightHand.length <= 0) {
+            const uiMenuContainer = app.stage.children
+                .find(child =>
+                    child && child.id && child.id === menu.container.ui
+                );
+
+            const uiBtns = uiMenuContainer.children
+                .filter(_child => _child.id && _child.id.includes(menu.button.ui.idPrefix));
+
+            const uiBtnNames = uiBtns
+                .map(uiBtn => (
+                    uiBtn.children.find(btnComp =>
+                        btnComp && btnComp.name && btnComp.name.includes(menu.button.ui.buttonName)
+                    )
+                ))
+                .filter(comp => comp !== undefined);
+
+            const _radialAccessBtnName = this.radialAccessButton.children
+                .find(child => child.name && child.name.includes(menu.button.ui.buttonName));
+
+            [...uiBtnNames, _radialAccessBtnName].forEach(uiBtnName => {
+                if (uiBtnName && uiBtnName.alpha && uiBtnName.alpha > 0) {
+                    uiBtnName.alpha += -0.2;
+                }
+            });
         }
     }
 }

@@ -23,9 +23,9 @@ export const PixiJSLevelOnePreview = (props) => {
         previewImg
     );
 
-    const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix');
-    const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix');
-    const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix');
+    const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
+    const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');
+    const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
 
     useEffect(() => {
         logInfo('Logging PixiJSPrevOne useEffect');

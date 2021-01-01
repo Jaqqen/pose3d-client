@@ -120,7 +120,7 @@ const loadingConfigurator = {
 
         const arcParam = {
             x: otherGO.getBounds().x + (isUiGo ? (otherGO.getBounds().width/2) : otherGO.getBounds().width),
-            y: otherGO.getBounds().y + (isUiGo ? (otherGO.getBounds().height/2) : 0),
+            y: otherGO.getBounds().y + (isUiGo ? (otherGO.getBounds().height/2 + 15) : 0),
             radius: isUiGo ? otherGO.width/2 : 25,
             angle: -95
         };
