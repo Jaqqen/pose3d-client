@@ -44,6 +44,7 @@ export const client = {
         return: require('static/img/ui/return.png').default,
         power: require('static/img/ui/power.png').default,
         dollar: require('static/img/ui/dollar.png').default,
+        menu: require('static/img/ui/menu.png').default,
     },
 }
 
@@ -129,6 +130,8 @@ export const assetRsrc = {
         power: 'powerRsrc',
         return: 'returnRsrc',
         dollar: 'dollarRsrc',
+        menu: 'menuRsrc',
+        close: 'closeRsrc',
     },
 };
 
@@ -274,7 +277,12 @@ export const listenerKeys = {
         },
     },
     menu: {
+        decreaseBlurInMenuContainerTick: 'menuDecreaseBlurInMenuContainerTickKey',
         decreaseBlurTick: 'menuDecreaseBlurTickKey',
+        openingMenuTick: 'openingMenuTickKey',
+        closingMenuTick: 'closingMenuTickKey',
+        uiMenuViewTick: 'uiMenuViewTickKey',
+        uiMenuPullerTick: 'uiMenuPullerTick',
     },
 };
 

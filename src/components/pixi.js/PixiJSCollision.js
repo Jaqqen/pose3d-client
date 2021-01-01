@@ -12,42 +12,42 @@ export const testForAABB = (object1, object2) => {
 };
 
 export const checkCollision = (hand, collisionGOs, character, lifebarsContainer) => {
-        const collGOsInFrame = collisionGOs.filter(collisionGo => (
-            appViewDimension.width > collisionGo[goLabels.interactive.go].x &&
-            collisionGo[goLabels.interactive.go].x > 0 &&
-            appViewDimension.height > collisionGo[goLabels.interactive.go].y &&
-            collisionGo[goLabels.interactive.go].y > 0
-        ));
-        collGOsInFrame.forEach(gameObj => {
+    const collGOsInFrame = collisionGOs.filter(collisionGo => (
+        appViewDimension.width > collisionGo[goLabels.interactive.go].x &&
+        collisionGo[goLabels.interactive.go].x > 0 &&
+        appViewDimension.height > collisionGo[goLabels.interactive.go].y &&
+        collisionGo[goLabels.interactive.go].y > 0
+    ));
+    collGOsInFrame.forEach(gameObj => {
+        if (
+            appViewDimension.width > hand.go.x && hand.go.x > 0 &&
+            appViewDimension.height > hand.go.y && hand.go.y > 0
+        ) {
             if (
-                appViewDimension.width > hand.go.x && hand.go.x > 0 &&
-                appViewDimension.height > hand.go.y && hand.go.y > 0
+                testForAABB(gameObj[goLabels.interactive.go], hand.go) &&
+                gameObj[goLabels.interactive.go].id === goLabels.interactive.go
             ) {
-                if (
-                    testForAABB(gameObj[goLabels.interactive.go], hand.go) &&
-                    gameObj[goLabels.interactive.go].id === goLabels.interactive.go
-                ) {
-                    const hitGO = gameObj[goLabels.interactive.go];
-                    hitGO.id = goLabels.interactive.collDis;
+                const hitGO = gameObj[goLabels.interactive.go];
+                hitGO.id = goLabels.interactive.collDis;
 
-                    let horizontalSpeed = -9;
-                    if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
+                let horizontalSpeed = -9;
+                if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
 
-                    let verticalSpeed = 9;
-                    if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
+                let verticalSpeed = 9;
+                if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
 
-                    hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
+                hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
 
-                    // hand.lifeCounter++;
-                }
+                // hand.lifeCounter++;
             }
+        }
 
-            if (character.id !== ID.levels.charOnCooldown) {
-                if (testForAABB(character, gameObj[goLabels.interactive.go])) {
-                    reduceLifeByOne(lifebarsContainer, character);
-                }
+        if (character.id !== ID.levels.charOnCooldown) {
+            if (testForAABB(character, gameObj[goLabels.interactive.go])) {
+                reduceLifeByOne(lifebarsContainer, character);
             }
-        });
+        }
+    });
 };
 
 // let characterRef = useRef(null);

@@ -113,9 +113,10 @@ export const uiMenuButton = (rsrcName, id_suffix, _x=null, _y=null, ) => {
     const buttonContainer = new PIXI.Container();
 
     const uiIcon = new PIXI.Sprite(PIXI.utils.TextureCache[rsrcName]);
+    uiIcon.name = menu.button.ui.spriteName + id_suffix;
     uiIcon.anchor.set(0.5);
     uiIcon.scale.set(0.5);
-    const buttonSize = uiIcon.width*0.8 + 10;
+    const buttonSize = uiIcon.width*0.75 + 10;
 
     const buttonCircle = new PIXI.Graphics();
     buttonCircle.lineStyle(0);

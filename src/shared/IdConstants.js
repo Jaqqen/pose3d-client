@@ -12,6 +12,7 @@ export const menu = {
         ui: {
             idPrefix: 'uiMenuButtonIdPrefix_',
             shadowCircleName: 'shadowCircleName',
+            spriteName: 'uiSpriteName_',
         },
     },
     container: {

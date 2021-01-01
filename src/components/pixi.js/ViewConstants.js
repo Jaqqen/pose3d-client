@@ -52,3 +52,7 @@ export const viewConstant = {
         w: 240,
     },
 };
+
+export const uiMenuViewConstants = {
+    offsetW: 60,
+};

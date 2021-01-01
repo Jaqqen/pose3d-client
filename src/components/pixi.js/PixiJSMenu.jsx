@@ -17,10 +17,11 @@ import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJS
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 import { changeAudio } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
+import { isPullerOrButtonHovered } from './UiMenu';
 
 const loading = {
     circle: new PIXI.Graphics(),
-    circleThickness: 14,
+    circleThickness: 10,
     tick: null,
     tween: null,
 };
@@ -41,7 +42,7 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
         const collisionGOsRight = otherGOs.filter(otherGO => testForAABB(handGOs.right, otherGO[1]));
         const isMenuCollisionSingle = collisionGOsRight.length === 1;
 
-        if (collisionGOs.length + collisionGOsRight.length === 1) {
+        if (collisionGOs.length + collisionGOsRight.length === 1 && !isPullerOrButtonHovered) {
             if (isSingleCollision) {
                 const currentlyHoveredMenuItem = collisionGOs[0][1].id;
                 if (storedHoverMenuItem !== currentlyHoveredMenuItem) {
@@ -111,7 +112,9 @@ const menuCollcleanUp = (app) => {
 
 const loadingConfigurator = {
     start: (app, otherGO, onCompleteFunc, isUiGo=false) => {
+        isUiGo && removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
         isUiGo && removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
+
         app.stage.addChild(loading.circle);
 
         const RAD = Math.PI / 180;
@@ -145,7 +148,7 @@ const loadingConfigurator = {
         loading.tick = () => {
             loading.circle
                 .clear()
-                .lineStyle(loading.circleThickness, 0xf44336)
+                .lineStyle(loading.circleThickness, 0xf05454)
                 .arc(arcParam.x, arcParam.y, arcParam.radius, -95 * RAD, arcParam.angle * RAD);
 
             if (shadowCircle !== null && shadowCircle !== undefined && shadowCircle !== false) {
@@ -166,25 +169,63 @@ const loadingConfigurator = {
             app.ticker.remove(tickToStop);
             loading.circle.clear();
             app.stage.removeChild(loading.circle);
-            const reduceShadowOfShadowCircle = () => {
-                let shadowCircleArr = app.stage.children
-                    .find(child => child.name === ID.appContainerName).children
-                    .find(_child => _child.id === menu.container.ui).children
+            const reduceShadowCircleInsideUiMenuContainer = (_uiMenuContainer) => {
+                const shadowCircleArr = _uiMenuContainer.children
                     .map(__child => (
                         __child.children.find(shadow => shadow.name === menu.button.ui.shadowCircleName))
-                    );
-
+                    )
+                    .filter(_shadow => _shadow !== undefined && _shadow !== null);
 
                 if (shadowCircleArr.length > 0) {
                     shadowCircleArr.forEach(uiMenuShadow => {
-                        (uiMenuShadow.filters[0].blur >= 12) && (uiMenuShadow.filters[0].blur += -3);
+                        (uiMenuShadow.filters[0].blur >= 12) && (uiMenuShadow.filters[0].blur += -4);
                     });
                     const currentMaxBlur = Math.max(...shadowCircleArr.map(s => s.filters[0].blur));
-                    !(currentMaxBlur >= 12) && removePixiTick(app, listenerKeys.menu.decreaseBlurTick)
+                    if (currentMaxBlur <= 12) {
+                        removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
+                    }
                 }
+            };
+            const reduceShadowCircle = () => {
+                const uiMenuBtnShadows = app.stage.children
+                    .find(child => child.name === ID.appContainerName).children
+                    .map(appContainerChild => {
+                        if (
+                            appContainerChild.hasOwnProperty('id') &&
+                            appContainerChild.id.includes(menu.button.ui.idPrefix)
+                        ) {
+                            return appContainerChild.children.find(
+                                uiMenuBtnChild => uiMenuBtnChild.name === menu.button.ui.shadowCircleName
+                            )
+                        }
+                        return null;
+                    })
+                    .filter(uiMenuBtnShadow => uiMenuBtnShadow !== null);
 
+                    if (uiMenuBtnShadows.length > 0) {
+                        uiMenuBtnShadows.forEach(uiMenuShadow => {
+                            (uiMenuShadow.filters[0].blur >= 12) && (uiMenuShadow.filters[0].blur += -4);
+                        });
+                        const currentMaxBlur = Math.max(...uiMenuBtnShadows.map(s => s.filters[0].blur));
+                        if (currentMaxBlur <= 12) {
+                            removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
+                        }
+                    }
+            };
+            // .find(child => child.name === ID.appContainerName).children
+            const uiMenuContainer = app.stage.children
+                .find(_child => _child.id === menu.container.ui);
+            if (uiMenuContainer !== undefined) {
+                addPixiTick(
+                    app, listenerKeys.menu.decreaseBlurInMenuContainerTick,
+                    () => reduceShadowCircleInsideUiMenuContainer(uiMenuContainer)
+                );
+            } else {
+                addPixiTick(
+                    app, listenerKeys.menu.decreaseBlurTick,
+                    () => reduceShadowCircle()
+                );
             }
-            addPixiTick(app, listenerKeys.menu.decreaseBlurTick, () => reduceShadowOfShadowCircle());
         }
 
         return {

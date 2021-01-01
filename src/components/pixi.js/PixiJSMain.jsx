@@ -1,4 +1,4 @@
-import { cloudsContainerBg, pixiJsCanvas, pixiJsContainer, poseWebcam } from 'shared/IdConstants';
+import { cloudsContainerBg, menu, pixiJsCanvas, pixiJsContainer, poseWebcam } from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 import { GUI } from 'dat.gui';
 
@@ -218,6 +218,8 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.ui.power, client.icon.power)
                     .add(assetRsrc.ui.return, client.icon.return)
                     .add(assetRsrc.ui.dollar, client.icon.dollar)
+                    .add(assetRsrc.ui.menu, client.icon.menu)
+                    .add(assetRsrc.ui.close, client.icon.close)
                     .load(() => {
                         appViewDimension.width = app.view.width;
                         appViewDimension.height = app.view.height;
@@ -305,6 +307,19 @@ export default function PixiJSMain(props) {
         }
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = getCleanAppContainer();
+
+        const uiMenuBtn = app.stage.children
+            .find(child => child && child.id && child.id.includes('menuSuffix'));
+        if (uiMenuBtn !== undefined && uiMenuBtn !== null) {
+            uiMenuBtn.destroy({children: true, texture: false, baseTexture: false})
+        };
+
+        const uiMenuCont = app.stage.children
+            .find(child => child && child.id && child.id === menu.container.ui)
+        if (uiMenuCont !== undefined && uiMenuCont !== null) {
+            uiMenuCont.destroy({children: true, texture: false, baseTexture: false});
+        }
+
         app.stage.addChild(appContainer);
         setViewState(viewKey);
     };
@@ -320,6 +335,15 @@ export default function PixiJSMain(props) {
 
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = getCleanAppContainer();
+
+        app.stage.children
+            .find(child => child && child.id && child.id.includes('menuSuffix'))
+            .destroy({children: true, texture: false, baseTexture: false});
+
+        app.stage.children
+            .find(child => child && child.id && child.id === menu.container.ui)
+            .destroy({children: true, texture: false, baseTexture: false});
+
         app.stage.addChild(getCloudsForBackground(app));
 
         app.stage.addChild(appContainer);
