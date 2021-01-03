@@ -13,7 +13,7 @@ import {
     pixiTicks, removeCachedPixiTickFromScene, removePixiTick
 } from 'components/pixi.js/SharedTicks';
 import { viewConstant } from './ViewConstants';
-import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
+import { defaultMenuButton, disabledMenuButton, UI_MIN_BLUR } from "components/pixi.js/PixiJSButton";
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 import { changeAudio } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
@@ -141,7 +141,7 @@ const loadingConfigurator = {
         });
 
         const shadowCircle = otherGO.hasOwnProperty('children')
-            ? otherGO.children.find(child => child.name === menu.button.ui.shadowCircleName)
+            ? otherGO.getChildByName(menu.button.ui.shadowCircleName)
             : false;
 
         loading.tick = () => {
@@ -170,32 +170,31 @@ const loadingConfigurator = {
             app.stage.removeChild(loading.circle);
             const reduceShadowCircleInsideUiMenuContainer = (_uiMenuContainer) => {
                 const shadowCircleArr = _uiMenuContainer.children
-                    .map(__child => (
-                        __child.children.find(shadow => shadow.name === menu.button.ui.shadowCircleName))
-                    )
+                    .map(__child => __child.getChildByName(menu.button.ui.shadowCircleName))
                     .filter(_shadow => _shadow !== undefined && _shadow !== null);
 
                 if (shadowCircleArr.length > 0) {
                     shadowCircleArr.forEach(uiMenuShadow => {
-                        (uiMenuShadow.filters[0].blur >= 12) && (uiMenuShadow.filters[0].blur += -4);
+                        if (uiMenuShadow.filters[0].blur >= UI_MIN_BLUR) {
+                            uiMenuShadow.filters[0].blur += -4;
+                        }
                     });
                     const currentMaxBlur = Math.max(...shadowCircleArr.map(s => s.filters[0].blur));
-                    if (currentMaxBlur <= 12) {
+                    if (currentMaxBlur <= UI_MIN_BLUR) {
                         removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
                     }
                 }
             };
             const reduceShadowCircle = () => {
-                const uiMenuBtnShadows = app.stage.children
-                    .find(child => child.name === ID.appContainerName).children
+                const uiMenuBtnShadows = app.stage
+                    .getChildByName(ID.appContainerName)
+                    .children
                     .map(appContainerChild => {
                         if (
                             appContainerChild.hasOwnProperty('id') &&
                             appContainerChild.id.includes(menu.button.ui.idPrefix)
                         ) {
-                            return appContainerChild.children.find(
-                                uiMenuBtnChild => uiMenuBtnChild.name === menu.button.ui.shadowCircleName
-                            )
+                            return appContainerChild.getChildByName(menu.button.ui.shadowCircleName);
                         }
                         return null;
                     })
@@ -203,15 +202,14 @@ const loadingConfigurator = {
 
                     if (uiMenuBtnShadows.length > 0) {
                         uiMenuBtnShadows.forEach(uiMenuShadow => {
-                            (uiMenuShadow.filters[0].blur >= 12) && (uiMenuShadow.filters[0].blur += -4);
+                            (uiMenuShadow.filters[0].blur >= UI_MIN_BLUR) && (uiMenuShadow.filters[0].blur += -4);
                         });
                         const currentMaxBlur = Math.max(...uiMenuBtnShadows.map(s => s.filters[0].blur));
-                        if (currentMaxBlur <= 12) {
+                        if (currentMaxBlur <= UI_MIN_BLUR) {
                             removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
                         }
                     }
             };
-            // .find(child => child.name === ID.appContainerName).children
             const uiMenuContainer = app.stage.children
                 .find(_child => _child.id === menu.container.ui);
             if (uiMenuContainer !== undefined) {

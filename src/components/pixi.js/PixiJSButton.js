@@ -109,6 +109,7 @@ export const previewMenuBtn = (buttonName, id=null, x=null, y=null, dimensions={
     return buttonContainer;
 };
 
+export const UI_MIN_BLUR = 15;
 export const uiMenuButton = (rsrcName, id_suffix, _buttonText=null, _x=null, _y=null) => {
     const buttonContainer = new PIXI.Container();
 
@@ -130,7 +131,7 @@ export const uiMenuButton = (rsrcName, id_suffix, _buttonText=null, _x=null, _y=
     shadowCircle.beginFill(0x333333, 1);
     shadowCircle.drawCircle(0, 0, buttonSize+2);
     shadowCircle.endFill();
-    shadowCircle.filters = [new PIXI.filters.BlurFilter(12, 7)];
+    shadowCircle.filters = [new PIXI.filters.BlurFilter(UI_MIN_BLUR, 7)];
 
     const buttonText = getPixiJsText(_buttonText, {
         [pJsTxtOptions.removeShadow]: true,

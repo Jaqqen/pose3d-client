@@ -1,11 +1,11 @@
-import { Container, Graphics, utils } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
 import { assetRsrc, goLabels, listenerKeys } from "shared/Indentifiers";
 import { logError } from "shared/P3dcLogger";
 import { appViewDimension } from "./PixiJSMain";
 import { uiMenuViewConstants } from "components/pixi.js/ViewConstants";
-import { uiMenuButton } from "./PixiJSButton";
+import { uiMenuButton, UI_MIN_BLUR } from "./PixiJSButton";
 import { addPixiTick, removePixiTick } from "./SharedTicks";
-import { appContainerName, menu } from "shared/IdConstants";
+import { menu } from "shared/IdConstants";
 import { testForAABB } from "./PixiJSCollision";
 import { menuCollRes } from "./PixiJSMenu";
 
@@ -15,7 +15,8 @@ const TRIGGERED = 'PULLER_TRIGGERED';
 const NOT_TRIGGERED = 'PULLER_NOT_TRIGGERED';
 export class UiMenu {
     constructor(container=[]) {
-        this.container = container;
+        this.containerItemObjs = container;
+        this.cancelButton = uiMenuButton(assetRsrc.ui.close, 'cancelSuffix', 'Cancel');
         this.pixiMenuContainer = null;
         this.radialAccessButton = null;
         this.radialAccessPuller = {
@@ -32,32 +33,35 @@ export class UiMenu {
     addMenuItem(elementObj=null) {
         try {
             if (elementObj === null) {
-                return this.container;
+                return this.containerItemObjs;
             }
             if (elementObj.hasOwnProperty(btnProp) && elementObj.hasOwnProperty(btnFunc)) {
-                const orderNum = (this.container.length > 0)
-                    ? Math.max(...this.container.map(o => o.orderN))
+                const orderNum = (this.containerItemObjs.length > 0)
+                    ? Math.max(...this.containerItemObjs.map(o => o.orderN))
                     : 0;
                 const uiMenuObj = {
                     [btnProp]: elementObj[btnProp],
                     orderN: orderNum + 1,
                     [btnFunc]: elementObj[btnFunc],
                 };
-                const offsetH = 80;
-                uiMenuObj[btnProp].x = appViewDimension.width + uiMenuObj[btnProp].width + 10;
+                const offsetH = 70;
+                uiMenuObj[btnProp].x = (
+                    appViewDimension.width - uiMenuObj[btnProp].width - 3*uiMenuViewConstants.offsetW
+                );
+
                 const halfHeightAndOffset = ((uiMenuObj[btnProp].height/2) + offsetH);
                 if (uiMenuObj.orderN === 1) {
                     uiMenuObj[btnProp].y = uiMenuObj.orderN * halfHeightAndOffset;
                 } else {
-                    uiMenuObj[btnProp].y = this.container
+                    uiMenuObj[btnProp].y = this.containerItemObjs
                         .find(_uiMenuObj => _uiMenuObj.orderN === orderNum)[btnProp]
                         .y + halfHeightAndOffset + offsetH;
                 }
 
-                this.container.push(uiMenuObj);
+                this.containerItemObjs.push(uiMenuObj);
             }
 
-            return this.container;
+            return this.containerItemObjs;
         } catch (error) {
             logError(error);
         }
@@ -66,7 +70,7 @@ export class UiMenu {
     addMenuItemsArray(elementArray=null) {
         try {
             if (elementArray === null) {
-                return this.container;
+                return this.containerItemObjs;
             }
             if (Array.isArray(elementArray)) {
                 for (let childElem of elementArray) {
@@ -74,19 +78,22 @@ export class UiMenu {
                 }
             }
 
-            return this.container;
+            return this.containerItemObjs;
         } catch (error) {
             logError(error);
         }
     }
 
-    getAsMenuGOs() {
-        return this.container.map(child => [child[btnFunc], child[btnProp]]);
+    getAsFunctionItemTupleArray(app) {
+        const uiMenuGOs =  this.containerItemObjs.map(child => [child[btnFunc], child[btnProp]]);
+        uiMenuGOs.push([() => this.closeRadialMenuOnComplete(app), this.cancelButton]);
+
+        return uiMenuGOs;
     }
 
     getMenuItemsAsArray() {
-        const menuItemsArray = this.container.map(child => child[btnProp]);
-        menuItemsArray.push(this.radialAccessButton);
+        const menuItemsArray = this.containerItemObjs.map(child => child[btnProp]);
+        menuItemsArray.push(this.cancelButton);
         return menuItemsArray;
     }
 
@@ -102,11 +109,13 @@ export class UiMenu {
         dimming.zIndex = -50;
         pixiMenuContainer.addChild(dimming);
 
-        this.container.forEach(uiMenuObj => {
+        this.containerItemObjs.forEach(uiMenuObj => {
             pixiMenuContainer.addChild(uiMenuObj[btnProp]);
         });
 
-        this.pixiMenuContainer = pixiMenuContainer;
+        this.cancelButton.x = appViewDimension.width - this.radialAccessButton.width/2 - 20;
+        this.cancelButton.y = appViewDimension.height/2;
+        pixiMenuContainer.addChild(this.cancelButton);
 
         return pixiMenuContainer;
     }
@@ -141,13 +150,13 @@ export class UiMenu {
                     this.radialAccessPuller.state = TRIGGERED;
                     (this.main.tickKey === null) && (this.main.tickKey = mainTickKey);
                     (this.main.tickFn === null) && (this.main.tickFn = currentMainTick);
-                    const radialOnCompleteOpening = () => {
-                        this.openRadialMenuOnComplete(app, mainTickKey, hands);
-                    };
                     const openingMenuTick = () => {
                         menuCollRes(app, [
                             ...menuGOs,
-                            [() => radialOnCompleteOpening(), this.radialAccessButton]
+                            [
+                                () => this.openRadialMenuOnComplete(app, mainTickKey, hands),
+                                this.radialAccessButton
+                            ]
                         ], hands);
                     };
                     removePixiTick(app, mainTickKey);
@@ -171,27 +180,23 @@ export class UiMenu {
                         addPixiTick(app, mainTickKey, currentMainTick);
                     }
                     this.radialAccessButton.x += 5;
-                    let currentBlur = this.radialAccessButton.children
-                        .find(shadow => 
-                            shadow && shadow.name && shadow.name === menu.button.ui.shadowCircleName
-                        )
-                        .filters[0].blur;
-                    if (currentBlur >= 12) {
-                        currentBlur += 4
+                    const currentBlurObj = this.radialAccessButton
+                        .getChildByName(menu.button.ui.shadowCircleName)
+                        .filters[0];
+                    if (currentBlurObj.blur >= UI_MIN_BLUR) {
+                        currentBlurObj.blur += -2;
                     }
-
-                    const _radialAccessBtnName = this.radialAccessButton.children
-                        .find(child => child.name && child.name.includes(menu.button.ui.buttonName));
-                    (_radialAccessBtnName.alpha > 0 ) && (_radialAccessBtnName.alpha += -0.2);
                 }
             }
         }
     }
 
     getRadialAccessButton() {
-        this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Cancel');
-        this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
-        this.radialAccessButton.y = appViewDimension.height/2;
+        if (this.radialAccessButton === null) {
+            this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Menu');
+            this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
+            this.radialAccessButton.y = appViewDimension.height/2;
+        }
 
         return this.radialAccessButton;
     }
@@ -200,103 +205,58 @@ export class UiMenu {
         removePixiTick(app, mainTickKey);
         this.isMenuOpen = true;
 
-        const uiMenuPixiContainer = this.getContainerAsPixiContainer(menu.container.ui);
-        uiMenuPixiContainer
-            .children
-            .filter(_child => _child.id && _child.id.includes(menu.button.ui.idPrefix))
-            .forEach(uiBtn => (
-                uiBtn.x = appViewDimension.width - uiBtn.width - 3*uiMenuViewConstants.offsetW
-            ));
-        app.stage.addChild(uiMenuPixiContainer);
+        this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
+        app.stage.addChild(this.pixiMenuContainer);
 
-        this.setRadialAccessButtonByState(app, this.isMenuOpen);
-
-        const uiMenuGOs = [
-            ...this.getAsMenuGOs(),
-            [() => this.closeRadialMenuOnComplete(app, uiMenuPixiContainer), this.radialAccessButton]
-        ];
         const uiMenuTick = () => {
-            menuCollRes(app, uiMenuGOs, hands);
+            menuCollRes(app, this.getAsFunctionItemTupleArray(app), hands);
         };
 
         addPixiTick(app, listenerKeys.menu.uiMenuViewTick, uiMenuTick);
 
         const _onMenuItemHoverTick = () => {
-            this.onMenuItemHoverTick(app, this.getMenuItemsAsArray(), hands);
+            this.onMenuItemHoverTick(this.getMenuItemsAsArray(), hands);
         };
         addPixiTick(app, listenerKeys.menu.uiMenuShowTextTick, _onMenuItemHoverTick);
     }
 
-    closeRadialMenuOnComplete(app, uiMenuContainer) {
+    closeRadialMenuOnComplete(app) {
         removePixiTick(app, listenerKeys.menu.uiMenuShowTextTick);
         removePixiTick(app, listenerKeys.menu.uiMenuViewTick);
 
-        app.stage.removeChild(uiMenuContainer);
+        app.stage.removeChild(this.pixiMenuContainer);
 
         this.isMenuOpen = false;
 
-        this.setRadialAccessButtonByState(app, this.isMenuOpen);
         addPixiTick(app, this.main.tickKey, this.main.tickFn);
     }
 
-    setRadialAccessButtonByState(app, menuState) {
-        if (menuState) {
-            this.radialAccessButton
-                .children
-                .find(child => child.name && child.name.includes(menu.button.ui.spriteName))
-                .texture = utils.TextureCache[assetRsrc.ui.close];
-            app.stage.children
-                .find(stageChild => stageChild && stageChild.name === appContainerName)
-                .removeChild(this.radialAccessButton);
-            app.stage.addChild(this.radialAccessButton);
-        } else {
-            this.radialAccessButton
-                .children
-                .find(child => child.name && child.name.includes(menu.button.ui.spriteName))
-                .texture = utils.TextureCache[assetRsrc.ui.menu];
-            app.stage.removeChild(this.radialAccessButton);
-            app.stage.children
-                .find(stageChild => stageChild && stageChild.name === appContainerName)
-                .addChild(this.radialAccessButton);
+    setTextAlphaOnHover(itemChildren) {
+        const menuText = itemChildren.find(child => 
+            child && child.name && child.name.includes(menu.button.ui.buttonName)
+        )
+        if (menuText !== undefined && menuText.alpha !== 1) {
+            menuText.alpha += 0.2;
         }
     }
 
-    onMenuItemHoverTick(app, menuItems, hands) {
+    onMenuItemHoverTick(menuItems, hands) {
         const menuItemsOnLeftHand = menuItems.filter(item => testForAABB(hands.left, item));
         const menuItemsOnRightHand = menuItems.filter(item => testForAABB(hands.right, item));
 
         if (menuItemsOnLeftHand.length + menuItemsOnRightHand.length === 1) {
             if (menuItemsOnLeftHand.length === 1) {
-                const menuText = menuItemsOnLeftHand[0].children
-                    .find(child => 
-                        child && child.name && child.name.includes(menu.button.ui.buttonName)
-                    )
-                if (menuText !== undefined && menuText.alpha !== 1) {
-                    menuText.alpha += 0.2;
-                }
+                this.setTextAlphaOnHover(menuItemsOnLeftHand[0].children);
             }
 
             if (menuItemsOnRightHand.length === 1) {
-                const menuText = menuItemsOnRightHand[0].children
-                    .find(child => 
-                        child && child.name && child.name.includes(menu.button.ui.buttonName)
-                    )
-                if (menuText !== undefined && menuText.alpha !== 1) {
-                    menuText.alpha += 0.2;
-                }
+                this.setTextAlphaOnHover(menuItemsOnRightHand[0].children);
             }
         }
 
         if (menuItemsOnLeftHand.length + menuItemsOnRightHand.length <= 0) {
-            const uiMenuContainer = app.stage.children
-                .find(child =>
-                    child && child.id && child.id === menu.container.ui
-                );
-
-            const uiBtns = uiMenuContainer.children
-                .filter(_child => _child.id && _child.id.includes(menu.button.ui.idPrefix));
-
-            const uiBtnNames = uiBtns
+            const menuUiButtons = this.containerItemObjs.map(uiMenuObj => uiMenuObj[btnProp]);
+            const uiBtnNames = menuUiButtons
                 .map(uiBtn => (
                     uiBtn.children.find(btnComp =>
                         btnComp && btnComp.name && btnComp.name.includes(menu.button.ui.buttonName)
@@ -304,10 +264,10 @@ export class UiMenu {
                 ))
                 .filter(comp => comp !== undefined);
 
-            const _radialAccessBtnName = this.radialAccessButton.children
+            const cancelButtonName = this.cancelButton.children
                 .find(child => child.name && child.name.includes(menu.button.ui.buttonName));
 
-            [...uiBtnNames, _radialAccessBtnName].forEach(uiBtnName => {
+            [...uiBtnNames, cancelButtonName].forEach(uiBtnName => {
                 if (uiBtnName && uiBtnName.alpha && uiBtnName.alpha > 0) {
                     uiBtnName.alpha += -0.2;
                 }
