@@ -12,7 +12,6 @@ import { quitBtnFn } from 'components/pixi.js/PixiJSMenu';
 import { UiMenu } from 'components/pixi.js/UiMenu';
 
 export const PixiJSLevelOnePreview = (props) => {
-
     const {
         [preview.level.container]: prevContainer,
         [preview.level.returnBtn]: returnButton,
@@ -63,6 +62,7 @@ export const PixiJSLevelOnePreview = (props) => {
             );
         };
         addPixiTick(app, listenerKeys.menu.uiMenuPullerTick, radialAccessPullerTick);
+
         return(() => {
             removePreviewTextureFromCache();
         });

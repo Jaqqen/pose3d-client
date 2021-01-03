@@ -49,429 +49,428 @@ export const PixiJSLevelOne = (props) => {
         let levelOneTick;
         let menuCollTick;
 
-        app.loader
-            .load((loader, resources) => {
-                //? measures and tracking variables
-                const worldWidth = appViewDimension.width * 5;
-                const lastPartBeforeEndX = worldWidth - appViewDimension.width;
-                const amountOfClouds = 7;
-                const worldTickSpeed = 3;
-                let elapsedGroundWidth = 0;
-                //? animationKeys
-                const worldAnimKey = listenerKeys.char.entry.worldAnim;
-                const infiniteGroundKey = listenerKeys.char.entry.infinite.ground;
-                const infiniteCloudsKey = listenerKeys.char.entry.infinite.clouds;
-                const infiniteMeteorsKey = listenerKeys.game.object.meteors.own;
-                const infiniteIciclesKey = listenerKeys.game.object.icicles.own;
+        //? measures and tracking variables
+        const worldWidth = appViewDimension.width * 5;
+        const lastPartBeforeEndX = worldWidth - appViewDimension.width;
+        const amountOfClouds = 7;
+        const worldTickSpeed = 3;
+        let elapsedGroundWidth = 0;
+        //? animationKeys
+        const worldAnimKey = listenerKeys.char.entry.worldAnim;
+        const infiniteGroundKey = listenerKeys.char.entry.infinite.ground;
+        const infiniteCloudsKey = listenerKeys.char.entry.infinite.clouds;
+        const infiniteMeteorsKey = listenerKeys.game.object.meteors.own;
+        const infiniteIciclesKey = listenerKeys.game.object.icicles.own;
 
-                const menuCollTickKey = listenerKeys.levelOneScene.menuCollTick;
-                const levelOneTickKey = listenerKeys.levelOneScene.mainTick; 
+        const menuCollTickKey = listenerKeys.levelOneScene.menuCollTick;
+        const levelOneTickKey = listenerKeys.levelOneScene.mainTick; 
 
-                //? character
-                const characterDummy = new PIXI.Sprite(resources[assetRsrc.character.dummy].texture);
+        //? character
+        const characterDummy = new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.character.dummy]);
 
-                //? interactive objects
-                const interactiveGOKey = goLabels.interactive.go;
-                const interactiveTickKey = goLabels.interactive.tick;
+        //? interactive objects
+        const interactiveGOKey = goLabels.interactive.go;
+        const interactiveTickKey = goLabels.interactive.tick;
 
-                let meteors = [];
-                const amtMeteors = 4;
-                const meteorMaxXOffset = 50;
-                const meteorAccelBounds = {
-                    x: {
-                        min: 5.2,
-                        max: 5.6,
-                    },
-                    y: {
-                        min: -3,
-                        max: -3.4,
-                    },
-                };
-                const meteorTimeoutRange = {
-                    min: 100,
-                    minInTick: 2000,
-                    max: 8000,
-                    step: 1000,
-                };
-                const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
+        let meteors = [];
+        const amtMeteors = 4;
+        const meteorMaxXOffset = 50;
+        const meteorAccelBounds = {
+            x: {
+                min: 5.2,
+                max: 5.6,
+            },
+            y: {
+                min: -3,
+                max: -3.4,
+            },
+        };
+        const meteorTimeoutRange = {
+            min: 100,
+            minInTick: 2000,
+            max: 8000,
+            step: 1000,
+        };
+        const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
 
-                let icicles = [];
-                const amtIcicles = 3;
-                const iciclesAccelBounds = {
-                    x: worldTickSpeed * 0.9,
-                    y: {
-                        min: -2,
-                        max: -2.4,
-                    },
-                };
-                const icicleTimeoutRange = {
-                    min: 100,
-                    minInTick: 2000,
-                    max: 8000,
-                    step: 1000,
-                };
-                const icicleTickKeyPrefix = goLabels.level.one.projectiles.icicle.tickKeyPrefix;
-                const icicleDistances = [
-                    onScreenStartingX + 400,
-                    onScreenStartingX + 660
-                ];
+        let icicles = [];
+        const amtIcicles = 3;
+        const iciclesAccelBounds = {
+            x: worldTickSpeed * 0.9,
+            y: {
+                min: -2,
+                max: -2.4,
+            },
+        };
+        const icicleTimeoutRange = {
+            min: 100,
+            minInTick: 2000,
+            max: 8000,
+            step: 1000,
+        };
+        const icicleTickKeyPrefix = goLabels.level.one.projectiles.icicle.tickKeyPrefix;
+        const icicleDistances = [
+            onScreenStartingX + 400,
+            onScreenStartingX + 660
+        ];
 
-                //? non-interactive, world objects
-                const groundWithDots = getGroundsByTypeForScene(
-                    3, resources, assetRsrc.env.ground.dots
+        //? non-interactive, world objects
+        const groundWithDots = getGroundsByTypeForScene(3, assetRsrc.env.ground.dots);
+        const clouds = getCloudsForScene(amountOfClouds);
+        const flagContainer = getFinishingFlag();
+
+        const aboveGroundHeight = appViewDimension.height - groundWithDots[0].getBounds().height - 16;
+
+        //? setup of scene
+        characterDummy.position.y = aboveGroundHeight;
+        appContainer.addChild(characterDummy);
+
+        clouds.forEach((cloud, index) => {
+            cloud.x = index * getCloudXDist();
+            cloud.y = Math.floor(getRandomArbitrary(0, (appViewDimension.height/3) - cloud.height));
+            cloud.zIndex = -20;
+            appContainer.addChild(cloud);
+        });
+
+        groundWithDots.forEach((ground, index) => {
+            ground.x = index * ground.getBounds().width;
+            ground.y = appViewDimension.height - ground.getBounds().height + 15;
+            ground.zIndex = -3;
+            appContainer.addChild(ground);
+        });
+
+        for (let i = 0; i < amtMeteors; i++) {
+            const tmpMeteor = new PIXI.Sprite(
+                PIXI.utils.TextureCache[assetRsrc.projectile.meteor]
+            );
+            meteors.push({
+                [interactiveGOKey]: tmpMeteor,
+                [interactiveTickKey]: null,
+            });
+            tmpMeteor.scale.set(0.6);
+            tmpMeteor.x = appViewDimension.width + getRandomArbitrary(20, meteorMaxXOffset);
+            tmpMeteor.y = getRandomArbitrary(-30, (appViewDimension.height/4));
+            tmpMeteor.zIndex = -10;
+            tmpMeteor.acceleration = new PIXI.Point(
+                getRandomArbitrary(meteorAccelBounds.x.min, meteorAccelBounds.x.max),
+                getRandomArbitrary(meteorAccelBounds.y.min, meteorAccelBounds.y.max)
+            );
+            appContainer.addChild(tmpMeteor);
+        }
+        for (let i = 0; i < amtIcicles; i++) {
+            const tmpIcicle = new PIXI.Sprite(
+                PIXI.utils.TextureCache[assetRsrc.projectile.icicle]
+            );
+            icicles.push({
+                [interactiveGOKey]: tmpIcicle,
+                [interactiveTickKey]: null,
+            });
+            tmpIcicle.scale.set(0.6);
+            tmpIcicle.x = getRandomChoiceOfArray(icicleDistances);
+            tmpIcicle.y = -tmpIcicle.getBounds().height;
+            tmpIcicle.zIndex = -10;
+            tmpIcicle.acceleration = new PIXI.Point(
+                iciclesAccelBounds.x,
+                getRandomArbitrary(iciclesAccelBounds.y.min, iciclesAccelBounds.y.max)
+            );
+            appContainer.addChild(tmpIcicle);
+        }
+
+        //? ticks
+        const worldAnimation = defaultWorldAnimation(worldTickSpeed, [ clouds, groundWithDots ]);
+
+        const infiniteClouds = () => {
+            const lostCloudsArr = clouds.filter(
+                cloud => (cloud.x + cloud.getBounds().width) < 0
+            );
+            if (lostCloudsArr.length > 0) {
+                const xValuesOfClouds = clouds.map(obj => obj.x);
+                const endXOfClouds = (
+                    Math.max(...xValuesOfClouds) + clouds[0].getBounds().width
                 );
-                const clouds = getCloudsForScene(amountOfClouds, resources);
-                const flagContainer = getFinishingFlag();
-
-                const aboveGroundHeight = appViewDimension.height - groundWithDots[0].getBounds().height - 16;
-
-                //? setup of scene
-                characterDummy.position.y = aboveGroundHeight;
-                appContainer.addChild(characterDummy);
-
-                clouds.forEach((cloud, index) => {
-                    cloud.x = index * getCloudXDist();
-                    cloud.y = Math.floor(getRandomArbitrary(0, (appViewDimension.height/3) - cloud.height));
-                    cloud.zIndex = -20;
-                    appContainer.addChild(cloud);
+                lostCloudsArr.forEach(lostCloud => {
+                    lostCloud.x = endXOfClouds + getCloudXDist();
                 });
+            }
+        };
 
-                groundWithDots.forEach((ground, index) => {
-                    ground.x = index * ground.getBounds().width;
-                    ground.y = appViewDimension.height - ground.getBounds().height + 15;
-                    ground.zIndex = -3;
-                    appContainer.addChild(ground);
-                });
+        const infiniteGround = () => {
+            const lostGroundTileArr = groundWithDots.filter(
+                ground => (ground.x + ground.getBounds().width) < 0
+            );
+            if (lostGroundTileArr.length > 0) {
+                const lostTile = lostGroundTileArr[0];
+                const xValuesOfGroundTiles = groundWithDots.map(obj => obj.x);
+                const endXOfGroundTiles = (
+                    Math.max(...xValuesOfGroundTiles) + lostTile.getBounds().width
+                );
 
-                for (let i = 0; i < amtMeteors; i++) {
-                    const tmpMeteor = new PIXI.Sprite(resources[assetRsrc.projectile.meteor].texture);
-                    meteors.push({
-                        [interactiveGOKey]: tmpMeteor,
-                        [interactiveTickKey]: null,
-                    });
-                    tmpMeteor.scale.set(0.6);
-                    tmpMeteor.x = appViewDimension.width + getRandomArbitrary(20, meteorMaxXOffset);
-                    tmpMeteor.y = getRandomArbitrary(-30, (appViewDimension.height/4));
-                    tmpMeteor.zIndex = -10;
-                    tmpMeteor.acceleration = new PIXI.Point(
-                        getRandomArbitrary(meteorAccelBounds.x.min, meteorAccelBounds.x.max),
-                        getRandomArbitrary(meteorAccelBounds.y.min, meteorAccelBounds.y.max)
+                lostTile.x = endXOfGroundTiles;
+                elapsedGroundWidth += lostTile.getBounds().width;
+
+                if (lastPartBeforeEndX < elapsedGroundWidth) {
+                    runFlagEntryAnimation(
+                        app, appContainer, flagContainer, aboveGroundHeight, 5
                     );
-                    appContainer.addChild(tmpMeteor);
+
+                    runCharacterFinishAnimation(app, characterDummy,
+                        {
+                            [worldAnimKey]: worldAnimation,
+                            [infiniteCloudsKey]: infiniteClouds,
+                            [infiniteGroundKey]: infiniteGround,
+                            [levelOneTickKey]: levelOneTick
+                        },
+                        {
+                            [infiniteMeteorsKey]: infiniteMeteors,
+                            [infiniteIciclesKey]: infiniteIcicles,
+                        },
+                        cleanUpOnFinish,
+                        () => onFinishLevel(
+                            app, interactiveGOs, worldGOs,
+                            [levelOneTickKey, levelOneTick],
+                            handGOs,
+                            () => exitViewFn(views.levelN),
+                            () => exitViewFn(viewsMain),
+                            [menuCollTickKey, menuCollTick]
+                        )
+                    );
                 }
-                for (let i = 0; i < amtIcicles; i++) {
-                    const tmpIcicle = new PIXI.Sprite(resources[assetRsrc.projectile.icicle].texture);
-                    icicles.push({
-                        [interactiveGOKey]: tmpIcicle,
-                        [interactiveTickKey]: null,
-                    });
-                    tmpIcicle.scale.set(0.6);
-                    tmpIcicle.x = getRandomChoiceOfArray(icicleDistances);
-                    tmpIcicle.y = -tmpIcicle.getBounds().height;
-                    tmpIcicle.zIndex = -10;
-                    tmpIcicle.acceleration = new PIXI.Point(
-                        iciclesAccelBounds.x,
-                        getRandomArbitrary(iciclesAccelBounds.y.min, iciclesAccelBounds.y.max)
-                    );
-                    appContainer.addChild(tmpIcicle);
-                }
+            }
+        };
 
-                //? ticks
-                const worldAnimation = defaultWorldAnimation(worldTickSpeed, [ clouds, groundWithDots ]);
+        const initiateMeteors = () => {
+            meteors.forEach((meteor, index) => {
+                const meteorTick = () => {
+                    const meteorGo = meteor[interactiveGOKey];
 
-                const infiniteClouds = () => {
-                    const lostCloudsArr = clouds.filter(
-                        cloud => (cloud.x + cloud.getBounds().width) < 0
-                    );
-                    if (lostCloudsArr.length > 0) {
-                        const xValuesOfClouds = clouds.map(obj => obj.x);
-                        const endXOfClouds = (
-                            Math.max(...xValuesOfClouds) + clouds[0].getBounds().width
-                        );
-                        lostCloudsArr.forEach(lostCloud => {
-                            lostCloud.x = endXOfClouds + getCloudXDist();
-                        });
+                    meteorGo.x -= meteorGo.acceleration.x;
+                    meteorGo.y -= meteorGo.acceleration.y;
+                };
+
+                meteor[interactiveTickKey] = meteorTickKeyPrefix + index;
+                meteor[interactiveGOKey].id = interactiveGOKey;
+
+                const initMetId = setTimeout(() => {
+                    addPixiTick(app, meteor[interactiveTickKey], meteorTick);
+                    clearPixiTimeoutWithKey(meteor[interactiveTickKey]);
+                },
+                    getRandomArbitraryInStep(
+                        meteorTimeoutRange.min,
+                        meteorTimeoutRange.max,
+                        meteorTimeoutRange.step
+                    )
+                );
+                addPixiTimeout(meteor[interactiveTickKey], initMetId);
+            })
+        };
+
+        const initiateIcicles = () => {
+            icicles.forEach((icicle, index) => {
+                const icicleTick = () => {
+                    const icicleGo = icicle[interactiveGOKey];
+
+                    if (icicleGo.y < 0 && icicleGo.acceleration.y < 0) {
+                        icicleGo.y -= -(Math.abs((icicleGo.acceleration.y/2)));
+                    } else {
+                        icicleGo.x -= icicleGo.acceleration.x;
+                        icicleGo.y -= icicleGo.acceleration.y;
+
                     }
                 };
 
-                const infiniteGround = () => {
-                    const lostGroundTileArr = groundWithDots.filter(
-                        ground => (ground.x + ground.getBounds().width) < 0
-                    );
-                    if (lostGroundTileArr.length > 0) {
-                        const lostTile = lostGroundTileArr[0];
-                        const xValuesOfGroundTiles = groundWithDots.map(obj => obj.x);
-                        const endXOfGroundTiles = (
-                            Math.max(...xValuesOfGroundTiles) + lostTile.getBounds().width
+                icicle[interactiveTickKey] = icicleTickKeyPrefix + index;
+                icicle[interactiveGOKey].id = interactiveGOKey;
+
+                const initIcicleId = setTimeout(() => {
+                    addPixiTick(app, icicle[interactiveTickKey], icicleTick);
+                    clearPixiTimeoutWithKey(icicle[interactiveTickKey]);
+                },
+                    getRandomArbitraryInStep(
+                        icicleTimeoutRange.min,
+                        icicleTimeoutRange.max,
+                        icicleTimeoutRange.step
+                    )
+                );
+                addPixiTimeout(icicle[interactiveTickKey], initIcicleId);
+            });
+        };
+        const initiateProjectiles = () => {
+            initiateMeteors();
+            initiateIcicles();
+        };
+
+        const infiniteMeteors = () => {
+            const lostMeteors = meteors.filter(
+                meteor => (
+                    meteor[interactiveGOKey].y > (appViewDimension.height - groundWithDots[0].getBounds().height + meteor[interactiveGOKey].getBounds().height) ||
+                    meteor[interactiveGOKey].y < (0 - meteor[interactiveGOKey].getBounds().height) ||
+                    meteor[interactiveGOKey].x < (0 - meteor[interactiveGOKey].getBounds().width) ||
+                    meteor[interactiveGOKey].x > (appViewDimension.width + meteorMaxXOffset)
+                )
+            );
+
+            if (lostMeteors.length > 0) {
+                lostMeteors.forEach(lostMeteor => {
+                    const meteorGo = lostMeteor[interactiveGOKey];
+                    const meteorKey = lostMeteor[interactiveTickKey];
+                    if (lastPartBeforeEndX - (appViewDimension.width/2) < elapsedGroundWidth) {
+                        removePixiTick(app, meteorKey);
+                        appContainer.removeChild(meteorGo);
+                    } else {
+                        meteorGo.acceleration = new PIXI.Point(0);
+                        const isSmvOpen = app.stage.children.filter(
+                            (child) => child.id === ID.sceneSmv
                         );
+                        if (isSmvOpen.length <= 0) {
+                            clearPixiTimeoutWithKey(meteorKey);
+                            meteorGo.id = interactiveGOKey;
+                            meteorGo.x = appViewDimension.width + getRandomArbitrary(20, meteorMaxXOffset);
+                            meteorGo.y = getRandomArbitrary(-30, (appViewDimension.height/4));
 
-                        lostTile.x = endXOfGroundTiles;
-                        elapsedGroundWidth += lostTile.getBounds().width;
-
-                        if (lastPartBeforeEndX < elapsedGroundWidth) {
-                            runFlagEntryAnimation(
-                                app, appContainer, flagContainer, aboveGroundHeight, 5
-                            );
-
-                            runCharacterFinishAnimation(app, characterDummy,
-                                {
-                                    [worldAnimKey]: worldAnimation,
-                                    [infiniteCloudsKey]: infiniteClouds,
-                                    [infiniteGroundKey]: infiniteGround,
-                                    [levelOneTickKey]: levelOneTick
-                                },
-                                {
-                                    [infiniteMeteorsKey]: infiniteMeteors,
-                                    [infiniteIciclesKey]: infiniteIcicles,
-                                },
-                                cleanUpOnFinish,
-                                () => onFinishLevel(
-                                    app, interactiveGOs, worldGOs,
-                                    [levelOneTickKey, levelOneTick],
-                                    handGOs,
-                                    () => exitViewFn(views.levelN, resources),
-                                    () => exitViewFn(viewsMain, resources),
-                                    [menuCollTickKey, menuCollTick]
+                            const resetMeteorId = setTimeout(() => {
+                                meteorGo.acceleration.set(
+                                    getRandomArbitrary(meteorAccelBounds.x.min, meteorAccelBounds.x.max),
+                                    getRandomArbitrary(meteorAccelBounds.y.min, meteorAccelBounds.y.max)
+                                );
+                                clearPixiTimeoutWithKey(meteorKey);
+                                }, getRandomArbitraryInStep(
+                                    meteorTimeoutRange.minInTick, meteorTimeoutRange.max, meteorTimeoutRange.step
                                 )
                             );
+                            addPixiTimeout(meteorKey, resetMeteorId);
                         }
                     }
-                };
+                });
+            }
+        };
+        const infiniteIcicles = () => {
+            const lostIcicles = icicles.filter(
+                icicle => (
+                    icicle[interactiveGOKey].y > (appViewDimension.height - groundWithDots[0].getBounds().height + icicle[interactiveGOKey].getBounds().height) ||
+                    icicle[interactiveGOKey].y < (0 - icicle[interactiveGOKey].getBounds().height-5) ||
+                    icicle[interactiveGOKey].x < (0 - icicle[interactiveGOKey].getBounds().width) ||
+                    icicle[interactiveGOKey].x > appViewDimension.width
+                )
+            );
 
-                const initiateMeteors = () => {
-                    meteors.forEach((meteor, index) => {
-                        const meteorTick = () => {
-                            const meteorGo = meteor[interactiveGOKey];
-
-                            meteorGo.x -= meteorGo.acceleration.x;
-                            meteorGo.y -= meteorGo.acceleration.y;
-                        };
-
-                        meteor[interactiveTickKey] = meteorTickKeyPrefix + index;
-                        meteor[interactiveGOKey].id = interactiveGOKey;
-
-                        const initMetId = setTimeout(() => {
-                            addPixiTick(app, meteor[interactiveTickKey], meteorTick);
-                            clearPixiTimeoutWithKey(meteor[interactiveTickKey]);
-                        },
-                            getRandomArbitraryInStep(
-                                meteorTimeoutRange.min,
-                                meteorTimeoutRange.max,
-                                meteorTimeoutRange.step
-                            )
+            if (lostIcicles.length > 0) {
+                lostIcicles.forEach(lostIcicle => {
+                    const icicleGo = lostIcicle[interactiveGOKey];
+                    const icicleKey = lostIcicle[interactiveTickKey];
+                    if (lastPartBeforeEndX - (appViewDimension.width/2) < elapsedGroundWidth) {
+                        removePixiTick(app, icicleKey);
+                        appContainer.removeChild(icicleGo);
+                    } else {
+                        icicleGo.acceleration = new PIXI.Point(0);
+                        const isSmvOpen = app.stage.children.filter(
+                            (child) => child.id === ID.sceneSmv
                         );
-                        addPixiTimeout(meteor[interactiveTickKey], initMetId);
-                    })
-                };
+                        if (isSmvOpen.length <= 0) {
+                            clearPixiTimeoutWithKey(icicleKey);
+                            icicleGo.id = interactiveGOKey;
+                            icicleGo.x = getRandomChoiceOfArray(icicleDistances);
+                            icicleGo.y = -icicleGo.getBounds().height;
 
-                const initiateIcicles = () => {
-                    icicles.forEach((icicle, index) => {
-                        const icicleTick = () => {
-                            const icicleGo = icicle[interactiveGOKey];
-
-                            if (icicleGo.y < 0 && icicleGo.acceleration.y < 0) {
-                                icicleGo.y -= -(Math.abs((icicleGo.acceleration.y/2)));
-                            } else {
-                                icicleGo.x -= icicleGo.acceleration.x;
-                                icicleGo.y -= icicleGo.acceleration.y;
-
-                            }
-                        };
-
-                        icicle[interactiveTickKey] = icicleTickKeyPrefix + index;
-                        icicle[interactiveGOKey].id = interactiveGOKey;
-
-                        const initIcicleId = setTimeout(() => {
-                            addPixiTick(app, icicle[interactiveTickKey], icicleTick);
-                            clearPixiTimeoutWithKey(icicle[interactiveTickKey]);
-                        },
-                            getRandomArbitraryInStep(
-                                icicleTimeoutRange.min,
-                                icicleTimeoutRange.max,
-                                icicleTimeoutRange.step
-                            )
-                        );
-                        addPixiTimeout(icicle[interactiveTickKey], initIcicleId);
-                    });
-                };
-                const initiateProjectiles = () => {
-                    initiateMeteors();
-                    initiateIcicles();
-                };
-
-                const infiniteMeteors = () => {
-                    const lostMeteors = meteors.filter(
-                        meteor => (
-                            meteor[interactiveGOKey].y > (appViewDimension.height - groundWithDots[0].getBounds().height + meteor[interactiveGOKey].getBounds().height) ||
-                            meteor[interactiveGOKey].y < (0 - meteor[interactiveGOKey].getBounds().height) ||
-                            meteor[interactiveGOKey].x < (0 - meteor[interactiveGOKey].getBounds().width) ||
-                            meteor[interactiveGOKey].x > (appViewDimension.width + meteorMaxXOffset)
-                        )
-                    );
-
-                    if (lostMeteors.length > 0) {
-                        lostMeteors.forEach(lostMeteor => {
-                            const meteorGo = lostMeteor[interactiveGOKey];
-                            const meteorKey = lostMeteor[interactiveTickKey];
-                            if (lastPartBeforeEndX - (appViewDimension.width/2) < elapsedGroundWidth) {
-                                removePixiTick(app, meteorKey);
-                                appContainer.removeChild(meteorGo);
-                            } else {
-                                meteorGo.acceleration = new PIXI.Point(0);
-                                const isSmvOpen = app.stage.children.filter(
-                                    (child) => child.id === ID.sceneSmv
+                            const resetIcicleId = setTimeout(() => {
+                                icicleGo.acceleration.set(
+                                    iciclesAccelBounds.x,
+                                    getRandomArbitrary(iciclesAccelBounds.y.min, iciclesAccelBounds.y.max)
                                 );
-                                if (isSmvOpen.length <= 0) {
-                                    clearPixiTimeoutWithKey(meteorKey);
-                                    meteorGo.id = interactiveGOKey;
-                                    meteorGo.x = appViewDimension.width + getRandomArbitrary(20, meteorMaxXOffset);
-                                    meteorGo.y = getRandomArbitrary(-30, (appViewDimension.height/4));
-
-                                    const resetMeteorId = setTimeout(() => {
-                                        meteorGo.acceleration.set(
-                                            getRandomArbitrary(meteorAccelBounds.x.min, meteorAccelBounds.x.max),
-                                            getRandomArbitrary(meteorAccelBounds.y.min, meteorAccelBounds.y.max)
-                                        );
-                                        clearPixiTimeoutWithKey(meteorKey);
-                                        }, getRandomArbitraryInStep(
-                                            meteorTimeoutRange.minInTick, meteorTimeoutRange.max, meteorTimeoutRange.step
-                                        )
-                                    );
-                                    addPixiTimeout(meteorKey, resetMeteorId);
-                                }
-                            }
-                        });
+                                clearPixiTimeoutWithKey(icicleKey);
+                            },
+                                getRandomArbitraryInStep(
+                                    icicleTimeoutRange.minInTick,
+                                    icicleTimeoutRange.max,
+                                    icicleTimeoutRange.step
+                                )
+                            );
+                            addPixiTimeout(icicleKey, resetIcicleId);
+                        }
                     }
-                };
-                const infiniteIcicles = () => {
-                    const lostIcicles = icicles.filter(
-                        icicle => (
-                            icicle[interactiveGOKey].y > (appViewDimension.height - groundWithDots[0].getBounds().height + icicle[interactiveGOKey].getBounds().height) ||
-                            icicle[interactiveGOKey].y < (0 - icicle[interactiveGOKey].getBounds().height-5) ||
-                            icicle[interactiveGOKey].x < (0 - icicle[interactiveGOKey].getBounds().width) ||
-                            icicle[interactiveGOKey].x > appViewDimension.width
-                        )
-                    );
+                });
+            }
+        };
 
-                    if (lostIcicles.length > 0) {
-                        lostIcicles.forEach(lostIcicle => {
-                            const icicleGo = lostIcicle[interactiveGOKey];
-                            const icicleKey = lostIcicle[interactiveTickKey];
-                            if (lastPartBeforeEndX - (appViewDimension.width/2) < elapsedGroundWidth) {
-                                removePixiTick(app, icicleKey);
-                                appContainer.removeChild(icicleGo);
-                            } else {
-                                icicleGo.acceleration = new PIXI.Point(0);
-                                const isSmvOpen = app.stage.children.filter(
-                                    (child) => child.id === ID.sceneSmv
-                                );
-                                if (isSmvOpen.length <= 0) {
-                                    clearPixiTimeoutWithKey(icicleKey);
-                                    icicleGo.id = interactiveGOKey;
-                                    icicleGo.x = getRandomChoiceOfArray(icicleDistances);
-                                    icicleGo.y = -icicleGo.getBounds().height;
+        const cleanUpOnFinish = () => {
+            const lostAppContChildren = appContainer.children.filter(
+                child => (
+                    child.y > (appViewDimension.height - groundWithDots[0].getBounds().height + child.getBounds().height) ||
+                    child.y < (0 - child.getBounds().height) ||
+                    child.x < (0 - child.getBounds().width) ||
+                    child.x > (appViewDimension.width + child.getBounds().width) ||
+                    child.id === interactiveGOKey
+                )
+            );
 
-                                    const resetIcicleId = setTimeout(() => {
-                                        icicleGo.acceleration.set(
-                                            iciclesAccelBounds.x,
-                                            getRandomArbitrary(iciclesAccelBounds.y.min, iciclesAccelBounds.y.max)
-                                        );
-                                        clearPixiTimeoutWithKey(icicleKey);
-                                    },
-                                        getRandomArbitraryInStep(
-                                            icicleTimeoutRange.minInTick,
-                                            icicleTimeoutRange.max,
-                                            icicleTimeoutRange.step
-                                        )
-                                    );
-                                    addPixiTimeout(icicleKey, resetIcicleId);
-                                }
-                            }
-                        });
-                    }
-                };
-
-                const cleanUpOnFinish = () => {
-                    const lostAppContChildren = appContainer.children.filter(
-                        child => (
-                            child.y > (appViewDimension.height - groundWithDots[0].getBounds().height + child.getBounds().height) ||
-                            child.y < (0 - child.getBounds().height) ||
-                            child.x < (0 - child.getBounds().width) ||
-                            child.x > (appViewDimension.width + child.getBounds().width) ||
-                            child.id === interactiveGOKey
-                        )
-                    );
-
-                    lostAppContChildren.forEach(lostChild => {
-                        lostChild.destroy({children: true, texture: false, baseTexture: false});
-                    });
-                };
-
-                runCharacterEntryAnimation(
-                    app, characterDummy, {
-                        [worldAnimKey]: worldAnimation,
-                        [infiniteCloudsKey]: infiniteClouds,
-                        [infiniteGroundKey]: infiniteGround,
-                        [infiniteMeteorsKey]: infiniteMeteors,
-                        [infiniteIciclesKey]: infiniteIcicles,
-                    },
-                    () => {
-                        menuTopRightButton.visible = true;
-                        lifeBars.visible = true;
-                    },
-                    () => addPixiTick(app, levelOneTickKey, levelOneTick),
-                    initiateProjectiles,
-                    () => addPixiTick(app, menuCollTickKey, menuCollTick),
-                    views.levelN
-                );
-
-                const interactiveGOs = [
-                    ...meteors,
-                    ...icicles
-                ];
-                const worldGOs = {
-                    [worldAnimKey]: worldAnimation,
-                    [infiniteCloudsKey]: infiniteClouds,
-                    [infiniteGroundKey]: infiniteGround,
-                    [infiniteMeteorsKey]: infiniteMeteors,
-                    [infiniteIciclesKey]: infiniteIcicles,
-                };
-
-                const handGOs = {
-                    left: hands.left.go,
-                    right: hands.right.go
-                };
-
-                const openSmvLevelScene = () => menuTopRightSceneFn(
-                    app, interactiveGOs, worldGOs,
-                    [levelOneTickKey, levelOneTick],
-                    handGOs,
-                    () => exitViewFn(viewsMain),
-                    [menuCollTickKey, menuCollTick]
-                );
-
-                const levelGOs = [
-                    [openSmvLevelScene, menuTopRightButton]
-                ];
-
-                menuCollTick = () => menuCollRes(app, levelGOs, handGOs);
-                levelOneTick = () => {
-                    checkCollision(hands.left, interactiveGOs, characterDummy, lifeBars);
-                    checkCollision(hands.right, interactiveGOs, characterDummy, lifeBars);
-                    lifeHandlerTick(
-                        app, interactiveGOs, worldGOs,
-                        [levelOneTickKey, levelOneTick],
-                        handGOs,
-                        () => exitViewFn(views.levelN),
-                        () => exitViewFn(viewsMain),
-                        [menuCollTickKey, menuCollTick],
-                        lifeBars
-                    );
-                };
-
-                //! Character y-coordinate has to be set here
-                // setJumpAt();
+            lostAppContChildren.forEach(lostChild => {
+                lostChild.destroy({children: true, texture: false, baseTexture: false});
             });
+        };
+
+        runCharacterEntryAnimation(
+            app, characterDummy, {
+                [worldAnimKey]: worldAnimation,
+                [infiniteCloudsKey]: infiniteClouds,
+                [infiniteGroundKey]: infiniteGround,
+                [infiniteMeteorsKey]: infiniteMeteors,
+                [infiniteIciclesKey]: infiniteIcicles,
+            },
+            () => {
+                menuTopRightButton.visible = true;
+                lifeBars.visible = true;
+            },
+            () => addPixiTick(app, levelOneTickKey, levelOneTick),
+            initiateProjectiles,
+            () => addPixiTick(app, menuCollTickKey, menuCollTick),
+            views.levelN
+        );
+
+        const interactiveGOs = [
+            ...meteors,
+            ...icicles
+        ];
+        const worldGOs = {
+            [worldAnimKey]: worldAnimation,
+            [infiniteCloudsKey]: infiniteClouds,
+            [infiniteGroundKey]: infiniteGround,
+            [infiniteMeteorsKey]: infiniteMeteors,
+            [infiniteIciclesKey]: infiniteIcicles,
+        };
+
+        const handGOs = {
+            left: hands.left.go,
+            right: hands.right.go
+        };
+
+        const openSmvLevelScene = () => menuTopRightSceneFn(
+            app, interactiveGOs, worldGOs,
+            [levelOneTickKey, levelOneTick],
+            handGOs,
+            () => exitViewFn(viewsMain),
+            [menuCollTickKey, menuCollTick]
+        );
+
+        const levelGOs = [
+            [openSmvLevelScene, menuTopRightButton]
+        ];
+
+        menuCollTick = () => menuCollRes(app, levelGOs, handGOs);
+        levelOneTick = () => {
+            checkCollision(hands.left, interactiveGOs, characterDummy, lifeBars);
+            checkCollision(hands.right, interactiveGOs, characterDummy, lifeBars);
+            lifeHandlerTick(
+                app, interactiveGOs, worldGOs,
+                [levelOneTickKey, levelOneTick],
+                handGOs,
+                () => exitViewFn(views.levelN),
+                () => exitViewFn(viewsMain),
+                [menuCollTickKey, menuCollTick],
+                lifeBars
+            );
+        };
+
+        //! Character y-coordinate has to be set here
+        // setJumpAt();
     }, [props, menuTopRightButton, lifeBars])
 
     return(

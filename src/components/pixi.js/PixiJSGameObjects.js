@@ -18,22 +18,22 @@ import { appViewDimension } from './PixiJSMain';
 const cloudInitDist = 272;
 export const getCloudXDist = () => { return cloudInitDist + getRandomArbitrary(-55, 55); }
 
-export const getCloudsForScene = (amountOfClouds, resources) => {
+export const getCloudsForScene = (amountOfClouds) => {
     let clouds = [];
     for (let i = 0; i < amountOfClouds; i++) {
         let assetType;
         if (i % 1.5 === 0) { assetType = assetRsrc.env.cloud.two; }
         else { assetType = assetRsrc.env.cloud.one; }
-    
-        clouds.push(new PIXI.Sprite(resources[assetType].texture));
+
+        clouds.push(new PIXI.Sprite(PIXI.utils.TextureCache[assetType]));
     }
     return clouds;
 };
 
-export const getGroundsByTypeForScene = (amount, resources, groundType) => {
+export const getGroundsByTypeForScene = (amount, groundType) => {
     let grounds = [];
     for (let i = 0; i < amount; i++) {
-        grounds.push(new PIXI.Sprite(resources[groundType].texture));
+        grounds.push(new PIXI.Sprite(PIXI.utils.TextureCache[groundType]));
     }
     return grounds;
 };
