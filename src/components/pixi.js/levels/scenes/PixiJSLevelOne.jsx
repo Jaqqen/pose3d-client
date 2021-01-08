@@ -25,6 +25,7 @@ import { appViewDimension } from 'components/pixi.js/PixiJSMain';
 import { UiMenu } from 'components/pixi.js/UiMenu';
 import { uiMenuButton } from 'components/pixi.js/PixiJSButton';
 import { quitBtnFn } from 'components/pixi.js/PixiJSMenu';
+import { audioOnClick, shouldPlayAudio } from 'components/pixi.js/PixiJSAudio';
 
 export const PixiJSLevelOne = (props) => {
     const menuTopRightButton = menuTopRight(
@@ -39,6 +40,11 @@ export const PixiJSLevelOne = (props) => {
     lifeBars.zIndex = 80;
     lifeBars.visible = false;
 
+    const audioUiButton = uiMenuButton(
+        (shouldPlayAudio() === "true" ? assetRsrc.ui.pause : assetRsrc.ui.play),
+        'audioSuffix',
+        'Audio'
+    );
     const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
     const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');
     const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
@@ -49,10 +55,9 @@ export const PixiJSLevelOne = (props) => {
         removeCloudFromStageBeforeLevelStart(app);
 
         const uiMenuContainer = new UiMenu();
-
         uiMenuContainer.addMenuItem({
-            [goLabels.menu.ui.element.button]: creditsUiButton,
-            [goLabels.menu.ui.element.func]: () => {console.log("credits")},
+            [goLabels.menu.ui.element.button]: audioUiButton,
+            [goLabels.menu.ui.element.func]: () => audioOnClick.audioUiButtonOnComplete(audioUiButton),
         });
         uiMenuContainer.addMenuItem({
             [goLabels.menu.ui.element.button]: returnUiButton,
@@ -519,7 +524,7 @@ export const PixiJSLevelOne = (props) => {
                 app, hands, levelOneTickKey, levelOneTick, worldGOs, interactiveGOs, menuCollTickKey
             );
         };
-    }, [props, menuTopRightButton, lifeBars, creditsUiButton, returnUiButton, quitUiButton])
+    }, [props, menuTopRightButton, lifeBars, creditsUiButton, returnUiButton, quitUiButton, audioUiButton])
 
     return(
         <Fragment></Fragment>

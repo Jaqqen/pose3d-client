@@ -6,7 +6,7 @@ import { menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import { logInfo } from 'shared/P3dcLogger';
 import { addPixiTick } from '../SharedTicks';
 import { viewConstant } from '../ViewConstants';
-import { changeAudio } from '../PixiJSAudio';
+import { audioOnClick, changeAudio, shouldPlayAudio } from '../PixiJSAudio';
 import { quitBtnFn } from '../PixiJSMenu';
 import { UiMenu } from '../UiMenu';
 
@@ -27,6 +27,11 @@ export const PixiJSLevels = (props) => {
         thirdMenuBtnX, viewConstant.initCoord.y
     );
 
+    const audioUiButton = uiMenuButton(
+        (shouldPlayAudio() === "true" ? assetRsrc.ui.pause : assetRsrc.ui.play),
+        'audioSuffix',
+        'Audio'
+    );
     const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
     const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
 
@@ -43,6 +48,10 @@ export const PixiJSLevels = (props) => {
         ];
 
         const uiMenuContainer = new UiMenu();
+        uiMenuContainer.addMenuItem({
+            [goLabels.menu.ui.element.button]: audioUiButton,
+            [goLabels.menu.ui.element.func]: () => audioOnClick.audioUiButtonOnComplete(audioUiButton),
+        });
         uiMenuContainer.addMenuItem({
             [goLabels.menu.ui.element.button]: creditsUiButton,
             [goLabels.menu.ui.element.func]: () => {console.log("credits")},
@@ -70,7 +79,7 @@ export const PixiJSLevels = (props) => {
     },[
         props,
         levelOneButton, levelTwoButton, levelThreeButton,
-        creditsUiButton, quitUiButton,
+        creditsUiButton, quitUiButton, audioUiButton
     ]);
 
     return (

@@ -46,21 +46,6 @@
 .showClass {
     opacity: 1;
 }
-#audioContainer {
-    position: absolute;
-    left: 70px;
-    top: 120px;
-    transform: scale(0.5);
-}
-.audioClass {
-    position: absolute;
-    opacity: 0;
-    display: none;
-}
-.showAudioClass {
-    opacity: 1;
-    display: block;
-}
 
 /* ? Startpage */
 .startpagemain-container {

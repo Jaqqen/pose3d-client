@@ -73,12 +73,6 @@ export const controllerId = {
     disconnected: "controllerDisabled",
 };
 
-export const audioId = {
-    container: "audioContainer",
-    playing: "audioPlayingId",
-    paused: "audioPausedId",
-};
-
 export const kbAndMouse = {
     container: "keyboardAndMouseContainer",
     default: "keyboardAndMouseDefault",
