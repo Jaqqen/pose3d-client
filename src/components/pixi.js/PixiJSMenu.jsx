@@ -192,6 +192,7 @@ const loadingConfigurator = {
                     .map(appContainerChild => {
                         if (
                             appContainerChild.hasOwnProperty('id') &&
+                            appContainerChild.id !== null && appContainerChild.id !== undefined &&
                             appContainerChild.id.includes(menu.button.ui.idPrefix)
                         ) {
                             return appContainerChild.getChildByName(menu.button.ui.shadowCircleName);

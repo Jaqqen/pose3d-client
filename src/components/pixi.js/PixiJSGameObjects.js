@@ -82,10 +82,9 @@ export const getFinishingFlag = () => {
     return flag;
 };
 
-export const onScreenStartingX = 220;
+export const onScreenStartingX = 450;
 export const runCharacterEntryAnimation = (
-    app, characterDummy, animations, showMenuAndLifebars, addMainTickToPixiTick, interactivesInitiation,
-    menuCollTick, levelView
+    app, characterDummy, animations, showMenuAndLifebars, addMainTickToPixiTick, levelView
 ) => {
     const characterInit = {x: -70};
     const characterIntroTick = () => {characterDummy.position.x = characterInit.x};
@@ -96,14 +95,12 @@ export const runCharacterEntryAnimation = (
         ease: Linear.easeIn,
         onStart: () => { changeAudio(levelView) },
         onComplete: () => {
-            interactivesInitiation();
             for (let key of Object.keys(animations)) {
                 addPixiTick(app, key, animations[key]);
             }
             removePixiTick(app, listenerKeys.char.entry.own);
             showMenuAndLifebars();
             addMainTickToPixiTick();
-            menuCollTick();
         },
     });
     addPixiTick(app, listenerKeys.char.entry.own, characterIntroTick);

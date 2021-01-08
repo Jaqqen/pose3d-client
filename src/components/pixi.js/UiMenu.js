@@ -4,7 +4,10 @@ import { logError } from "shared/P3dcLogger";
 import { appViewDimension } from "./PixiJSMain";
 import { uiMenuViewConstants } from "components/pixi.js/ViewConstants";
 import { uiMenuButton, UI_MIN_BLUR } from "./PixiJSButton";
-import { addPixiTick, removePixiTick } from "./SharedTicks";
+import { 
+    addPixiTick, addPixiTickFromSceneToCache, cachedPixiTicksFromScene, clearAllPixiTimeouts, 
+    pixiTicks, removeCachedPixiTickFromScene, removePixiTick 
+} from "./SharedTicks";
 import { menu } from "shared/IdConstants";
 import { testForAABB } from "./PixiJSCollision";
 import { menuCollRes } from "./PixiJSMenu";
@@ -13,6 +16,10 @@ const btnProp = goLabels.menu.ui.element.button;
 const btnFunc = goLabels.menu.ui.element.func;
 const TRIGGERED = 'PULLER_TRIGGERED';
 const NOT_TRIGGERED = 'PULLER_NOT_TRIGGERED';
+
+const isButtonOnTriggerPosition = (button) => {
+    return button.x <= appViewDimension.width - button.width/2 - 20;
+}
 export class UiMenu {
     constructor(container=[]) {
         this.containerItemObjs = container;
@@ -28,6 +35,10 @@ export class UiMenu {
             tickFn: null,
         };
         this.isMenuOpen = false;
+        this.scene = {
+            tickKey: null,
+            tickFn: null,
+        };
     }
 
     addMenuItem(elementObj=null) {
@@ -84,9 +95,13 @@ export class UiMenu {
         }
     }
 
-    getAsFunctionItemTupleArray(app) {
+    getAsFunctionItemTupleArray(app, isForScene) {
         const uiMenuGOs =  this.containerItemObjs.map(child => [child[btnFunc], child[btnProp]]);
-        uiMenuGOs.push([() => this.closeRadialMenuOnComplete(app), this.cancelButton]);
+        if (isForScene) {
+            uiMenuGOs.push([() => this.closeSceneRadialMenuOnComplete(app), this.cancelButton]);
+        } else {
+            uiMenuGOs.push([() => this.closeRadialMenuOnComplete(app), this.cancelButton]);
+        }
 
         return uiMenuGOs;
     }
@@ -135,18 +150,40 @@ export class UiMenu {
         return this.radialAccessPuller.puller;
     }
 
+    getRadialAccessButton() {
+        if (this.radialAccessButton === null) {
+            this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Menu');
+            this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
+            this.radialAccessButton.y = appViewDimension.height/2;
+        }
+
+        return this.radialAccessButton;
+    }
+
+    getHoveringHandsContent(hands) {
+        return Object.values(hands)
+            .filter(hand => {
+                if (hand.hasOwnProperty('go')) {
+                    return testForAABB(hand.go, this.radialAccessPuller.puller);
+                } else {
+                    return testForAABB(hand, this.radialAccessPuller.puller);
+                }
+            });
+    }
+
+    getPreparedHandsFromScene(hands) {
+        return {
+            left: hands.left.go,
+            right: hands.right.go,
+        };
+    }
+
     getRadialAccessPullerTick(app, hands, mainTickKey, currentMainTick, menuGOs) {
-        const hoveringHands = Object.values(hands).filter(hand => {
-            if (hand.hasOwnProperty('go')) return testForAABB(hand.go, this.radialAccessPuller.puller);
-            else return testForAABB(hand, this.radialAccessPuller.puller);
-        });
+        const hoveringHands = this.getHoveringHandsContent(hands);
 
         if (hoveringHands.length === 1) {
             if (this.radialAccessPuller.state === NOT_TRIGGERED && !this.isMenuOpen) {
-                const isOnTriggerdPosition = (this.radialAccessButton.x <= appViewDimension.width
-                    - this.radialAccessButton.width/2 - 20
-                );
-                if (isOnTriggerdPosition) {
+                if (isButtonOnTriggerPosition(this.radialAccessButton)) {
                     this.radialAccessPuller.state = TRIGGERED;
                     (this.main.tickKey === null) && (this.main.tickKey = mainTickKey);
                     (this.main.tickFn === null) && (this.main.tickFn = currentMainTick);
@@ -191,14 +228,60 @@ export class UiMenu {
         }
     }
 
-    getRadialAccessButton() {
-        if (this.radialAccessButton === null) {
-            this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Menu');
-            this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
-            this.radialAccessButton.y = appViewDimension.height/2;
-        }
+    getSceneRadialAccessPullerTick(
+        app, hands, sceneTickKey, sceneTick, worldGoObjs, interactiveObjs, menuCollTickKey
+    ) {
+        const hoveringHands = this.getHoveringHandsContent(hands);
 
-        return this.radialAccessButton;
+        if (hoveringHands.length === 1) {
+            if (this.radialAccessPuller.state === NOT_TRIGGERED && !this.isMenuOpen) {
+                if (isButtonOnTriggerPosition(this.radialAccessButton)) {
+                    this.radialAccessPuller.state = TRIGGERED;
+                    (this.scene.tickKey === null) && (this.scene.tickKey = sceneTickKey);
+                    (this.scene.tickFn === null) && (this.scene.tickFn = sceneTick);
+                    const preparedHands = this.getPreparedHandsFromScene(hands);
+                    const openingMenuTick = () => {
+                        menuCollRes(app, [[
+                            () => this.openSceneRadialMenuOnComplete(
+                                app, sceneTickKey, preparedHands, worldGoObjs, interactiveObjs
+                            ),
+                            this.radialAccessButton
+                        ]], preparedHands);
+                    };
+                    removePixiTick(app, menuCollTickKey);
+                    addPixiTick(app, listenerKeys.menu.openingMenuTick, openingMenuTick);
+                } else {
+                    this.radialAccessButton.x += -5;
+                }
+            }
+        } else {
+            if (!this.isMenuOpen) {
+                if ((
+                    this.radialAccessButton.x 
+                        <= appViewDimension.width 
+                        - this.radialAccessButton.width/2 + 50
+                )) {
+                    (this.scene.tickKey !== null) && (this.scene.tickKey = null);
+                    (this.scene.tickFn !== null) && (this.scene.tickFn = null);
+                    if (this.radialAccessPuller.state !== NOT_TRIGGERED) {
+                        this.radialAccessPuller.state = NOT_TRIGGERED;
+                        removePixiTick(app, listenerKeys.menu.openingMenuTick);
+                        addPixiTick(
+                            app,
+                            menuCollTickKey,
+                            () => menuCollRes(app, [], this.getPreparedHandsFromScene(hands))
+                        );
+                    }
+                    this.radialAccessButton.x += 5;
+                    const currentBlurObj = this.radialAccessButton
+                        .getChildByName(menu.button.ui.shadowCircleName)
+                        .filters[0];
+                    if (currentBlurObj.blur >= UI_MIN_BLUR) {
+                        currentBlurObj.blur += -2;
+                    }
+                }
+            }
+        }
     }
 
     openRadialMenuOnComplete(app, mainTickKey, hands) {
@@ -209,7 +292,39 @@ export class UiMenu {
         app.stage.addChild(this.pixiMenuContainer);
 
         const uiMenuTick = () => {
-            menuCollRes(app, this.getAsFunctionItemTupleArray(app), hands);
+            menuCollRes(app, this.getAsFunctionItemTupleArray(app, false), hands);
+        };
+
+        addPixiTick(app, listenerKeys.menu.uiMenuViewTick, uiMenuTick);
+
+        const _onMenuItemHoverTick = () => {
+            this.onMenuItemHoverTick(this.getMenuItemsAsArray(), hands);
+        };
+        addPixiTick(app, listenerKeys.menu.uiMenuShowTextTick, _onMenuItemHoverTick);
+    }
+
+    openSceneRadialMenuOnComplete(app, mainTickKey, hands, worldGoObjs, interactiveObjs) {
+        this.isMenuOpen = true;
+        removePixiTick(app, mainTickKey);
+        removePixiTick(app, listenerKeys.menu.openingMenuTick);
+        clearAllPixiTimeouts();
+
+        interactiveObjs.forEach(interactiveObj => {
+            const _key = interactiveObj[goLabels.interactive.tick];
+            addPixiTickFromSceneToCache(_key, pixiTicks[_key]);
+            removePixiTick(app, _key);
+        });
+
+        for (let _key of Object.keys(worldGoObjs)) {
+            addPixiTickFromSceneToCache(_key, worldGoObjs[_key]);
+            removePixiTick(app, _key)
+        }
+
+        this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
+        app.stage.addChild(this.pixiMenuContainer);
+
+        const uiMenuTick = () => {
+            menuCollRes(app, this.getAsFunctionItemTupleArray(app, true), hands);
         };
 
         addPixiTick(app, listenerKeys.menu.uiMenuViewTick, uiMenuTick);
@@ -231,10 +346,30 @@ export class UiMenu {
         addPixiTick(app, this.main.tickKey, this.main.tickFn);
     }
 
+    closeSceneRadialMenuOnComplete(app) {
+        removePixiTick(app, listenerKeys.menu.uiMenuShowTextTick);
+        removePixiTick(app, listenerKeys.menu.uiMenuViewTick);
+
+        app.stage.removeChild(this.pixiMenuContainer);
+
+        this.isMenuOpen = false;
+
+        if (Object.keys(cachedPixiTicksFromScene).length !== 0) {
+            const cachedTickKeys = Object.keys(cachedPixiTicksFromScene);
+            for (let key of cachedTickKeys) {
+                addPixiTick(app, key, cachedPixiTicksFromScene[key]);
+                removeCachedPixiTickFromScene(key);
+            }
+        }
+
+        addPixiTick(app, this.scene.tickKey, this.scene.tickFn);
+    }
+
     setTextAlphaOnHover(itemChildren) {
         const menuText = itemChildren.find(child => 
             child && child.name && child.name.includes(menu.button.ui.buttonName)
-        )
+        );
+
         if (menuText !== undefined && menuText.alpha !== 1) {
             menuText.alpha += 0.2;
         }

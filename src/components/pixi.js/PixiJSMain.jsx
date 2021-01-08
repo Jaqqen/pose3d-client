@@ -336,13 +336,17 @@ export default function PixiJSMain(props) {
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = getCleanAppContainer();
 
-        app.stage.children
-            .find(child => child && child.id && child.id.includes('menuSuffix'))
-            .destroy({children: true, texture: false, baseTexture: false});
+        const uiMenuBtn = app.stage.children
+            .find(child => child && child.id && child.id.includes('menuSuffix'));
+        if (uiMenuBtn !== undefined && uiMenuBtn !== null) {
+            uiMenuBtn.destroy({children: true, texture: false, baseTexture: false})
+        };
 
-        app.stage.children
+        const uiMenuCont = app.stage.children
             .find(child => child && child.id && child.id === menu.container.ui)
-            .destroy({children: true, texture: false, baseTexture: false});
+        if (uiMenuCont !== undefined && uiMenuCont !== null) {
+            uiMenuCont.destroy({children: true, texture: false, baseTexture: false});
+        }
 
         app.stage.addChild(getCloudsForBackground(app));
 
