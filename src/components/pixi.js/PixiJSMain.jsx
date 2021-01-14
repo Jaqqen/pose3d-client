@@ -75,7 +75,7 @@ export const getCloudsForBackground = (app) => {
 export default function PixiJSMain(props) {
     const [areRsrcsLoaded, setAreRsrcsLoaded] = useState(false);
     const [areHandsStaged, setAreHandsStaged] = useState(false);
-    const [viewState, setViewState] = useState(views.levelN);
+    const [viewState, setViewState] = useState(views.levels);
     const cachedViewKey = useRef(null);
 
     const setView = (viewKey) => {

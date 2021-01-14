@@ -55,11 +55,15 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
 
                     if (collisionGOs[0][1].id.includes(menu.button.ui.idPrefix)) {
                         loading.tween = loadingConfigurator.start(
-                            app, collisionGOs[0][1], collisionGOs[0][0], true
+                            app, collisionGOs[0][1], collisionGOs[0][0], true, false
+                        );
+                    } else if (collisionGOs[0][1].id.includes(menu.button.ui.overworldBtnIdPrefix)) {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOs[0][1], collisionGOs[0][0], false, true
                         );
                     } else {
                         loading.tween = loadingConfigurator.start(
-                            app, collisionGOs[0][1], collisionGOs[0][0]
+                            app, collisionGOs[0][1], collisionGOs[0][0], false, false
                         );
                     }
                 }
@@ -76,11 +80,15 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
 
                     if (collisionGOsRight[0][1].id.includes(menu.button.ui.idPrefix)) {
                         loading.tween = loadingConfigurator.start(
-                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], true
+                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], true, false
+                        );
+                    } else if (collisionGOsRight[0][1].id.includes(menu.button.ui.overworldBtnIdPrefix)) {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], false, true
                         );
                     } else {
                         loading.tween = loadingConfigurator.start(
-                            app, collisionGOsRight[0][1], collisionGOsRight[0][0]
+                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], false, false
                         );
                     }
                     
@@ -110,20 +118,32 @@ const menuCollcleanUp = (app) => {
 }
 
 const loadingConfigurator = {
-    start: (app, otherGO, onCompleteFunc, isUiGo=false) => {
-        isUiGo && removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
-        isUiGo && removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
+    start: (app, otherGO, onCompleteFunc, isUiGo=false, isOverworldBtn=false) => {
+        (isUiGo || isOverworldBtn) && removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
+        (isUiGo || isOverworldBtn) && removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
 
         app.stage.addChild(loading.circle);
 
         const RAD = Math.PI / 180;
 
         const arcParam = {
-            x: otherGO.getBounds().x + (isUiGo ? (otherGO.getBounds().width/2) : otherGO.getBounds().width),
-            y: otherGO.getBounds().y + (isUiGo ? (otherGO.getBounds().height/2 + 15) : 0),
-            radius: isUiGo ? otherGO.width/2 : 25,
+            x: otherGO.getBounds().x,
+            y: otherGO.getBounds().y,
+            radius: 0,
             angle: -95
-        };
+        };;
+        if (isUiGo) {
+            arcParam.x += otherGO.getBounds().width/2;
+            arcParam.y += otherGO.getBounds().height/2 + 15;
+            arcParam.radius += otherGO.width/2;
+        } else if (isOverworldBtn) {
+            arcParam.x += otherGO.getBounds().width/2;
+            arcParam.y += otherGO.getBounds().height/2;
+            arcParam.radius += otherGO.width/2;
+        } else {
+            arcParam.x += otherGO.getBounds().width;
+            arcParam.radius += 25;
+        }
 
         const onCompleteLoading = () => {
             const resetInfo = loadingConfigurator.stop(app, loading.tick, loading.tween);
@@ -135,7 +155,7 @@ const loadingConfigurator = {
         const tmpLoadingTween = gsap.to(arcParam, {
             angle: 280,
             delay: 0.6,
-            duration: 1.0,
+            duration: 1.3,
             ease: Linear.easeNone,
             onComplete: onCompleteLoading,
         });
@@ -190,26 +210,51 @@ const loadingConfigurator = {
                     .getChildByName(ID.appContainerName)
                     .children
                     .map(appContainerChild => {
-                        if (
-                            appContainerChild.hasOwnProperty('id') &&
-                            appContainerChild.id !== null && appContainerChild.id !== undefined &&
-                            appContainerChild.id.includes(menu.button.ui.idPrefix)
+                        if ('id' in appContainerChild &&
+                            appContainerChild.id !== null && appContainerChild.id !== undefined
                         ) {
-                            return appContainerChild.getChildByName(menu.button.ui.shadowCircleName);
+                            if (
+                                appContainerChild.id.includes(menu.button.ui.idPrefix) ||
+                                appContainerChild.id.includes(menu.button.ui.overworldBtnIdPrefix)
+                            ) {
+                                return appContainerChild
+                                    .getChildByName(menu.button.ui.shadowCircleName);
+                            }
                         }
                         return null;
                     })
                     .filter(uiMenuBtnShadow => uiMenuBtnShadow !== null);
 
-                    if (uiMenuBtnShadows.length > 0) {
-                        uiMenuBtnShadows.forEach(uiMenuShadow => {
-                            (uiMenuShadow.filters[0].blur >= UI_MIN_BLUR) && (uiMenuShadow.filters[0].blur += -4);
-                        });
-                        const currentMaxBlur = Math.max(...uiMenuBtnShadows.map(s => s.filters[0].blur));
-                        if (currentMaxBlur <= UI_MIN_BLUR) {
-                            removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
-                        }
+                const previewContainer = app.stage
+                    .getChildByName(ID.appContainerName)
+                    .getChildByName('previewContainerName');
+                const previewShadows = [];
+                if (previewContainer) {
+                        previewContainer
+                            .children
+                            .forEach(previewChild => {
+                                if (
+                                    'id' in previewChild &&
+                                    previewChild.id &&
+                                    previewChild.id.includes(menu.button.ui.overworldBtnIdPrefix)
+                                ) {
+                                    previewShadows.push(
+                                        previewChild.getChildByName(menu.button.ui.shadowCircleName)
+                                    );
+                                }
+                            });
+                }
+                uiMenuBtnShadows.push(...previewShadows);
+
+                if (uiMenuBtnShadows.length > 0) {
+                    uiMenuBtnShadows.forEach(uiMenuShadow => {
+                        (uiMenuShadow.filters[0].blur >= UI_MIN_BLUR) && (uiMenuShadow.filters[0].blur += -4);
+                    });
+                    const currentMaxBlur = Math.max(...uiMenuBtnShadows.map(s => s.filters[0].blur));
+                    if (currentMaxBlur <= UI_MIN_BLUR) {
+                        removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
                     }
+                }
             };
             const uiMenuContainer = app.stage.children
                 .find(_child => _child.id === menu.container.ui);

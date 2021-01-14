@@ -172,16 +172,16 @@ export const runPlayerFinishAnimation = (
     addPixiTick(app, listenerKeys.char.finish.own, characterFinishingTick);
 };
 
-export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHeight, offset=0) => {
+export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHeight) => {
     flagContainer.zIndex = -10;
     flagContainer.x = flagPosition();
-    flagContainer.y = groundHeight - offset;
+    flagContainer.y = groundHeight + flagContainer.getBounds().height;
     appContainer.addChild(flagContainer);
 
-    const flagContainerInit = {y: groundHeight - offset};
+    const flagContainerInit = {y: flagContainer.y};
     const flagEntryTick = () => {flagContainer.y = flagContainerInit.y};
     gsap.to(flagContainerInit, {
-        y: groundHeight - flagContainer.getBounds().width,
+        y: groundHeight - 25,
         duration: 2,
         ease: Linear.easeIn,
         onComplete: () => {

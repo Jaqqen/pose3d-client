@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-import { defaultMenuButton } from 'components/pixi.js/PixiJSButton';
+import { uiMenuOverworldButton } from 'components/pixi.js/PixiJSButton';
 import { getPixiJsText } from 'components/pixi.js/PixiJSText';
 import { viewConstant } from 'components/pixi.js/ViewConstants';
 import { pJsTxtOptions, preview } from 'shared/Indentifiers';
@@ -83,25 +83,23 @@ export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, 
 
     prevContainer.addChild(description);
 
-    const previewButtonDim = {
-        w: viewConstant.menuBtnDim.w - 30,
-        h: viewConstant.menuBtnDim.h - 50,
-    };
-    const returnButton = defaultMenuButton(
-        'Back', previews.button.return, 0, 0,
-        previewButtonDim
+    const returnButton = uiMenuOverworldButton(previews.button.return, 'Back');
+    returnButton.scale.set(0.8);
+    returnButton.position.set(
+        viewConstant.previewDim.w/4,
+        viewConstant.previewDim.h
     );
-    returnButton.x = viewConstant.previewDim.w/4 - returnButton.getBounds().width/2;
-    returnButton.y = viewConstant.previewDim.h - returnButton.getBounds().height/2;
     prevContainer.addChild(returnButton);
 
-    const startButton = defaultMenuButton(
-        'Start', previews.button.start, 0, 0,
-        previewButtonDim
+    const startButton = uiMenuOverworldButton(previews.button.start, 'Start');
+    startButton.scale.set(0.8);
+    startButton.position.set(
+        viewConstant.previewDim.w * (3/4),
+        viewConstant.previewDim.h
     );
-    startButton.x = viewConstant.previewDim.w * (3/4) - startButton.getBounds().width/2;
-    startButton.y = viewConstant.previewDim.h - startButton.getBounds().height/2;
     prevContainer.addChild(startButton);
+
+    prevContainer.name = 'previewContainerName';
 
     return {
         [preview.level.container]: prevContainer,

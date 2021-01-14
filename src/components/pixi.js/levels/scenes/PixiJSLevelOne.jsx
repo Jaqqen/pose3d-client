@@ -94,7 +94,6 @@ export const PixiJSLevelOne = (props) => {
         const levelOneTickKey = listenerKeys.levelOneScene.mainTick; 
 
         //? character
-        const characterDummy = new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.character.dummy]);
         const slime = new PixiGameChar(
             PIXI.utils.TextureCache[assetRsrc.character.slime_spritesheet],
             64, 64,
@@ -290,7 +289,7 @@ export const PixiJSLevelOne = (props) => {
 
                 if (lastPartBeforeEndX < elapsedGroundWidth) {
                     runFlagEntryAnimation(
-                        app, appContainer, flagContainer, aboveGroundHeight, 15
+                        app, appContainer, flagContainer, aboveGroundHeight
                     );
 
                     runPlayerFinishAnimation(app, slime,

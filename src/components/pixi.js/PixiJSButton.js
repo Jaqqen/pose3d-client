@@ -158,3 +158,42 @@ export const uiMenuButton = (rsrcName, id_suffix, _buttonText=null, _x=null, _y=
 
     return buttonContainer;
 };
+
+const overworldBtnWidth = viewConstant.menuBtnDim.w/3.2;
+export const uiMenuOverworldButton = (id_suffix, _buttonText, _x=null, _y=null) => {
+    const buttonContainer = new PIXI.Container();
+
+    const buttonCircle = new PIXI.Graphics();
+    buttonCircle.lineStyle(0);
+    buttonCircle.beginFill(0x7ABA7A, 1);
+    buttonCircle.drawCircle(0, 0, overworldBtnWidth);
+    buttonCircle.endFill();
+
+    const shadowCircle = new PIXI.Graphics();
+    shadowCircle.name = menu.button.ui.shadowCircleName;
+    shadowCircle.lineStyle(0);
+    shadowCircle.beginFill(0x333333, 1);
+    shadowCircle.drawCircle(0, 0, overworldBtnWidth+2);
+    shadowCircle.endFill();
+    shadowCircle.filters = [new PIXI.filters.BlurFilter(UI_MIN_BLUR, 7)];
+
+    const buttonText = getPixiJsText(_buttonText, {
+        [pJsTxtOptions.removeShadow]: true,
+        [pJsTxtOptions.customFontSize]: 54,
+        [pJsTxtOptions.wordWrap]: overworldBtnWidth+50,
+        [pJsTxtOptions.fill]: '#000000',
+        [pJsTxtOptions.fontWeight]: 'bold',
+    });
+    buttonText.anchor.set(0.5);
+
+    buttonContainer.addChild(shadowCircle);
+    buttonContainer.addChild(buttonCircle);
+    buttonContainer.addChild(buttonText);
+
+    _x && (buttonContainer.x = _x);
+    _y && (buttonContainer.y = _y);
+
+    buttonContainer.id = menu.button.ui.overworldBtnIdPrefix + id_suffix;
+
+    return buttonContainer;
+};

@@ -11,6 +11,7 @@ export const menu = {
         topRight: 'topRightId',
         ui: {
             idPrefix: 'uiMenuButtonIdPrefix_',
+            overworldBtnIdPrefix: 'uiOverworldButtonIdPrefix_',
             shadowCircleName: 'shadowCircleName',
             spriteName: 'uiSpriteName_',
             buttonName: 'uiButtoName_'

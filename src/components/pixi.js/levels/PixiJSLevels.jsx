@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from 'react'
 import { levels } from 'shared/IdConstants';
 import { assetRsrc, goLabels, listenerKeys, views } from 'shared/Indentifiers';
-import { previewMenuBtn, uiMenuButton } from "components/pixi.js/PixiJSButton";
+import { uiMenuButton, uiMenuOverworldButton } from "components/pixi.js/PixiJSButton";
 import { menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import { logInfo } from 'shared/P3dcLogger';
 import { addPixiTick } from '../SharedTicks';
@@ -11,20 +11,22 @@ import { quitBtnFn } from '../PixiJSMenu';
 import { UiMenu } from '../UiMenu';
 
 export const PixiJSLevels = (props) => {
-    const levelOneButton = previewMenuBtn(
-        'Lv. 1', levels.button.one, viewConstant.initCoord.x, viewConstant.initCoord.y
+    const levelOneButton = uiMenuOverworldButton(levels.button.one, 'Lv. 1');
+    levelOneButton.position.set(
+        viewConstant.initCoord.x + levelOneButton.width/2,
+        viewConstant.initCoord.y + levelOneButton.height/2
     );
 
-    const previewBtnWidthAndOffset = viewConstant.previewBtnDim.w + viewConstant.offset.w[30]
-    const secondMenuBtnX = viewConstant.initCoord.x + previewBtnWidthAndOffset;
-    const levelTwoButton = previewMenuBtn(
-        'Lv. 2', levels.button.two, secondMenuBtnX, viewConstant.initCoord.y 
+    const levelTwoButton = uiMenuOverworldButton(levels.button.two, 'Lv. 2');
+    levelTwoButton.position.set(
+        levelOneButton.x + levelOneButton.width/2 + viewConstant.initCoord.x + levelTwoButton.width/2,
+        viewConstant.initCoord.y + levelTwoButton.height/2
     );
 
-    const thirdMenuBtnX = secondMenuBtnX + previewBtnWidthAndOffset;
-    const levelThreeButton = previewMenuBtn(
-        'Lv. 3', levels.button.three,
-        thirdMenuBtnX, viewConstant.initCoord.y
+    const levelThreeButton = uiMenuOverworldButton(levels.button.two, 'Lv. 3');
+    levelThreeButton.position.set(
+        levelTwoButton.x + levelTwoButton.width/2 + viewConstant.initCoord.x + levelThreeButton.width/2,
+        viewConstant.initCoord.y + levelThreeButton.height/2
     );
 
     const audioUiButton = uiMenuButton(
