@@ -60,7 +60,10 @@ export const getCloudsForBackground = (app) => {
         else { assetType = assetRsrc.env.cloud.two; }
 
         const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType]);
-        _cloud.scale.set(getRandomArbitrary(0.9, 1.3))
+        _cloud.scale.set(getRandomArbitrary(0.8, 1.3))
+        if (_cloud.scale.x < 1) {
+            _cloud.alpha = _cloud.scale.x * 0.7;
+        }
 
         _cloud.x = getRandomInt(appViewDimension.width - _cloud.width);
         _cloud.y = getRandomInt(appViewDimension.height - _cloud.height);
