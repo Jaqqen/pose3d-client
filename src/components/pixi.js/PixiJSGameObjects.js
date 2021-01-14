@@ -83,17 +83,28 @@ export const getFinishingFlag = () => {
 };
 
 export const onScreenStartingX = 450;
-export const runCharacterEntryAnimation = (
-    app, characterDummy, animations, showMenuAndLifebars, addMainTickToPixiTick, levelView
+export const runPlayerEntryAnimation = (
+    app, player, animations, showMenuAndLifebars, addMainTickToPixiTick, levelView,
+    onStartAnim, onCompleteAnim
 ) => {
     const characterInit = {x: -70};
-    const characterIntroTick = () => {characterDummy.position.x = characterInit.x};
+    const characterIntroTick = () => {player.character.x = characterInit.x};
 
     gsap.to(characterInit, {
         x: onScreenStartingX,
         duration: 3,
         ease: Linear.easeIn,
-        onStart: () => { changeAudio(levelView) },
+        onStart: () => {
+            changeAudio(levelView);
+
+            if (
+                onStartAnim &&
+                player.character && player.character.children &&
+                player.character.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onStartAnim.state, onStartAnim.animation);
+            }
+        },
         onComplete: () => {
             for (let key of Object.keys(animations)) {
                 addPixiTick(app, key, animations[key]);
@@ -101,17 +112,26 @@ export const runCharacterEntryAnimation = (
             removePixiTick(app, listenerKeys.char.entry.own);
             showMenuAndLifebars();
             addMainTickToPixiTick();
+
+            if (
+                onCompleteAnim &&
+                player.character && player.character.children &&
+                player.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
+            }
         },
     });
     addPixiTick(app, listenerKeys.char.entry.own, characterIntroTick);
 };
 
 const flagPosition = () => { return appViewDimension.width - 300 };
-export const runCharacterFinishAnimation = (
-    app, character, onStartAnimations, onCompleteAnimations, cleanUpFn, initiateFinishOverlay
+export const runPlayerFinishAnimation = (
+    app, player, onStartAnimations, onCompleteAnimations, cleanUpFn, initiateFinishOverlay,
+    onStartAnim, onCompleteAnim
 ) => {
     const characterInScreenPos = {x: onScreenStartingX};
-    const characterFinishingTick = () => {character.x = characterInScreenPos.x}
+    const characterFinishingTick = () => {player.character.x = characterInScreenPos.x}
     gsap.to(characterInScreenPos, {
         x: flagPosition(),
         duration: 3,
@@ -121,6 +141,14 @@ export const runCharacterFinishAnimation = (
             for (let key of Object.keys(onStartAnimations)) {
                 removePixiTick(app, key);
             }
+
+            if (
+                onStartAnim &&
+                player.character && player.character.children &&
+                player.character.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onStartAnim.state, onStartAnim.animation);
+            }
         },
         onComplete: () => {
             for (let key of Object.keys(onCompleteAnimations)) {
@@ -129,6 +157,14 @@ export const runCharacterFinishAnimation = (
 
             removePixiTick(app, listenerKeys.char.finish.own);
             cleanUpFn();
+
+            if (
+                onCompleteAnim &&
+                player.character && player.character.children &&
+                player.character.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
+            }
 
             initiateFinishOverlay();
         },
@@ -184,18 +220,26 @@ export const getLifeBars = (id=null, x=null, y =null) => {
     return lifeBarsContainer;
 };
 
-export const reduceLifeByOne = (lifebarsContainer, character) => {
+export const reduceLifeByOne = (lifebarsContainer, player) => {
     const lifeBarsFirstChild = lifebarsContainer.children.find(e => e)
     if (lifeBarsFirstChild !== undefined) {
         lifeBarsFirstChild.destroy(true);
 
-        character.tint = '0xa20a0a';
         const cooldownId = ID.levels.charOnCooldown;
-        character.id = cooldownId;
-    
+        if (player.character.getChildByName('animSpriteCharName')) {
+            player.setDamageState(false);
+        } else {
+            player.tint = '0xa20a0a';
+            player.id = cooldownId;
+        }
+
         const removeCharId_id = setTimeout(() => {
-            character.id = null;
-            character.tint = '0xffffff';
+            if (player.character.getChildByName('animSpriteCharName')) {
+                player.setDamageState(true);
+            } else {
+                player.id = null;
+                player.tint = '0xffffff';
+            }
             clearPixiTimeoutWithKey(cooldownId);
         }, 3000);
         addPixiTimeout(cooldownId, removeCharId_id);
@@ -299,7 +343,10 @@ export const lifeHandlerTick = (
 ) => {
     if (lifeBarsContainer.children <= 0) {
         clearAllPixiTimeouts();
-        app.stage.children.find(elem => elem.name = ID.appContainerName).removeChild(lifeBarsContainer);
+        app.stage
+            .children
+            .find(elem => elem.name = ID.appContainerName)
+            .removeChild(lifeBarsContainer);
 
         interactiveTickObjs.forEach(tickObj => {
             const _key = tickObj[goLabels.interactive.tick];
@@ -317,17 +364,17 @@ export const lifeHandlerTick = (
 
         const {
             [overlayerRefs.container]: container,
-            // [overlayerRefs.retry]: retryBtn,
+            [overlayerRefs.retry]: retryBtn,
             [overlayerRefs.mainMenu]: mainMenuBtn,
             [overlayerRefs.quit]: quitBtn
         } = getGameOverlayByStatus(ID.levels.status.gameOver);
         app.stage.addChild(container);
 
-        // const retryFn = () => {
-        //     removePixiTick(app, listenerKeys.game.overlay.own);
-        //     app.stage.removeChild(container);
-        //     _retryFn();
-        // };
+        const retryFn = () => {
+            removePixiTick(app, listenerKeys.game.overlay.own);
+            app.stage.removeChild(container);
+            _retryFn();
+        };
 
         const exitFn = () => {
             removePixiTick(app, listenerKeys.game.overlay.own);
@@ -337,6 +384,7 @@ export const lifeHandlerTick = (
 
 
         const overlayGOs = [
+            [retryFn, retryBtn],
             [exitFn, mainMenuBtn],
             [quitBtnFn, quitBtn]
         ]
@@ -368,17 +416,17 @@ export const onFinishLevel = (
 
     const {
         [overlayerRefs.container]: container,
-        // [overlayerRefs.retry]: retryBtn,
+        [overlayerRefs.retry]: retryBtn,
         [overlayerRefs.mainMenu]: mainMenuBtn,
         [overlayerRefs.quit]: quitBtn
     } = getGameOverlayByStatus(ID.levels.status.win);
     app.stage.addChild(container);
 
-    // const retryFn = () => {
-    //     removePixiTick(app, listenerKeys.game.overlay.own);
-    //     app.stage.removeChild(container);
-    //     _retryFn();
-    // };
+    const retryFn = () => {
+        removePixiTick(app, listenerKeys.game.overlay.own);
+        app.stage.removeChild(container);
+        _retryFn();
+    };
 
     const exitFn = () => {
         removePixiTick(app, listenerKeys.game.overlay.own);
@@ -387,6 +435,7 @@ export const onFinishLevel = (
     };
 
     const overlayGOs = [
+        [retryFn, retryBtn],
         [exitFn, mainMenuBtn],
         [quitBtnFn, quitBtn]
     ]

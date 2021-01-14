@@ -57,6 +57,9 @@ export const asset = {
     },
     character: {
         dummy: require('static/assets/pixi.js/img/character_dummy.png').default,
+        slime: {
+            spriteSheet: require('static/assets/pixi.js/img/slime_spritesheet.png').default,
+        }
     },
     env: {
         ground: {
@@ -94,6 +97,7 @@ export const asset = {
 export const assetRsrc = {
     character: {
         dummy: 'dummyCharacterRsrc',
+        slime_spritesheet: 'slime_spritesheetRsrc',
     },
     leftHand: {
         default: 'leftHandRsrc',
@@ -186,6 +190,7 @@ export const views = {
     tutHands: 'tutHandsView',
     tutSpeech: 'tutSpeechView',
     tutorials: 'tutorialsView',
+    resetView: 'resetViewView',
 };
 export const viewsMain = views.levels;
 

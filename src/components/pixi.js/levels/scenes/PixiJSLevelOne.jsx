@@ -14,18 +14,19 @@ import { assetRsrc, goLabels, listenerKeys, views, viewsMain } from 'shared/Inde
 import { logInfo } from 'shared/P3dcLogger';
 import {
     getCloudsForScene, getCloudXDist, getGroundsByTypeForScene,
-    defaultWorldAnimation, getFinishingFlag, runCharacterFinishAnimation, 
-    runFlagEntryAnimation, runCharacterEntryAnimation, onScreenStartingX,
+    defaultWorldAnimation, getFinishingFlag, runPlayerFinishAnimation, 
+    runFlagEntryAnimation, runPlayerEntryAnimation, onScreenStartingX,
     removeCloudFromStageBeforeLevelStart, getLifeBars, lifeHandlerTick,
     onFinishLevel
 } from "components/pixi.js/PixiJSGameObjects";
 import { getRandomArbitrary, getRandomArbitraryInStep, getRandomChoiceOfArray } from 'shared/Utils';
-import { checkCollision } from 'components/pixi.js/PixiJSCollision';
+import { checkCollision, checkPlayerEnvironment } from 'components/pixi.js/PixiJSCollision';
 import { appViewDimension } from 'components/pixi.js/PixiJSMain';
 import { UiMenu } from 'components/pixi.js/UiMenu';
 import { uiMenuButton } from 'components/pixi.js/PixiJSButton';
 import { quitBtnFn } from 'components/pixi.js/PixiJSMenu';
 import { audioOnClick, shouldPlayAudio } from 'components/pixi.js/PixiJSAudio';
+import { CHAR_STATE, PixiGameChar } from 'components/pixi.js/animations/PixiGameChar';
 
 export const PixiJSLevelOne = (props) => {
     const menuTopRightButton = menuTopRight(
@@ -94,6 +95,51 @@ export const PixiJSLevelOne = (props) => {
 
         //? character
         const characterDummy = new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.character.dummy]);
+        const slime = new PixiGameChar(
+            PIXI.utils.TextureCache[assetRsrc.character.slime_spritesheet],
+            64, 64,
+            0.1, true
+        );
+        slime.createCharacter({
+            idle_anim: {
+                startColumn: 0,
+                endColumn: 3,
+                row: 0,
+            },
+            walk_anim: {
+                startColumn: 0,
+                endColumn: 9,
+                row: 1,
+            },
+            jump_anim: {
+                startColumn: 0,
+                endColumn: 13,
+                row: 2,
+            },
+            status_surprise: {
+                startColumn: 0,
+                endColumn: 1,
+                row: 3,
+            },
+        }, 'idle_anim');
+        const slimeStates = {
+            entry: {
+                onStart: {
+                    state: CHAR_STATE.WALKING,
+                    animation: 'walk_anim',
+                },
+            },
+            finish: {
+                onStart: {
+                    state: CHAR_STATE.WALKING,
+                    animation: 'walk_anim',
+                },
+                onComplete: {
+                    state: CHAR_STATE.IDLE,
+                    animation: 'idle_anim',
+                },
+            },
+        };
 
         //? interactive objects
         const interactiveGOKey = goLabels.interactive.go;
@@ -104,12 +150,12 @@ export const PixiJSLevelOne = (props) => {
         const meteorBoundaryPadding = 5;
         const meteorAccelBounds = {
             x: {
-                min: 5.2,
-                max: 5.4,
+                min: 3.2,
+                max: 3.4,
             },
             y: {
-                min: -3.4,
-                max: -3.6,
+                min: -1.8,
+                max: -2,
             },
         };
         const meteorTimeoutRange = {
@@ -147,11 +193,15 @@ export const PixiJSLevelOne = (props) => {
         const clouds = getCloudsForScene(amountOfClouds);
         const flagContainer = getFinishingFlag();
 
-        const aboveGroundHeight = appViewDimension.height - groundWithDots[0].getBounds().height - 16;
+        const aboveGroundHeight = (
+            appViewDimension.height
+            - groundWithDots[0].getBounds().height
+            - slime.character.getChildByName('animSpriteCharName').height/2.1
+        );
 
         //? setup of scene
-        characterDummy.position.y = aboveGroundHeight;
-        appContainer.addChild(characterDummy);
+        slime.character.y = aboveGroundHeight;
+        appContainer.addChild(slime.character);
 
         clouds.forEach((cloud, index) => {
             cloud.x = index * getCloudXDist();
@@ -240,10 +290,10 @@ export const PixiJSLevelOne = (props) => {
 
                 if (lastPartBeforeEndX < elapsedGroundWidth) {
                     runFlagEntryAnimation(
-                        app, appContainer, flagContainer, aboveGroundHeight, 5
+                        app, appContainer, flagContainer, aboveGroundHeight, 15
                     );
 
-                    runCharacterFinishAnimation(app, characterDummy,
+                    runPlayerFinishAnimation(app, slime,
                         {
                             [worldAnimKey]: worldAnimation,
                             [infiniteCloudsKey]: infiniteClouds,
@@ -259,10 +309,12 @@ export const PixiJSLevelOne = (props) => {
                             app, interactiveGOs, worldGOs,
                             [levelOneTickKey, levelOneTick],
                             handGOs,
-                            () => exitViewFn(views.levelN),
+                            () => exitViewFn(views.levelN, true),
                             () => exitViewFn(viewsMain),
                             [menuCollTickKey, menuCollTick]
-                        )
+                        ),
+                        slimeStates.finish.onStart,
+                        slimeStates.finish.onComplete,
                     );
                 }
             }
@@ -479,8 +531,8 @@ export const PixiJSLevelOne = (props) => {
 
         let radialSceneAccessPullerTick;
 
-        runCharacterEntryAnimation(
-            app, characterDummy,
+        runPlayerEntryAnimation(
+            app, slime,
             worldGOs,
             () => {
                 menuTopRightButton.visible = true;
@@ -490,7 +542,9 @@ export const PixiJSLevelOne = (props) => {
                 addPixiTick(app, levelOneTickKey, levelOneTick);
                 addPixiTick(app, listenerKeys.menu.uiMenuPullerTick, radialSceneAccessPullerTick)
             },
-            views.levelN
+            views.levelN,
+            slimeStates.entry.onStart,
+            null
         );
 
         const interactiveGOs = [
@@ -506,13 +560,14 @@ export const PixiJSLevelOne = (props) => {
         addPixiTick(app, menuCollTickKey, () => menuCollRes(app, [], handGOs));
 
         levelOneTick = () => {
-            checkCollision(hands.left, interactiveGOs, characterDummy, lifeBars);
-            checkCollision(hands.right, interactiveGOs, characterDummy, lifeBars);
+            checkCollision(hands.left, interactiveGOs);
+            checkCollision(hands.right, interactiveGOs);
+            checkPlayerEnvironment(interactiveGOs, slime, lifeBars);
             lifeHandlerTick(
                 app, interactiveGOs, worldGOs,
                 [levelOneTickKey, levelOneTick],
                 handGOs,
-                () => exitViewFn(views.levelN),
+                () => exitViewFn(views.levelN, true),
                 () => exitViewFn(viewsMain),
                 [menuCollTickKey, menuCollTick],
                 lifeBars

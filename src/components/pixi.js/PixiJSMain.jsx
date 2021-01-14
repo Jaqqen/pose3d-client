@@ -2,7 +2,7 @@ import { cloudsContainerBg, menu, pixiJsCanvas, pixiJsContainer, poseWebcam } fr
 import * as PIXI from 'pixi.js';
 import { GUI } from 'dat.gui';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { appMode, asset, assetRsrc, client, localStorageKeys, views } from 'shared/Indentifiers';
 import { appContainerName } from "shared/IdConstants";
@@ -75,7 +75,8 @@ export const getCloudsForBackground = (app) => {
 export default function PixiJSMain(props) {
     const [areRsrcsLoaded, setAreRsrcsLoaded] = useState(false);
     const [areHandsStaged, setAreHandsStaged] = useState(false);
-    const [viewState, setViewState] = useState(views.levels);
+    const [viewState, setViewState] = useState(views.levelN);
+    const cachedViewKey = useRef(null);
 
     const setView = (viewKey) => {
         switch (viewKey) {
@@ -164,6 +165,11 @@ export default function PixiJSMain(props) {
                         changeViewFn={changeView}
                     />
                 );
+            case views.resetView:{
+                    setViewState(cachedViewKey.current);
+                    cachedViewKey.current = null;
+                    break;
+                }
             default:
                 break;
         };
@@ -220,6 +226,7 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.ui.dollar, client.icon.dollar)
                     .add(assetRsrc.ui.menu, client.icon.menu)
                     .add(assetRsrc.ui.close, client.icon.close)
+                    .add(assetRsrc.character.slime_spritesheet, asset.character.slime.spriteSheet)
                     .load(() => {
                         appViewDimension.width = app.view.width;
                         appViewDimension.height = app.view.height;
@@ -324,7 +331,7 @@ export default function PixiJSMain(props) {
         setViewState(viewKey);
     };
 
-    const changeViewOnLevelOrTutExit = (viewKey) => {
+    const changeViewOnLevelOrTutExit = (viewKey, shouldReset=false) => {
         app.ticker.stop();
         clearAllPixiTimeouts();
         clearAllCachedPixiTicksFromScene(app);
@@ -353,7 +360,12 @@ export default function PixiJSMain(props) {
         app.stage.addChild(appContainer);
         app.ticker.start();
 
-        setViewState(viewKey);
+        if (shouldReset) {
+            cachedViewKey.current = viewKey;
+            setViewState(views.resetView);
+        } else {
+            setViewState(viewKey);
+        }
     };
 
     return (
