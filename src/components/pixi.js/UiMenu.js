@@ -9,7 +9,7 @@ import {
     pixiTicks, removeCachedPixiTickFromScene, removePixiTick 
 } from "./SharedTicks";
 import { menu } from "shared/IdConstants";
-import { testForAABB } from "./PixiJSCollision";
+import { setCooldownTween, setHitTween, testForAABB } from "./PixiJSCollision";
 import { menuCollRes } from "./PixiJSMenu";
 
 const btnProp = goLabels.menu.ui.element.button;
@@ -320,6 +320,13 @@ export class UiMenu {
             removePixiTick(app, _key)
         }
 
+        if (setHitTween && setHitTween.isActive()) {
+            setHitTween.pause();
+        }
+        if (setCooldownTween && setCooldownTween.isActive()) {
+            setCooldownTween.pause();
+        }
+
         this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
         app.stage.addChild(this.pixiMenuContainer);
 
@@ -360,6 +367,13 @@ export class UiMenu {
                 addPixiTick(app, key, cachedPixiTicksFromScene[key]);
                 removeCachedPixiTickFromScene(key);
             }
+        }
+
+        if (setHitTween && setHitTween.paused()) {
+            setHitTween.play();
+        }
+        if (setCooldownTween && setCooldownTween.paused()) {
+            setCooldownTween.play();
         }
 
         addPixiTick(app, this.scene.tickKey, this.scene.tickFn);

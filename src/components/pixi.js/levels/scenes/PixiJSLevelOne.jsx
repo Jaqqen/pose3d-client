@@ -77,7 +77,7 @@ export const PixiJSLevelOne = (props) => {
         let menuCollTick;
 
         //? measures and tracking variables
-        const worldWidth = appViewDimension.width * 5;
+        const worldWidth = appViewDimension.width * 7;
         const lastPartBeforeEndX = worldWidth - appViewDimension.width;
         const amountOfClouds = 7;
         const worldTickSpeed = 3;
@@ -144,7 +144,7 @@ export const PixiJSLevelOne = (props) => {
         const interactiveTickKey = goLabels.interactive.tick;
 
         let meteors = [];
-        const amtMeteors = 8;
+        const amtMeteors = 3;
         const meteorBoundaryPadding = 5;
         const meteorAccelBounds = {
             x: {
@@ -158,14 +158,14 @@ export const PixiJSLevelOne = (props) => {
         };
         const meteorTimeoutRange = {
             min: 100,
-            minInTick: 2500,
+            minInTick: 4000,
             max: 8000,
             step: 1900,
         };
         const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
 
         let icicles = [];
-        const amtIcicles = 3;
+        const amtIcicles = 2;
         const icicleBoundaryPadding = 5;
         const iciclesAccelBounds = {
             x: worldTickSpeed * 0.9,
@@ -176,7 +176,7 @@ export const PixiJSLevelOne = (props) => {
         };
         const icicleTimeoutRange = {
             min: 100,
-            minInTick: 2000,
+            minInTick: 3000,
             max: 8000,
             step: 1000,
         };
@@ -557,9 +557,20 @@ export const PixiJSLevelOne = (props) => {
 
         addPixiTick(app, menuCollTickKey, () => menuCollRes(app, [], handGOs));
 
+        const rightHand = {
+            isHit: false,
+            isOnCooldown: false,
+            whichHand: 'rightHand',
+        };
+        const leftHand = {
+            isHit: false,
+            isOnCooldown: false,
+            whichHand: 'leftHand',
+        };
+
         levelOneTick = () => {
-            checkCollision(hands.left, interactiveGOs);
-            checkCollision(hands.right, interactiveGOs);
+            checkCollision(hands.left, interactiveGOs, leftHand);
+            checkCollision(hands.right, interactiveGOs, rightHand);
             checkPlayerEnvironment(interactiveGOs, slime, lifeBars);
             lifeHandlerTick(
                 app, interactiveGOs, worldGOs,
@@ -568,7 +579,7 @@ export const PixiJSLevelOne = (props) => {
                 () => exitViewFn(views.levelN, true),
                 () => exitViewFn(viewsMain),
                 [menuCollTickKey, menuCollTick],
-                lifeBars
+                lifeBars, listenerKeys.menu.uiMenuPullerTick
             );
         };
 

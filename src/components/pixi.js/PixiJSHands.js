@@ -7,6 +7,7 @@ import {
     getInterpolatedValues, setDatGuiControllerListener, setDatGuiControllerValWithLocalStorage 
 } from "shared/Utils";
 import { appViewDimension } from "./PixiJSMain";
+import { setCooldownTween, setHitTween} from "components/pixi.js/PixiJSCollision";
 
 export let leftHand = null;
 export const setLeftHand = (_leftHand) => { leftHand = _leftHand; };
@@ -15,7 +16,6 @@ export let rightHand = null;
 export const setRightHand = (_rightHand) => { rightHand = _rightHand; };
 
 let leftHandBaseTexture = null;
-
 
 export const getHandByRsrcName = (rsrcName, _appMode) => {
     const hand = {
@@ -269,21 +269,38 @@ const getHandPositions = (coordinates, handType) => {
     return null;
 };
 
-// export const manageHandLife = (hand) => {
-//     switch (hand.lifeCounter) {
-//         case 1:
-//             hand.go.texture = utils.TextureCache[assetRsrc.han]
-//             break;
-//         case 2:
-            
-//             break;
-//         case 3:
-            
-//             break;
-//         case 4:
-            
-//             break;
-//         default:
-//             break;
-//     }
-// };
+export const manageHandLife = (hand, whichHand) => {
+    switch (hand.lifeCounter) {
+        case 1:
+            hand.go.texture = utils.TextureCache[assetRsrc[whichHand].crack_1];
+            break;
+        case 2:
+            hand.go.texture = utils.TextureCache[assetRsrc[whichHand].crack_2];
+            break;
+        case 3:
+            hand.go.texture = utils.TextureCache[assetRsrc[whichHand].crack_3];
+            break;
+        case 4:
+            hand.go.texture = utils.TextureCache[assetRsrc[whichHand].crack_4];
+            break;
+        case 5:
+            hand.go.texture = utils.TextureCache[assetRsrc[whichHand].default];
+            hand.go.alpha = 0.5;
+            break;
+        default:
+            break;
+    }
+};
+
+export const resetHandsLifeCounter = () => {
+    (setHitTween) && setHitTween.pause().time(0);
+    (setCooldownTween) && setCooldownTween.pause().time(0);
+
+    leftHand.go.alpha = 1;
+    leftHand.go.texture = utils.TextureCache[assetRsrc.leftHand.default];
+    rightHand.go.alpha = 1;
+    rightHand.go.texture = utils.TextureCache[assetRsrc.rightHand.default];
+
+    leftHand.lifeCounter = 0;
+    rightHand.lifeCounter = 0;
+};

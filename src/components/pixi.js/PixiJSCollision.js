@@ -1,5 +1,7 @@
+import gsap from 'gsap/gsap-core';
 import { goLabels } from 'shared/Indentifiers';
 import { reduceLifeByOne } from './PixiJSGameObjects';
+import { manageHandLife } from './PixiJSHands';
 import { appViewDimension } from './PixiJSMain';
 
 export const testForAABB = (object1, object2) => {
@@ -19,33 +21,63 @@ const getCollisionInFrame = (collisionGos) => {
     ));
 };
 
-export const checkCollision = (hand, collisionGOs) => {
-    const collGOsInFrame = getCollisionInFrame(collisionGOs);
+export let setHitTween;
+export let setCooldownTween;
+export const checkCollision = (hand, collisionGOs, handStatus) => {
+    if (!handStatus.isOnCooldown) {
+        const collGOsInFrame = getCollisionInFrame(collisionGOs);
 
-    collGOsInFrame.forEach(gameObj => {
-        if (
-            appViewDimension.width > hand.go.x && hand.go.x > 0 &&
-            appViewDimension.height > hand.go.y && hand.go.y > 0
-        ) {
+        collGOsInFrame.forEach(gameObj => {
             if (
-                testForAABB(gameObj[goLabels.interactive.go], hand.go) &&
-                gameObj[goLabels.interactive.go].id === goLabels.interactive.go
+                appViewDimension.width > hand.go.x && hand.go.x > 0 &&
+                appViewDimension.height > hand.go.y && hand.go.y > 0
             ) {
-                const hitGO = gameObj[goLabels.interactive.go];
-                hitGO.id = goLabels.interactive.collDis;
+                if (
+                    testForAABB(gameObj[goLabels.interactive.go], hand.go) &&
+                    gameObj[goLabels.interactive.go].id === goLabels.interactive.go
+                ) {
+                    const hitGO = gameObj[goLabels.interactive.go];
+                    hitGO.id = goLabels.interactive.collDis;
 
-                let horizontalSpeed = -9;
-                if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
+                    let horizontalSpeed = -9;
+                    if (hitGO.x < hand.go.x) { horizontalSpeed *= -1; }
 
-                let verticalSpeed = 9;
-                if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
+                    let verticalSpeed = -9;
+                    if (hitGO.y < hand.go.y) { verticalSpeed *= -1; }
 
-                hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
+                    hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
 
-                // hand.lifeCounter++;
+                    if (!handStatus.isHit && !handStatus.isOnCooldown) {
+                        setHitTween = gsap.to(handStatus, {
+                            isHit: false,
+                            duration: 1.3,
+                        });
+                        if (hand.lifeCounter < 5) {
+                            handStatus.isHit = true;
+                            hand.lifeCounter++;
+                            manageHandLife(hand, handStatus.whichHand);
+                        }
+
+                        if (hand.lifeCounter >= 5) {
+                            setHitTween
+                                .pause()
+                                .time(0);
+                            handStatus.isOnCooldown = true;
+                            setCooldownTween = gsap.to(handStatus, {
+                                duration: 4,
+                                onComplete: () => {
+                                    hand.go.alpha = 1;
+                                    hand.lifeCounter = 0;
+                                    handStatus.isOnCooldown = false;
+                                    handStatus.isHit = false;
+                                },
+                            });
+                        }
+                    }
+                }
             }
-        }
-    });
+        });
+    }
 };
 
 export const checkPlayerEnvironment = (collisionGOs, player, lifebarsContainer) => {
