@@ -69,7 +69,6 @@ export const PixiJSLevelOne = (props) => {
             [goLabels.menu.ui.element.func]: quitBtnFn,
         });
 
-        // appContainer.addChild(menuTopRightButton);
         appContainer.addChild(lifeBars);
         appContainer.addChild(uiMenuContainer.getRadialAccessPuller());
         appContainer.addChild(uiMenuContainer.getRadialAccessButton());

@@ -4,10 +4,12 @@ import * as PIXI from 'pixi.js';
 import { assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from "shared/Indentifiers";
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
-import { addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, removePixiTick } from "./SharedTicks";
+import { 
+    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, removePixiTick
+} from "./SharedTicks";
 
 import gsap from "gsap/gsap-core";
-import { defaultMenuButton, disabledMenuButton } from './PixiJSButton';
+import { uiMenuOverworldButton } from './PixiJSButton';
 import { viewConstant } from './ViewConstants';
 import { getPixiJsText } from './PixiJSText';
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
@@ -24,8 +26,12 @@ export const getCloudsForScene = (amountOfClouds) => {
         let assetType;
         if (i % 1.5 === 0) { assetType = assetRsrc.env.cloud.two; }
         else { assetType = assetRsrc.env.cloud.one; }
-
-        clouds.push(new PIXI.Sprite(PIXI.utils.TextureCache[assetType]));
+        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType])
+        _cloud.scale.set(getRandomArbitrary(0.7, 1.1))
+        if (_cloud.scale.x < 1) {
+            _cloud.alpha = _cloud.scale.x * 0.9;
+        }
+        clouds.push(_cloud);
     }
     return clouds;
 };
@@ -264,14 +270,17 @@ const getGameOverlayByStatus = (gameStatus) => {
 
     let overlayLabelColor;
     let overlayLabelName;
+    let btnStatusColor; 
     switch (gameStatus) {
         case ID.levels.status.gameOver:
-            overlayLabelColor = '#a20a0a';
+            overlayLabelColor = 0xec0101;
             overlayLabelName = 'Game Over';
+            btnStatusColor = 0x799351;
             break;
         case ID.levels.status.win:
             overlayLabelColor = '#a8dda8';
             overlayLabelName = 'WIN';
+            btnStatusColor = 0xbedbbb;
             break;
         default:
             overlayLabelColor = '#FFFFFF';
@@ -282,11 +291,12 @@ const getGameOverlayByStatus = (gameStatus) => {
     const overlayLabel = getPixiJsText(overlayLabelName,
         {
             [pJsTxtOptions.fill]: overlayLabelColor,
+            [pJsTxtOptions.customFontSize]: 74,
         }
     );
     overlayLabel.anchor.set(0.5);
     overlayLabel.x = appViewDimension.width/2;
-    overlayLabel.y = appViewDimension.height * (2/5);
+    overlayLabel.y = appViewDimension.height * (1.2/5);
     overlayLabel.zIndex = 52;
     gameOverlayContainer.addChild(overlayLabel);
 
@@ -296,44 +306,50 @@ const getGameOverlayByStatus = (gameStatus) => {
         textScale: 0.7,
     };
 
-    const retryBtn = disabledMenuButton(
-        'Retry',
-        'overlayRetryBtnId',
-        70,
-        buttonConstraints.y,
-        buttonConstraints.dim
-    );
-    retryBtn.children.find(e => e.text === 'Retry').scale.set(buttonConstraints.textScale);
-    retryBtn.zIndex = 52;
-    gameOverlayContainer.addChild(retryBtn);
+    const getColumnX = (orderNumber) => {
+        let columnIndex = 1;
+        (orderNumber === 2) && (columnIndex = 3);
+        (orderNumber === 3) && (columnIndex = 5);
 
-    const mainMenuBtn = defaultMenuButton(
-        'Main Menu',
-        'overlayMainMenuBtnId',
-        retryBtn.getBounds().x + retryBtn.getBounds().width + 150,
-        buttonConstraints.y,
-        buttonConstraints.dim
-    );
-    mainMenuBtn.children.find(e => e.text === 'Main Menu').scale.set(buttonConstraints.textScale - 0.1);
-    mainMenuBtn.zIndex = 52;
-    gameOverlayContainer.addChild(mainMenuBtn);
+        return appViewDimension.width * (columnIndex/6);
+    };
 
-    const quitBtn = defaultMenuButton(
-        'Quit',
-        'overlayQuitBtnId',
-        mainMenuBtn.getBounds().x + mainMenuBtn.getBounds().width + 150,
-        buttonConstraints.y,
-        buttonConstraints.dim
+    const uiRetryBtn = uiMenuOverworldButton(
+        'overlayRetryBtnId', 'Retry',
+        getColumnX(1), buttonConstraints.y,
+        btnStatusColor
     );
-    quitBtn.children.find(e => e.text === 'Quit').scale.set(buttonConstraints.textScale);
-    quitBtn.zIndex = 52;
-    gameOverlayContainer.addChild(quitBtn);
+    uiRetryBtn.scale.set(0.8);
+    uiRetryBtn.zIndex = 52;
+
+    gameOverlayContainer.addChild(uiRetryBtn);
+
+    const uiMainMenuBtn = uiMenuOverworldButton(
+        'overlayMainMenuBtnId', 'Main Menu',
+        getColumnX(2), buttonConstraints.y,
+        btnStatusColor
+    );
+    uiMainMenuBtn.scale.set(0.8);
+    uiMainMenuBtn.zIndex = 52;
+
+    gameOverlayContainer.addChild(uiMainMenuBtn);
+
+    const uiQuitBtn = uiMenuOverworldButton(
+        'overlayQuitBtnId', 'Quit',
+        getColumnX(3), buttonConstraints.y,
+        btnStatusColor
+    );
+    uiQuitBtn.scale.set(0.8);
+    uiQuitBtn.zIndex = 52;
+
+    gameOverlayContainer.addChild(uiQuitBtn);
+    gameOverlayContainer.name = 'gameOverlayContainerName';
 
     return {
         [overlayerRefs.container]: gameOverlayContainer,
-        [overlayerRefs.retry]: retryBtn,
-        [overlayerRefs.mainMenu]: mainMenuBtn,
-        [overlayerRefs.quit]: quitBtn,
+        [overlayerRefs.retry]: uiRetryBtn,
+        [overlayerRefs.mainMenu]: uiMainMenuBtn,
+        [overlayerRefs.quit]: uiQuitBtn,
     };
 }
 

@@ -160,14 +160,19 @@ export const uiMenuButton = (rsrcName, id_suffix, _buttonText=null, _x=null, _y=
 };
 
 const overworldBtnWidth = viewConstant.menuBtnDim.w/3.2;
-export const uiMenuOverworldButton = (id_suffix, _buttonText, _x=null, _y=null) => {
+export const uiMenuOverworldButton = (id_suffix, _buttonText, _x=null, _y=null, customColor=null) => {
     const buttonContainer = new PIXI.Container();
 
     const buttonCircle = new PIXI.Graphics();
     buttonCircle.lineStyle(0);
-    buttonCircle.beginFill(0x7ABA7A, 1);
+    if (customColor) {
+        buttonCircle.beginFill(customColor, 1);
+    } else {
+        buttonCircle.beginFill(0x7ABA7A, 1);
+    }
     buttonCircle.drawCircle(0, 0, overworldBtnWidth);
     buttonCircle.endFill();
+    buttonCircle.name = 'overWorldButtonCircleName';
 
     const shadowCircle = new PIXI.Graphics();
     shadowCircle.name = menu.button.ui.shadowCircleName;

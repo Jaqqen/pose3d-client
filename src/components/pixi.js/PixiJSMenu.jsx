@@ -244,7 +244,27 @@ const loadingConfigurator = {
                                 }
                             });
                 }
+
+                const gameOverlayShadows = [];
+                const gameOverlayContainer = app.stage.getChildByName('gameOverlayContainerName')
+                if (gameOverlayContainer) {
+                    gameOverlayContainer
+                        .children
+                        .forEach(gameOverlayChild => {
+                            if (
+                                'id' in gameOverlayChild &&
+                                gameOverlayChild.id &&
+                                gameOverlayChild.id.includes(menu.button.ui.overworldBtnIdPrefix)
+                            ) {
+                                gameOverlayShadows.push(
+                                    gameOverlayChild.getChildByName(menu.button.ui.shadowCircleName)
+                                );
+                            }
+                        });
+                }
+
                 uiMenuBtnShadows.push(...previewShadows);
+                uiMenuBtnShadows.push(...gameOverlayShadows);
 
                 if (uiMenuBtnShadows.length > 0) {
                     uiMenuBtnShadows.forEach(uiMenuShadow => {
