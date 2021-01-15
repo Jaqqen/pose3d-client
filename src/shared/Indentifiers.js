@@ -40,6 +40,11 @@ export const client = {
         keyboardAndMouse: require('static/img/ui/keyboard_and_mouse.png').default,
         pause: require('static/img/ui/pause.png').default,
         play: require('static/img/ui/play.png').default,
+        webcam: require('static/img/ui/webcam.png').default,
+        return: require('static/img/ui/return.png').default,
+        power: require('static/img/ui/power.png').default,
+        dollar: require('static/img/ui/dollar.png').default,
+        menu: require('static/img/ui/menu.png').default,
     },
 }
 
@@ -52,6 +57,9 @@ export const asset = {
     },
     character: {
         dummy: require('static/assets/pixi.js/img/character_dummy.png').default,
+        slime: {
+            spriteSheet: require('static/assets/pixi.js/img/slime_spritesheet.png').default,
+        }
     },
     env: {
         ground: {
@@ -89,6 +97,7 @@ export const asset = {
 export const assetRsrc = {
     character: {
         dummy: 'dummyCharacterRsrc',
+        slime_spritesheet: 'slime_spritesheetRsrc',
     },
     leftHand: {
         default: 'leftHandRsrc',
@@ -119,6 +128,15 @@ export const assetRsrc = {
         icicle: 'icicleRsrc',
         meteor: 'meteorRsrc',
     },
+    ui: {
+        pause: 'pauseRsrc',
+        play: 'playRsrc',
+        power: 'powerRsrc',
+        return: 'returnRsrc',
+        dollar: 'dollarRsrc',
+        menu: 'menuRsrc',
+        close: 'closeRsrc',
+    },
 };
 
 export const goLabels = {
@@ -139,6 +157,14 @@ export const goLabels = {
             },
         },
     },
+    menu: {
+        ui: {
+            element: {
+                button: 'button',
+                func: 'func',
+            },
+        },
+    },
 };
 
 export const pJsTxtOptions = {
@@ -149,6 +175,7 @@ export const pJsTxtOptions = {
     wordWrapWidth: 'wordWrapWidth',
     fill: 'fill',
     customFontSize: 'customFontSize',
+    fontWeight: 'bold',
 };
 
 export const views = {
@@ -163,6 +190,7 @@ export const views = {
     tutHands: 'tutHandsView',
     tutSpeech: 'tutSpeechView',
     tutorials: 'tutorialsView',
+    resetView: 'resetViewView',
 };
 export const viewsMain = views.levels;
 
@@ -253,6 +281,15 @@ export const listenerKeys = {
         overlay: {
             own: 'gameOverlayTickKey',
         },
+    },
+    menu: {
+        decreaseBlurInMenuContainerTick: 'menuDecreaseBlurInMenuContainerTickKey',
+        decreaseBlurTick: 'menuDecreaseBlurTickKey',
+        openingMenuTick: 'openingMenuTickKey',
+        closingMenuTick: 'closingMenuTickKey',
+        uiMenuViewTick: 'uiMenuViewTickKey',
+        uiMenuPullerTick: 'uiMenuPullerTickKey',
+        uiMenuShowTextTick: 'uiMenuShowTextTickKey'
     },
 };
 

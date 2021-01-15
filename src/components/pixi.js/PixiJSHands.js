@@ -6,6 +6,7 @@ import { appMode, assetRsrc, body, localStorageKeys } from "shared/Indentifiers"
 import { 
     getInterpolatedValues, setDatGuiControllerListener, setDatGuiControllerValWithLocalStorage 
 } from "shared/Utils";
+import { appViewDimension } from "./PixiJSMain";
 
 export let leftHand = null;
 export const setLeftHand = (_leftHand) => { leftHand = _leftHand; };
@@ -15,12 +16,8 @@ export const setRightHand = (_rightHand) => { rightHand = _rightHand; };
 
 let leftHandBaseTexture = null;
 
-let appViewDimension = {
-    height: null,
-    width: null,
-};
 
-export const getHandByRsrcName = (app, rsrcName, _appMode) => {
+export const getHandByRsrcName = (rsrcName, _appMode) => {
     const hand = {
         go: null,
         lifeCounter: 0,
@@ -30,15 +27,15 @@ export const getHandByRsrcName = (app, rsrcName, _appMode) => {
     hand.go.anchor.set(0.5);
 
     const initializeHandsForNonWebcam = () => {
-        hand.go.x = app.view.width/2 + hand.go.getBounds().width;
+        hand.go.x = appViewDimension.width/2 + hand.go.getBounds().width;
         if (rsrcName === assetRsrc.leftHand.default) {
-            hand.go.x = (app.view.width/2) - (hand.go.getBounds().width * 2);
+            hand.go.x = (appViewDimension.width/2) - (hand.go.getBounds().width * 2);
         }
-        hand.go.y = app.view.height/2 + 20;
+        hand.go.y = appViewDimension.height/2 + 20;
     };
 
     if (_appMode === appMode.WEBCAM) {
-        hand.go.x = app.view.width/2;
+        hand.go.x = appViewDimension.width/2;
         hand.go.y = hand.go.height * (-1);
     } else if (_appMode === appMode.CONTROLLER) {
         initializeHandsForNonWebcam()
@@ -49,10 +46,6 @@ export const getHandByRsrcName = (app, rsrcName, _appMode) => {
     hand.go.zIndex = 99;
     if (rsrcName === assetRsrc.leftHand.default && leftHand === null) {
         leftHandBaseTexture = utils.BaseTextureCache[rsrcName];
-        appViewDimension = {
-            height: app.view.height,
-            width: app.view.width,
-        };
     };
     return hand;
 };

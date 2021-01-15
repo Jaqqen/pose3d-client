@@ -13,7 +13,7 @@ export const getRandomArbitrary = (min, max) => {
 export const getRandomArbitraryInStep = (min, max, step) => {
     const range = (max - min) / step;
     return Math.floor(Math.random() * range) * step + min;
-}
+};
 
 export const getInterpolatedValues = (a, b, frac) => {
     let nx = a.x;

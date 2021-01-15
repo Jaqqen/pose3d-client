@@ -13,12 +13,14 @@ import {
     pixiTicks, removeCachedPixiTickFromScene, removePixiTick
 } from 'components/pixi.js/SharedTicks';
 import { viewConstant } from './ViewConstants';
-import { defaultMenuButton, disabledMenuButton } from "components/pixi.js/PixiJSButton";
+import { defaultMenuButton, disabledMenuButton, UI_MIN_BLUR } from "components/pixi.js/PixiJSButton";
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 import { changeAudio } from './PixiJSAudio';
+import { appViewDimension } from './PixiJSMain';
 
-let loading = {
+const loading = {
     circle: new PIXI.Graphics(),
+    circleThickness: 10,
     tick: null,
     tween: null,
 };
@@ -30,7 +32,6 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
         handGOs.left !== undefined && handGOs.left !== null &&
         handGOs.right !== undefined && handGOs.right !== null
     ) {
-
         const collisionGOs = otherGOs.filter(otherGO => testForAABB(handGOs.left, otherGO[1]));
         const isSingleCollision = collisionGOs.length === 1;
         //* for a case where we want to seperate the funtionalities between left and right hand
@@ -52,9 +53,19 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
 
                     isHoveringOverMenu = true;
 
-                    loading.tween = loadingConfigurator.start(
-                        app, collisionGOs[0][1], collisionGOs[0][0]
-                    );
+                    if (collisionGOs[0][1].id.includes(menu.button.ui.idPrefix)) {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOs[0][1], collisionGOs[0][0], true, false
+                        );
+                    } else if (collisionGOs[0][1].id.includes(menu.button.ui.overworldBtnIdPrefix)) {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOs[0][1], collisionGOs[0][0], false, true
+                        );
+                    } else {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOs[0][1], collisionGOs[0][0], false, false
+                        );
+                    }
                 }
             } else if (isMenuCollisionSingle) {
                 const currentlyHoveredMenuItem = collisionGOsRight[0][1].id;
@@ -67,9 +78,20 @@ export const menuCollRes = (app, otherGOs, handGOs) => {
 
                     isHoveringOverMenu = true;
 
-                    loading.tween = loadingConfigurator.start(
-                        app, collisionGOsRight[0][1], collisionGOsRight[0][0]
-                    );
+                    if (collisionGOsRight[0][1].id.includes(menu.button.ui.idPrefix)) {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], true, false
+                        );
+                    } else if (collisionGOsRight[0][1].id.includes(menu.button.ui.overworldBtnIdPrefix)) {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], false, true
+                        );
+                    } else {
+                        loading.tween = loadingConfigurator.start(
+                            app, collisionGOsRight[0][1], collisionGOsRight[0][0], false, false
+                        );
+                    }
+                    
                 }
             } else {
                 storedHoverMenuItem = null;
@@ -96,17 +118,32 @@ const menuCollcleanUp = (app) => {
 }
 
 const loadingConfigurator = {
-    start: (app, otherGO, onCompleteFunc) => {
+    start: (app, otherGO, onCompleteFunc, isUiGo=false, isOverworldBtn=false) => {
+        (isUiGo || isOverworldBtn) && removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
+        (isUiGo || isOverworldBtn) && removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
+
         app.stage.addChild(loading.circle);
 
         const RAD = Math.PI / 180;
 
         const arcParam = {
-            x: (otherGO.getBounds().x + otherGO.getBounds().width),
+            x: otherGO.getBounds().x,
             y: otherGO.getBounds().y,
-            radius: 25,
+            radius: 0,
             angle: -95
-        };
+        };;
+        if (isUiGo) {
+            arcParam.x += otherGO.getBounds().width/2;
+            arcParam.y += otherGO.getBounds().height/2 + 15;
+            arcParam.radius += otherGO.width/2;
+        } else if (isOverworldBtn) {
+            arcParam.x += otherGO.getBounds().width/2;
+            arcParam.y += otherGO.getBounds().height/2;
+            arcParam.radius += otherGO.width/2;
+        } else {
+            arcParam.x += otherGO.getBounds().width;
+            arcParam.radius += 25;
+        }
 
         const onCompleteLoading = () => {
             const resetInfo = loadingConfigurator.stop(app, loading.tick, loading.tween);
@@ -118,16 +155,24 @@ const loadingConfigurator = {
         const tmpLoadingTween = gsap.to(arcParam, {
             angle: 280,
             delay: 0.6,
-            duration: 1.0,
+            duration: 1.3,
             ease: Linear.easeNone,
             onComplete: onCompleteLoading,
         });
 
+        const shadowCircle = otherGO.hasOwnProperty('children')
+            ? otherGO.getChildByName(menu.button.ui.shadowCircleName)
+            : false;
+
         loading.tick = () => {
             loading.circle
                 .clear()
-                .lineStyle(14, 0xf44336)
+                .lineStyle(loading.circleThickness, 0xf05454)
                 .arc(arcParam.x, arcParam.y, arcParam.radius, -95 * RAD, arcParam.angle * RAD);
+
+            if (shadowCircle !== null && shadowCircle !== undefined && shadowCircle !== false) {
+                (shadowCircle.filters[0].blur <= 42) && (shadowCircle.filters[0].blur += 4);
+            }
         };
 
         loading.circle.zIndex = otherGO.zIndex + 1;
@@ -143,6 +188,107 @@ const loadingConfigurator = {
             app.ticker.remove(tickToStop);
             loading.circle.clear();
             app.stage.removeChild(loading.circle);
+            const reduceShadowCircleInsideUiMenuContainer = (_uiMenuContainer) => {
+                const shadowCircleArr = _uiMenuContainer.children
+                    .map(__child => __child.getChildByName(menu.button.ui.shadowCircleName))
+                    .filter(_shadow => _shadow !== undefined && _shadow !== null);
+
+                if (shadowCircleArr.length > 0) {
+                    shadowCircleArr.forEach(uiMenuShadow => {
+                        if (uiMenuShadow.filters[0].blur >= UI_MIN_BLUR) {
+                            uiMenuShadow.filters[0].blur += -4;
+                        }
+                    });
+                    const currentMaxBlur = Math.max(...shadowCircleArr.map(s => s.filters[0].blur));
+                    if (currentMaxBlur <= UI_MIN_BLUR) {
+                        removePixiTick(app, listenerKeys.menu.decreaseBlurInMenuContainerTick);
+                    }
+                }
+            };
+            const reduceShadowCircle = () => {
+                const uiMenuBtnShadows = app.stage
+                    .getChildByName(ID.appContainerName)
+                    .children
+                    .map(appContainerChild => {
+                        if ('id' in appContainerChild &&
+                            appContainerChild.id !== null && appContainerChild.id !== undefined
+                        ) {
+                            if (
+                                appContainerChild.id.includes(menu.button.ui.idPrefix) ||
+                                appContainerChild.id.includes(menu.button.ui.overworldBtnIdPrefix)
+                            ) {
+                                return appContainerChild
+                                    .getChildByName(menu.button.ui.shadowCircleName);
+                            }
+                        }
+                        return null;
+                    })
+                    .filter(uiMenuBtnShadow => uiMenuBtnShadow !== null);
+
+                const previewContainer = app.stage
+                    .getChildByName(ID.appContainerName)
+                    .getChildByName('previewContainerName');
+                const previewShadows = [];
+                if (previewContainer) {
+                        previewContainer
+                            .children
+                            .forEach(previewChild => {
+                                if (
+                                    'id' in previewChild &&
+                                    previewChild.id &&
+                                    previewChild.id.includes(menu.button.ui.overworldBtnIdPrefix)
+                                ) {
+                                    previewShadows.push(
+                                        previewChild.getChildByName(menu.button.ui.shadowCircleName)
+                                    );
+                                }
+                            });
+                }
+
+                const gameOverlayShadows = [];
+                const gameOverlayContainer = app.stage.getChildByName('gameOverlayContainerName')
+                if (gameOverlayContainer) {
+                    gameOverlayContainer
+                        .children
+                        .forEach(gameOverlayChild => {
+                            if (
+                                'id' in gameOverlayChild &&
+                                gameOverlayChild.id &&
+                                gameOverlayChild.id.includes(menu.button.ui.overworldBtnIdPrefix)
+                            ) {
+                                gameOverlayShadows.push(
+                                    gameOverlayChild.getChildByName(menu.button.ui.shadowCircleName)
+                                );
+                            }
+                        });
+                }
+
+                uiMenuBtnShadows.push(...previewShadows);
+                uiMenuBtnShadows.push(...gameOverlayShadows);
+
+                if (uiMenuBtnShadows.length > 0) {
+                    uiMenuBtnShadows.forEach(uiMenuShadow => {
+                        (uiMenuShadow.filters[0].blur >= UI_MIN_BLUR) && (uiMenuShadow.filters[0].blur += -4);
+                    });
+                    const currentMaxBlur = Math.max(...uiMenuBtnShadows.map(s => s.filters[0].blur));
+                    if (currentMaxBlur <= UI_MIN_BLUR) {
+                        removePixiTick(app, listenerKeys.menu.decreaseBlurTick);
+                    }
+                }
+            };
+            const uiMenuContainer = app.stage.children
+                .find(_child => _child.id === menu.container.ui);
+            if (uiMenuContainer !== undefined) {
+                addPixiTick(
+                    app, listenerKeys.menu.decreaseBlurInMenuContainerTick,
+                    () => reduceShadowCircleInsideUiMenuContainer(uiMenuContainer)
+                );
+            } else {
+                addPixiTick(
+                    app, listenerKeys.menu.decreaseBlurTick,
+                    () => reduceShadowCircle()
+                );
+            }
         }
 
         return {
@@ -187,7 +333,7 @@ export const menuTopRightFn = (
             // [smvRefs.credits]:creditsBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
-        } = getSubMenuView(app, true);
+        } = getSubMenuView(true);
         app.stage.addChild(container);
 
         smvGOs = [
@@ -201,7 +347,7 @@ export const menuTopRightFn = (
             [smvRefs.mainMenu]:mainMenuBtn,
             [smvRefs.quit]:quitBtn,
             [smvRefs.returnBack]:returnBtn
-        } = getSubMenuView(app, false);
+        } = getSubMenuView(false);
         app.stage.addChild(container);
 
         const returnFn = () => returnBtnFn(
@@ -247,7 +393,7 @@ export const menuTopRightSceneFn = (
         [smvRefs.mainMenu]:mainMenuBtn,
         [smvRefs.quit]:quitBtn,
         [smvRefs.returnBack]:returnBtn
-    } = getSubMenuView(app, false);
+    } = getSubMenuView(false);
     app.stage.addChild(container);
     container.id = ID.sceneSmv;
 
@@ -297,13 +443,13 @@ const returnBtnFn = (app, smvTickKey, container, mainTick, mainTickKey) => {
     addPixiTick(app, mainTickKey, mainTick);
 }
 
-const getSubMenuView = (app, isMainMenu) => {
+const getSubMenuView = (isMainMenu) => {
     const subMenuContainer = new PIXI.Container();
     subMenuContainer.sortableChildren = true;
     subMenuContainer.zIndex = 49;
 
-    const subMenuViewHeight = app.view.height;
-    const subMenuViewWidth = app.view.width;
+    const subMenuViewHeight = appViewDimension.height;
+    const subMenuViewWidth = appViewDimension.width;
     const subMenuStartX = subMenuViewWidth * 0.65;
 
     const dimming = new PIXI.Graphics();

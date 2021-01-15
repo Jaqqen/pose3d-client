@@ -1,6 +1,6 @@
-import { audioClass, showAudioClass } from "shared/ClassName";
-import { audioId } from "shared/IdConstants";
-import { asset, levelSceneViews, localStorageKeys, menuViews } from "shared/Indentifiers";
+import { utils } from "pixi.js";
+import { menu } from "shared/IdConstants";
+import { asset, assetRsrc, levelSceneViews, localStorageKeys, menuViews } from "shared/Indentifiers";
 
 const isAudioPlayingKey = localStorageKeys.isAudioPlaying;
 export const audioInitVolume = 0.06;
@@ -44,24 +44,35 @@ export const changeAudio = (_currentView) => {
             }
         }
     }
-}
+};
 
 export const audioOnClick = {
-    pause: () => {
+    pause: (audioButton) => {
         my_audio.element.pause();
         localStorage.setItem(isAudioPlayingKey, false);
-        document.querySelector("#" + audioId.paused).classList.remove(showAudioClass);
-        document.querySelector("#" + audioId.playing).classList.add(showAudioClass);
+        audioButton
+            .getChildByName(menu.button.ui.spriteName + 'audioSuffix')
+            .texture = utils.TextureCache[assetRsrc.ui.play];
     },
-    play: () => {
+    play: (audioButton) => {
         my_audio.element.play();
         localStorage.setItem(isAudioPlayingKey, true);
-        document.querySelector("#" + audioId.playing).classList.remove(showAudioClass);
-        document.querySelector("#" + audioId.paused).classList.add(showAudioClass);
+        audioButton
+            .getChildByName(menu.button.ui.spriteName + 'audioSuffix')
+            .texture = utils.TextureCache[assetRsrc.ui.pause];
+    },
+    audioUiButtonOnComplete: (audioButton) => {
+        const isAudioPlaying = shouldPlayAudio();
+        if (isAudioPlaying === "true") {
+            audioOnClick.pause(audioButton);
+        }
+        if (isAudioPlaying === "false") {
+            audioOnClick.play(audioButton);
+        }
     },
 };
 
-const shouldPlayAudio = () => {
+export const shouldPlayAudio = () => {
     const _isAudioPlaying = localStorage.getItem(isAudioPlayingKey);
     if (_isAudioPlaying === null) {
         localStorage.setItem(isAudioPlayingKey, true);
@@ -69,18 +80,4 @@ const shouldPlayAudio = () => {
     };
 
     return _isAudioPlaying;
-}
-
-export const getShowAudioClassByLocalStorage = () => {
-    if (localStorage.getItem(isAudioPlayingKey) === "true") {
-        return {
-            pauseImg: audioClass + " " + showAudioClass,
-            playImg: audioClass,
-        };
-    }
-
-    return {
-        pauseImg: audioClass,
-        playImg: audioClass + " " + showAudioClass,
-    };
-}
+};

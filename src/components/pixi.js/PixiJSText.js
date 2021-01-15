@@ -10,6 +10,7 @@ export const getPixiJsText = (
         [pJsTxtOptions.alpha]: 1,
         [pJsTxtOptions.wordWrap]: 440,
         [pJsTxtOptions.fill]: '#111111',
+        [pJsTxtOptions.fontWeight]: 'bold'
     }
 ) => {
     let style = {
@@ -45,8 +46,12 @@ export const getPixiJsText = (
     if (options[pJsTxtOptions.fill] !== undefined) {
         style = { ...style, fill: options[pJsTxtOptions.fill], };
     }
+    if (options[pJsTxtOptions.fontWeight] !== undefined) {
+        style = { ...style, fontWeight: options[pJsTxtOptions.fontWeight], }
+    }
 
     const pixiJsText = new PIXI.Text(text, style);
+    pixiJsText.resolution = 1.5;
 
     if (options[pJsTxtOptions.alpha]) {
         pixiJsText.alpha = options[pJsTxtOptions.alpha];

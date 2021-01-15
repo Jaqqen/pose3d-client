@@ -20,7 +20,7 @@ export const viewConstant = {
         w: 250,
     },
     previewDim: {
-        h: 530,
+        h: 600,
         w: 890,
     },
     topRightMenuCoord: {
@@ -29,7 +29,7 @@ export const viewConstant = {
     },
     initCoord: {
         x: 80,
-        y: 100,
+        y: 40,
     },
     offset: {
         w: {
@@ -51,4 +51,8 @@ export const viewConstant = {
         h: 100,
         w: 240,
     },
+};
+
+export const uiMenuViewConstants = {
+    offsetW: 60,
 };

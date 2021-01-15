@@ -9,7 +9,17 @@ export const menu = {
         tutorialsId: 'tutorialsId',
         savesId: 'savesId',
         topRight: 'topRightId',
-    }
+        ui: {
+            idPrefix: 'uiMenuButtonIdPrefix_',
+            overworldBtnIdPrefix: 'uiOverworldButtonIdPrefix_',
+            shadowCircleName: 'shadowCircleName',
+            spriteName: 'uiSpriteName_',
+            buttonName: 'uiButtoName_'
+        },
+    },
+    container: {
+        ui: '_menu_container_ui_id_',
+    },
 };
 
 export const subMenu = {
@@ -64,14 +74,13 @@ export const controllerId = {
     disconnected: "controllerDisabled",
 };
 
-export const audioId = {
-    container: "audioContainer",
-    playing: "audioPlayingId",
-    paused: "audioPausedId",
-};
-
 export const kbAndMouse = {
     container: "keyboardAndMouseContainer",
     default: "keyboardAndMouseDefault",
     start: "startKeyboardAndMouseId",
-}
+};
+
+export const webcamId = {
+    container: "webcamContainer",
+    default: "webcamDefault",
+};

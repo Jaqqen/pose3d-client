@@ -8,5 +8,3 @@ export const startpageMainButtonContainer = "startpagemain-button-container";
 export const startpageMainContainer = "startpagemain-container";
 export const controllerClass = "controllerClass";
 export const showClass = "showClass";
-export const audioClass = "audioClass";
-export const showAudioClass = "showAudioClass";

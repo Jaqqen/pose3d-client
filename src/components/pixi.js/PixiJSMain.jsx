@@ -1,12 +1,12 @@
-import { cloudsContainerBg, pixiJsCanvas, pixiJsContainer, poseWebcam } from 'shared/IdConstants';
+import { cloudsContainerBg, menu, pixiJsCanvas, pixiJsContainer, poseWebcam } from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 import { GUI } from 'dat.gui';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { appMode, asset, assetRsrc, localStorageKeys, views } from 'shared/Indentifiers';
+import { appMode, asset, assetRsrc, client, localStorageKeys, views } from 'shared/Indentifiers';
 import { appContainerName } from "shared/IdConstants";
-import { logDebug, logInfo } from 'shared/P3dcLogger';
+import { logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
 import {
@@ -42,7 +42,12 @@ const getCleanAppContainer = () => {
     return _appContainer;
 };
 
-const poseWebcamQry = '#' + poseWebcam
+const poseWebcamQry = '#' + poseWebcam;
+
+export const appViewDimension = {
+    height: null,
+    width: null,
+};
 
 export const getCloudsForBackground = (app) => {
     const cloudsContainer = new PIXI.Container();
@@ -55,10 +60,13 @@ export const getCloudsForBackground = (app) => {
         else { assetType = assetRsrc.env.cloud.two; }
 
         const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType]);
-        _cloud.scale.set(getRandomArbitrary(0.9, 1.3))
+        _cloud.scale.set(getRandomArbitrary(0.8, 1.3))
+        if (_cloud.scale.x < 1) {
+            _cloud.alpha = _cloud.scale.x * 0.7;
+        }
 
-        _cloud.x = getRandomInt(app.view.width - _cloud.width);
-        _cloud.y = getRandomInt(app.view.height - _cloud.height);
+        _cloud.x = getRandomInt(appViewDimension.width - _cloud.width);
+        _cloud.y = getRandomInt(appViewDimension.height - _cloud.height);
         cloudsContainer.addChild(_cloud);
     }
     cloudsContainer.id = cloudsContainerBg;
@@ -71,9 +79,9 @@ export default function PixiJSMain(props) {
     const [areRsrcsLoaded, setAreRsrcsLoaded] = useState(false);
     const [areHandsStaged, setAreHandsStaged] = useState(false);
     const [viewState, setViewState] = useState(views.levels);
+    const cachedViewKey = useRef(null);
 
     const setView = (viewKey) => {
-        logDebug('setting View with', viewKey);
         switch (viewKey) {
             case views.levelN:
                 return(
@@ -160,6 +168,11 @@ export default function PixiJSMain(props) {
                         changeViewFn={changeView}
                     />
                 );
+            case views.resetView:{
+                    setViewState(cachedViewKey.current);
+                    cachedViewKey.current = null;
+                    break;
+                }
             default:
                 break;
         };
@@ -209,7 +222,19 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.projectile.meteor, asset.projectile.meteor)
                     .add(assetRsrc.projectile.icicle, asset.projectile.icicle)
                     .add(assetRsrc.character.dummy, asset.character.dummy)
-                    .load(() => { setAreRsrcsLoaded(true); });
+                    .add(assetRsrc.ui.pause, client.icon.pause)
+                    .add(assetRsrc.ui.play, client.icon.play)
+                    .add(assetRsrc.ui.power, client.icon.power)
+                    .add(assetRsrc.ui.return, client.icon.return)
+                    .add(assetRsrc.ui.dollar, client.icon.dollar)
+                    .add(assetRsrc.ui.menu, client.icon.menu)
+                    .add(assetRsrc.ui.close, client.icon.close)
+                    .add(assetRsrc.character.slime_spritesheet, asset.character.slime.spriteSheet)
+                    .load(() => {
+                        appViewDimension.width = app.view.width;
+                        appViewDimension.height = app.view.height;
+                        setAreRsrcsLoaded(true);
+                    });
             };
 
             if (props.appMode === appMode.WEBCAM) {
@@ -237,8 +262,8 @@ export default function PixiJSMain(props) {
             document.getElementById(pixiJsContainer).appendChild(app.view);
             app.stage.addChild(getCloudsForBackground(app, PIXI.utils.TextureCache));
 
-            setLeftHand(getHandByRsrcName(app, assetRsrc.leftHand.default, props.appMode));
-            setRightHand(getHandByRsrcName(app, assetRsrc.rightHand.default, props.appMode));
+            setLeftHand(getHandByRsrcName(assetRsrc.leftHand.default, props.appMode));
+            setRightHand(getHandByRsrcName(assetRsrc.rightHand.default, props.appMode));
 
             app.stage.addChild(leftHand.go);
             app.stage.addChild(rightHand.go);
@@ -287,21 +312,32 @@ export default function PixiJSMain(props) {
     }, [areRsrcsLoaded, props.appMode, ]);
 
     const changeView = (viewKey) => {
-        logDebug('changing View with', viewKey);
         for (let _tickKey of Object.keys(pixiTicks)) {
             removePixiTick(app, _tickKey);
         }
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = getCleanAppContainer();
+
+        const uiMenuBtn = app.stage.children
+            .find(child => child && child.id && child.id.includes('menuSuffix'));
+        if (uiMenuBtn !== undefined && uiMenuBtn !== null) {
+            uiMenuBtn.destroy({children: true, texture: false, baseTexture: false})
+        };
+
+        const uiMenuCont = app.stage.children
+            .find(child => child && child.id && child.id === menu.container.ui)
+        if (uiMenuCont !== undefined && uiMenuCont !== null) {
+            uiMenuCont.destroy({children: true, texture: false, baseTexture: false});
+        }
+
         app.stage.addChild(appContainer);
         setViewState(viewKey);
     };
 
-    const changeViewOnLevelOrTutExit = (viewKey) => {
+    const changeViewOnLevelOrTutExit = (viewKey, shouldReset=false) => {
         app.ticker.stop();
         clearAllPixiTimeouts();
         clearAllCachedPixiTicksFromScene(app);
-        logDebug('changing View with', viewKey);
         const pixiTickKeys = Object.keys(pixiTicks);
         for (let _tickKey of pixiTickKeys) {
             removePixiTick(app, _tickKey);
@@ -309,12 +345,30 @@ export default function PixiJSMain(props) {
 
         appContainer.destroy({children: true, texture: false, baseTexture: false});
         appContainer = getCleanAppContainer();
+
+        const uiMenuBtn = app.stage.children
+            .find(child => child && child.id && child.id.includes('menuSuffix'));
+        if (uiMenuBtn !== undefined && uiMenuBtn !== null) {
+            uiMenuBtn.destroy({children: true, texture: false, baseTexture: false})
+        };
+
+        const uiMenuCont = app.stage.children
+            .find(child => child && child.id && child.id === menu.container.ui)
+        if (uiMenuCont !== undefined && uiMenuCont !== null) {
+            uiMenuCont.destroy({children: true, texture: false, baseTexture: false});
+        }
+
         app.stage.addChild(getCloudsForBackground(app));
 
         app.stage.addChild(appContainer);
         app.ticker.start();
 
-        setViewState(viewKey);
+        if (shouldReset) {
+            cachedViewKey.current = viewKey;
+            setViewState(views.resetView);
+        } else {
+            setViewState(viewKey);
+        }
     };
 
     return (

@@ -8,8 +8,9 @@ import Webcam from 'react-webcam';
 
 import { appMode, client } from 'shared/Indentifiers';
 import { getPosenetModel, setPosenetModel } from 'components/pose/PoseHandler';
-import { audioId, controllerId, kbAndMouse, poseWebcam, startWebcamId } from 'shared/IdConstants';
-import { audioOnClick, getShowAudioClassByLocalStorage } from 'components/pixi.js/PixiJSAudio';
+import { 
+    controllerId, kbAndMouse, poseWebcam, startWebcamId, webcamId 
+} from 'shared/IdConstants';
 
 export default class App extends Component {
     constructor(props) {
@@ -74,18 +75,10 @@ export default class App extends Component {
         if (hasMainAppStarted === appMode.WEBCAM) {
             return (
                 <div className={appClassName}>
-                    <div id={audioId.container}>
+                    <div id={webcamId.container}>
                         <img
-                            id={audioId.paused} alt={"audio"}
-                            className={getShowAudioClassByLocalStorage().pauseImg}
-                            src={client.icon.pause}
-                            onClick={audioOnClick.pause}
-                        />
-                        <img
-                            id={audioId.playing} alt={"audio"}
-                            className={getShowAudioClassByLocalStorage().playImg}
-                            src={client.icon.play}
-                            onClick={audioOnClick.play}
+                            id={webcamId.default} alt={"webcam"}
+                            src={client.icon.webcam}
                         />
                     </div>
                     <Webcam
@@ -118,20 +111,6 @@ export default class App extends Component {
                             src={client.icon.controllerDisconnected}
                         />
                     </div>
-                    <div id={audioId.container}>
-                        <img
-                            id={audioId.paused} alt={"audio"}
-                            className={getShowAudioClassByLocalStorage().pauseImg}
-                            src={client.icon.pause}
-                            onClick={audioOnClick.pause}
-                        />
-                        <img
-                            id={audioId.playing} alt={"audio"}
-                            className={getShowAudioClassByLocalStorage().playImg}
-                            src={client.icon.play}
-                            onClick={audioOnClick.play}
-                        />
-                    </div>
                     <PixiJSMain
                         height={pixiJSMain.height}
                         width={pixiJSMain.width}
@@ -146,20 +125,6 @@ export default class App extends Component {
                         <img
                             id={kbAndMouse.default} alt={"keyboard_and_mouse"}
                             src={client.icon.keyboardAndMouse}
-                        />
-                    </div>
-                    <div id={audioId.container}>
-                        <img
-                            id={audioId.paused} alt={"audio"}
-                            className={getShowAudioClassByLocalStorage().pauseImg}
-                            src={client.icon.pause}
-                            onClick={audioOnClick.pause}
-                        />
-                        <img
-                            id={audioId.playing} alt={"audio"}
-                            className={getShowAudioClassByLocalStorage().playImg}
-                            src={client.icon.play}
-                            onClick={audioOnClick.play}
                         />
                     </div>
                     <PixiJSMain

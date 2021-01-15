@@ -4,35 +4,42 @@ import * as PIXI from 'pixi.js';
 import { assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from "shared/Indentifiers";
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
-import { addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, removePixiTick } from "./SharedTicks";
+import { 
+    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, removePixiTick
+} from "./SharedTicks";
 
 import gsap from "gsap/gsap-core";
-import { defaultMenuButton, disabledMenuButton } from './PixiJSButton';
+import { uiMenuOverworldButton } from './PixiJSButton';
 import { viewConstant } from './ViewConstants';
 import { getPixiJsText } from './PixiJSText';
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
 import { menuCollRes } from './PixiJSMenu';
 import { changeAudio } from './PixiJSAudio';
+import { appViewDimension } from './PixiJSMain';
 
 const cloudInitDist = 272;
 export const getCloudXDist = () => { return cloudInitDist + getRandomArbitrary(-55, 55); }
 
-export const getCloudsForScene = (amountOfClouds, resources) => {
+export const getCloudsForScene = (amountOfClouds) => {
     let clouds = [];
     for (let i = 0; i < amountOfClouds; i++) {
         let assetType;
         if (i % 1.5 === 0) { assetType = assetRsrc.env.cloud.two; }
         else { assetType = assetRsrc.env.cloud.one; }
-    
-        clouds.push(new PIXI.Sprite(resources[assetType].texture));
+        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType])
+        _cloud.scale.set(getRandomArbitrary(0.7, 1.1))
+        if (_cloud.scale.x < 1) {
+            _cloud.alpha = _cloud.scale.x * 0.9;
+        }
+        clouds.push(_cloud);
     }
     return clouds;
 };
 
-export const getGroundsByTypeForScene = (amount, resources, groundType) => {
+export const getGroundsByTypeForScene = (amount, groundType) => {
     let grounds = [];
     for (let i = 0; i < amount; i++) {
-        grounds.push(new PIXI.Sprite(resources[groundType].texture));
+        grounds.push(new PIXI.Sprite(PIXI.utils.TextureCache[groundType]));
     }
     return grounds;
 };
@@ -81,46 +88,72 @@ export const getFinishingFlag = () => {
     return flag;
 };
 
-export const onScreenStartingX = 220;
-export const runCharacterEntryAnimation = (
-    app, characterDummy, animations, showMenuAndLifebars, addMainTickToPixiTick, interactivesInitiation,
-    menuCollTick, levelView
+export const onScreenStartingX = 450;
+export const runPlayerEntryAnimation = (
+    app, player, animations, showMenuAndLifebars, addMainTickToPixiTick, levelView,
+    onStartAnim, onCompleteAnim
 ) => {
     const characterInit = {x: -70};
-    const characterIntroTick = () => {characterDummy.position.x = characterInit.x};
+    const characterIntroTick = () => {player.character.x = characterInit.x};
 
     gsap.to(characterInit, {
         x: onScreenStartingX,
         duration: 3,
         ease: Linear.easeIn,
-        onStart: () => { changeAudio(levelView) },
+        onStart: () => {
+            changeAudio(levelView);
+
+            if (
+                onStartAnim &&
+                player.character && player.character.children &&
+                player.character.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onStartAnim.state, onStartAnim.animation);
+            }
+        },
         onComplete: () => {
-            interactivesInitiation();
             for (let key of Object.keys(animations)) {
                 addPixiTick(app, key, animations[key]);
             }
             removePixiTick(app, listenerKeys.char.entry.own);
             showMenuAndLifebars();
             addMainTickToPixiTick();
-            menuCollTick();
+
+            if (
+                onCompleteAnim &&
+                player.character && player.character.children &&
+                player.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
+            }
         },
     });
     addPixiTick(app, listenerKeys.char.entry.own, characterIntroTick);
 };
 
-export const runCharacterFinishAnimation = (
-    app, character, onStartAnimations, onCompleteAnimations, cleanUpFn, initiateFinishOverlay
+const flagPosition = () => { return appViewDimension.width - 300 };
+export const runPlayerFinishAnimation = (
+    app, player, onStartAnimations, onCompleteAnimations, cleanUpFn, initiateFinishOverlay,
+    onStartAnim, onCompleteAnim
 ) => {
     const characterInScreenPos = {x: onScreenStartingX};
-    const characterFinishingTick = () => {character.x = characterInScreenPos.x}
+    const characterFinishingTick = () => {player.character.x = characterInScreenPos.x}
     gsap.to(characterInScreenPos, {
-        x: app.view.width - 300,
+        x: flagPosition(),
         duration: 3,
         ease: Linear.easeInOut,
         onStart: () => {
             clearAllPixiTimeouts();
             for (let key of Object.keys(onStartAnimations)) {
                 removePixiTick(app, key);
+            }
+
+            if (
+                onStartAnim &&
+                player.character && player.character.children &&
+                player.character.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onStartAnim.state, onStartAnim.animation);
             }
         },
         onComplete: () => {
@@ -131,22 +164,30 @@ export const runCharacterFinishAnimation = (
             removePixiTick(app, listenerKeys.char.finish.own);
             cleanUpFn();
 
+            if (
+                onCompleteAnim &&
+                player.character && player.character.children &&
+                player.character.getChildByName('animSpriteCharName')
+            ) {
+                player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
+            }
+
             initiateFinishOverlay();
         },
     });
     addPixiTick(app, listenerKeys.char.finish.own, characterFinishingTick);
 };
 
-export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHeight, offset=0) => {
+export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHeight) => {
     flagContainer.zIndex = -10;
-    flagContainer.x = app.view.width - 300;
-    flagContainer.y = groundHeight - offset;
+    flagContainer.x = flagPosition();
+    flagContainer.y = groundHeight + flagContainer.getBounds().height;
     appContainer.addChild(flagContainer);
 
-    const flagContainerInit = {y: groundHeight - offset};
+    const flagContainerInit = {y: flagContainer.y};
     const flagEntryTick = () => {flagContainer.y = flagContainerInit.y};
     gsap.to(flagContainerInit, {
-        y: groundHeight - flagContainer.getBounds().width,
+        y: groundHeight - 25,
         duration: 2,
         ease: Linear.easeIn,
         onComplete: () => {
@@ -185,31 +226,39 @@ export const getLifeBars = (id=null, x=null, y =null) => {
     return lifeBarsContainer;
 };
 
-export const reduceLifeByOne = (lifebarsContainer, character) => {
+export const reduceLifeByOne = (lifebarsContainer, player) => {
     const lifeBarsFirstChild = lifebarsContainer.children.find(e => e)
     if (lifeBarsFirstChild !== undefined) {
         lifeBarsFirstChild.destroy(true);
 
-        character.tint = '0xa20a0a';
         const cooldownId = ID.levels.charOnCooldown;
-        character.id = cooldownId;
-    
+        if (player.character.getChildByName('animSpriteCharName')) {
+            player.setDamageState(false);
+        } else {
+            player.tint = '0xa20a0a';
+            player.id = cooldownId;
+        }
+
         const removeCharId_id = setTimeout(() => {
-            character.id = null;
-            character.tint = '0xffffff';
+            if (player.character.getChildByName('animSpriteCharName')) {
+                player.setDamageState(true);
+            } else {
+                player.id = null;
+                player.tint = '0xffffff';
+            }
             clearPixiTimeoutWithKey(cooldownId);
         }, 3000);
         addPixiTimeout(cooldownId, removeCharId_id);
     }
 };
 
-const getGameOverlayByStatus = (app, gameStatus) => {
+const getGameOverlayByStatus = (gameStatus) => {
     const gameOverlayContainer = new PIXI.Container();
     gameOverlayContainer.sortableChildren = true;
     gameOverlayContainer.zIndex = 49;
 
-    const gameOverlayHeight = app.view.height;
-    const gameOverlayWidth = app.view.width;
+    const gameOverlayHeight = appViewDimension.height;
+    const gameOverlayWidth = appViewDimension.width;
 
     const dimming = new PIXI.Graphics();
     dimming.beginFill(0x444444);
@@ -221,14 +270,17 @@ const getGameOverlayByStatus = (app, gameStatus) => {
 
     let overlayLabelColor;
     let overlayLabelName;
+    let btnStatusColor; 
     switch (gameStatus) {
         case ID.levels.status.gameOver:
-            overlayLabelColor = '#a20a0a';
+            overlayLabelColor = 0xec0101;
             overlayLabelName = 'Game Over';
+            btnStatusColor = 0x799351;
             break;
         case ID.levels.status.win:
             overlayLabelColor = '#a8dda8';
             overlayLabelName = 'WIN';
+            btnStatusColor = 0xbedbbb;
             break;
         default:
             overlayLabelColor = '#FFFFFF';
@@ -239,58 +291,65 @@ const getGameOverlayByStatus = (app, gameStatus) => {
     const overlayLabel = getPixiJsText(overlayLabelName,
         {
             [pJsTxtOptions.fill]: overlayLabelColor,
+            [pJsTxtOptions.customFontSize]: 74,
         }
     );
     overlayLabel.anchor.set(0.5);
-    overlayLabel.x = app.view.width/2;
-    overlayLabel.y = app.view.height * (2/5);
+    overlayLabel.x = appViewDimension.width/2;
+    overlayLabel.y = appViewDimension.height * (1.2/5);
     overlayLabel.zIndex = 52;
     gameOverlayContainer.addChild(overlayLabel);
 
     const buttonConstraints = {
-        y: (app.view.height * (2.5/5)),
+        y: (appViewDimension.height * (2.5/5)),
         dim: { w: viewConstant.overlayBtnDim.w, h: viewConstant.overlayBtnDim.h, },
         textScale: 0.7,
     };
 
-    const retryBtn = disabledMenuButton(
-        'Retry',
-        'overlayRetryBtnId',
-        70,
-        buttonConstraints.y,
-        buttonConstraints.dim
-    );
-    retryBtn.children.find(e => e.text === 'Retry').scale.set(buttonConstraints.textScale);
-    retryBtn.zIndex = 52;
-    gameOverlayContainer.addChild(retryBtn);
+    const getColumnX = (orderNumber) => {
+        let columnIndex = 1;
+        (orderNumber === 2) && (columnIndex = 3);
+        (orderNumber === 3) && (columnIndex = 5);
 
-    const mainMenuBtn = defaultMenuButton(
-        'Main Menu',
-        'overlayMainMenuBtnId',
-        retryBtn.getBounds().x + retryBtn.getBounds().width + 150,
-        buttonConstraints.y,
-        buttonConstraints.dim
-    );
-    mainMenuBtn.children.find(e => e.text === 'Main Menu').scale.set(buttonConstraints.textScale - 0.1);
-    mainMenuBtn.zIndex = 52;
-    gameOverlayContainer.addChild(mainMenuBtn);
+        return appViewDimension.width * (columnIndex/6);
+    };
 
-    const quitBtn = defaultMenuButton(
-        'Quit',
-        'overlayQuitBtnId',
-        mainMenuBtn.getBounds().x + mainMenuBtn.getBounds().width + 150,
-        buttonConstraints.y,
-        buttonConstraints.dim
+    const uiRetryBtn = uiMenuOverworldButton(
+        'overlayRetryBtnId', 'Retry',
+        getColumnX(1), buttonConstraints.y,
+        btnStatusColor
     );
-    quitBtn.children.find(e => e.text === 'Quit').scale.set(buttonConstraints.textScale);
-    quitBtn.zIndex = 52;
-    gameOverlayContainer.addChild(quitBtn);
+    uiRetryBtn.scale.set(0.8);
+    uiRetryBtn.zIndex = 52;
+
+    gameOverlayContainer.addChild(uiRetryBtn);
+
+    const uiMainMenuBtn = uiMenuOverworldButton(
+        'overlayMainMenuBtnId', 'Main Menu',
+        getColumnX(2), buttonConstraints.y,
+        btnStatusColor
+    );
+    uiMainMenuBtn.scale.set(0.8);
+    uiMainMenuBtn.zIndex = 52;
+
+    gameOverlayContainer.addChild(uiMainMenuBtn);
+
+    const uiQuitBtn = uiMenuOverworldButton(
+        'overlayQuitBtnId', 'Quit',
+        getColumnX(3), buttonConstraints.y,
+        btnStatusColor
+    );
+    uiQuitBtn.scale.set(0.8);
+    uiQuitBtn.zIndex = 52;
+
+    gameOverlayContainer.addChild(uiQuitBtn);
+    gameOverlayContainer.name = 'gameOverlayContainerName';
 
     return {
         [overlayerRefs.container]: gameOverlayContainer,
-        [overlayerRefs.retry]: retryBtn,
-        [overlayerRefs.mainMenu]: mainMenuBtn,
-        [overlayerRefs.quit]: quitBtn,
+        [overlayerRefs.retry]: uiRetryBtn,
+        [overlayerRefs.mainMenu]: uiMainMenuBtn,
+        [overlayerRefs.quit]: uiQuitBtn,
     };
 }
 
@@ -300,7 +359,10 @@ export const lifeHandlerTick = (
 ) => {
     if (lifeBarsContainer.children <= 0) {
         clearAllPixiTimeouts();
-        app.stage.children.find(elem => elem.name = ID.appContainerName).removeChild(lifeBarsContainer);
+        app.stage
+            .children
+            .find(elem => elem.name = ID.appContainerName)
+            .removeChild(lifeBarsContainer);
 
         interactiveTickObjs.forEach(tickObj => {
             const _key = tickObj[goLabels.interactive.tick];
@@ -318,17 +380,17 @@ export const lifeHandlerTick = (
 
         const {
             [overlayerRefs.container]: container,
-            // [overlayerRefs.retry]: retryBtn,
+            [overlayerRefs.retry]: retryBtn,
             [overlayerRefs.mainMenu]: mainMenuBtn,
             [overlayerRefs.quit]: quitBtn
-        } = getGameOverlayByStatus(app, ID.levels.status.gameOver);
+        } = getGameOverlayByStatus(ID.levels.status.gameOver);
         app.stage.addChild(container);
 
-        // const retryFn = () => {
-        //     removePixiTick(app, listenerKeys.game.overlay.own);
-        //     app.stage.removeChild(container);
-        //     _retryFn();
-        // };
+        const retryFn = () => {
+            removePixiTick(app, listenerKeys.game.overlay.own);
+            app.stage.removeChild(container);
+            _retryFn();
+        };
 
         const exitFn = () => {
             removePixiTick(app, listenerKeys.game.overlay.own);
@@ -338,6 +400,7 @@ export const lifeHandlerTick = (
 
 
         const overlayGOs = [
+            [retryFn, retryBtn],
             [exitFn, mainMenuBtn],
             [quitBtnFn, quitBtn]
         ]
@@ -369,17 +432,17 @@ export const onFinishLevel = (
 
     const {
         [overlayerRefs.container]: container,
-        // [overlayerRefs.retry]: retryBtn,
+        [overlayerRefs.retry]: retryBtn,
         [overlayerRefs.mainMenu]: mainMenuBtn,
         [overlayerRefs.quit]: quitBtn
-    } = getGameOverlayByStatus(app, ID.levels.status.win);
+    } = getGameOverlayByStatus(ID.levels.status.win);
     app.stage.addChild(container);
 
-    // const retryFn = () => {
-    //     removePixiTick(app, listenerKeys.game.overlay.own);
-    //     app.stage.removeChild(container);
-    //     _retryFn();
-    // };
+    const retryFn = () => {
+        removePixiTick(app, listenerKeys.game.overlay.own);
+        app.stage.removeChild(container);
+        _retryFn();
+    };
 
     const exitFn = () => {
         removePixiTick(app, listenerKeys.game.overlay.own);
@@ -388,6 +451,7 @@ export const onFinishLevel = (
     };
 
     const overlayGOs = [
+        [retryFn, retryBtn],
         [exitFn, mainMenuBtn],
         [quitBtnFn, quitBtn]
     ]
