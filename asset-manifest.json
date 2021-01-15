@@ -1,23 +1,25 @@
 {
   "files": {
-    "main.css": "/pose3d-client/static/css/main.adce307b.chunk.css",
-    "main.js": "/pose3d-client/static/js/main.503494ca.chunk.js",
-    "main.js.map": "/pose3d-client/static/js/main.503494ca.chunk.js.map",
+    "main.css": "/pose3d-client/static/css/main.2d7f4d67.chunk.css",
+    "main.js": "/pose3d-client/static/js/main.25052988.chunk.js",
+    "main.js.map": "/pose3d-client/static/js/main.25052988.chunk.js.map",
     "runtime-main.js": "/pose3d-client/static/js/runtime-main.6062e713.js",
     "runtime-main.js.map": "/pose3d-client/static/js/runtime-main.6062e713.js.map",
-    "static/js/2.46799d83.chunk.js": "/pose3d-client/static/js/2.46799d83.chunk.js",
-    "static/js/2.46799d83.chunk.js.map": "/pose3d-client/static/js/2.46799d83.chunk.js.map",
+    "static/js/2.cbc9fc8d.chunk.js": "/pose3d-client/static/js/2.cbc9fc8d.chunk.js",
+    "static/js/2.cbc9fc8d.chunk.js.map": "/pose3d-client/static/js/2.cbc9fc8d.chunk.js.map",
     "index.html": "/pose3d-client/index.html",
-    "static/css/main.adce307b.chunk.css.map": "/pose3d-client/static/css/main.adce307b.chunk.css.map",
-    "static/js/2.46799d83.chunk.js.LICENSE.txt": "/pose3d-client/static/js/2.46799d83.chunk.js.LICENSE.txt",
+    "static/css/main.2d7f4d67.chunk.css.map": "/pose3d-client/static/css/main.2d7f4d67.chunk.css.map",
+    "static/js/2.cbc9fc8d.chunk.js.LICENSE.txt": "/pose3d-client/static/js/2.cbc9fc8d.chunk.js.LICENSE.txt",
     "static/media/PreviewLevelOne.d6e0f117.png": "/pose3d-client/static/media/PreviewLevelOne.d6e0f117.png",
     "static/media/arthur-vyncke-snow-and-magic.81eb4e08.mp3": "/pose3d-client/static/media/arthur-vyncke-snow-and-magic.81eb4e08.mp3",
-    "static/media/schematist-division-blade.0fcb10ce.mp3": "/pose3d-client/static/media/schematist-division-blade.0fcb10ce.mp3"
+    "static/media/ground_dots.png": "/pose3d-client/static/media/ground_dots.e3ea3a1d.png",
+    "static/media/schematist-division-blade.0fcb10ce.mp3": "/pose3d-client/static/media/schematist-division-blade.0fcb10ce.mp3",
+    "static/media/slime_spritesheet.png": "/pose3d-client/static/media/slime_spritesheet.49636f6e.png"
   },
   "entrypoints": [
     "static/js/runtime-main.6062e713.js",
-    "static/js/2.46799d83.chunk.js",
-    "static/css/main.adce307b.chunk.css",
-    "static/js/main.503494ca.chunk.js"
+    "static/js/2.cbc9fc8d.chunk.js",
+    "static/css/main.2d7f4d67.chunk.css",
+    "static/js/main.25052988.chunk.js"
   ]
 }
