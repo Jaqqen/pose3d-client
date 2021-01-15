@@ -1,5 +1,6 @@
 import gsap from 'gsap/gsap-core';
 import { goLabels } from 'shared/Indentifiers';
+import { getRAD } from 'shared/Utils';
 import { reduceLifeByOne } from './PixiJSGameObjects';
 import { manageHandLife } from './PixiJSHands';
 import { appViewDimension } from './PixiJSMain';
@@ -23,7 +24,7 @@ const getCollisionInFrame = (collisionGos) => {
 
 export let setHitTween;
 export let setCooldownTween;
-export const checkCollision = (hand, collisionGOs, handStatus) => {
+export const checkCollision = (app, hand, collisionGOs, handStatus) => {
     if (!handStatus.isOnCooldown) {
         const collGOsInFrame = getCollisionInFrame(collisionGOs);
 
@@ -63,13 +64,32 @@ export const checkCollision = (hand, collisionGOs, handStatus) => {
                                 .pause()
                                 .time(0);
                             handStatus.isOnCooldown = true;
+
                             setCooldownTween = gsap.to(handStatus, {
                                 duration: 4,
+                                angle: 280,
+                                onStart: () => {
+                                    app.stage.addChild(handStatus.cooldownCircle);
+                                },
+                                onUpdate: () => {
+                                    handStatus.cooldownCircle
+                                        .clear()
+                                        .lineStyle(10, 0xff961f)
+                                        .arc(
+                                            hand.go.x + (handStatus.whichHand === 'rightHand' ? 5 : -5),
+                                            hand.go.y + (handStatus.whichHand === 'rightHand' ? 5 : -5),
+                                            30,
+                                            -95 * getRAD(), handStatus.angle * getRAD()
+                                        );
+                                },
                                 onComplete: () => {
                                     hand.go.alpha = 1;
                                     hand.lifeCounter = 0;
                                     handStatus.isOnCooldown = false;
                                     handStatus.isHit = false;
+                                    handStatus.cooldownCircle.clear();
+                                    handStatus.angle = -95;
+                                    app.stage.removeChild(handStatus.cooldownCircle);
                                 },
                             });
                         }

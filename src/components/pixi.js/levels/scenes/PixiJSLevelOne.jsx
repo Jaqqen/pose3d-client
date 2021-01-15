@@ -560,17 +560,23 @@ export const PixiJSLevelOne = (props) => {
         const rightHand = {
             isHit: false,
             isOnCooldown: false,
+            cooldownCircle: new PIXI.Graphics(),
+            angle: -95,
             whichHand: 'rightHand',
         };
+        rightHand.cooldownCircle.zIndex = hands.right.go.zIndex + 1;
         const leftHand = {
             isHit: false,
             isOnCooldown: false,
+            cooldownCircle: new PIXI.Graphics(),
+            angle: -95,
             whichHand: 'leftHand',
         };
+        leftHand.cooldownCircle.zIndex = hands.left.go.zIndex + 1;
 
         levelOneTick = () => {
-            checkCollision(hands.left, interactiveGOs, leftHand);
-            checkCollision(hands.right, interactiveGOs, rightHand);
+            checkCollision(app, hands.left, interactiveGOs, leftHand);
+            checkCollision(app, hands.right, interactiveGOs, rightHand);
             checkPlayerEnvironment(interactiveGOs, slime, lifeBars);
             lifeHandlerTick(
                 app, interactiveGOs, worldGOs,
