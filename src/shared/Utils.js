@@ -48,3 +48,5 @@ export const setDatGuiControllerValWithLocalStorage = (guiController, storageKey
     guiController.setValue(elseValue);
     return false;
 };
+
+export const getRAD = () => Math.PI / 180;

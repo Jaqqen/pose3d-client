@@ -17,6 +17,7 @@ import { defaultMenuButton, disabledMenuButton, UI_MIN_BLUR } from "components/p
 import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
 import { changeAudio } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
+import { getRAD } from 'shared/Utils';
 
 const loading = {
     circle: new PIXI.Graphics(),
@@ -124,14 +125,12 @@ const loadingConfigurator = {
 
         app.stage.addChild(loading.circle);
 
-        const RAD = Math.PI / 180;
-
         const arcParam = {
             x: otherGO.getBounds().x,
             y: otherGO.getBounds().y,
             radius: 0,
             angle: -95
-        };;
+        };
         if (isUiGo) {
             arcParam.x += otherGO.getBounds().width/2;
             arcParam.y += otherGO.getBounds().height/2 + 15;
@@ -168,7 +167,7 @@ const loadingConfigurator = {
             loading.circle
                 .clear()
                 .lineStyle(loading.circleThickness, 0xf05454)
-                .arc(arcParam.x, arcParam.y, arcParam.radius, -95 * RAD, arcParam.angle * RAD);
+                .arc(arcParam.x, arcParam.y, arcParam.radius, -95 * getRAD(), arcParam.angle * getRAD());
 
             if (shadowCircle !== null && shadowCircle !== undefined && shadowCircle !== false) {
                 (shadowCircle.filters[0].blur <= 42) && (shadowCircle.filters[0].blur += 4);

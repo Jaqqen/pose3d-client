@@ -355,7 +355,7 @@ const getGameOverlayByStatus = (gameStatus) => {
 
 export const lifeHandlerTick = (
     app, interactiveTickObjs, worldTickObjs, mainTickObj, hands, _retryFn, _exitFn,
-    menuTickObj, lifeBarsContainer
+    menuTickObj, lifeBarsContainer, uiPullerTicKey
 ) => {
     if (lifeBarsContainer.children <= 0) {
         clearAllPixiTimeouts();
@@ -378,6 +378,8 @@ export const lifeHandlerTick = (
         //* menuTickObj[0] is the KEY and menuTickObj[1] is the main tick FUNCTION
         removePixiTick(app, menuTickObj[0]);
 
+        removePixiTick(app, uiPullerTicKey);
+
         const {
             [overlayerRefs.container]: container,
             [overlayerRefs.retry]: retryBtn,
@@ -397,7 +399,6 @@ export const lifeHandlerTick = (
             app.stage.removeChild(container);
             _exitFn();
         };
-
 
         const overlayGOs = [
             [retryFn, retryBtn],

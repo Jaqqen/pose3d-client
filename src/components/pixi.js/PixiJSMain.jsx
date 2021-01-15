@@ -25,7 +25,7 @@ import {
 import { PixiJSLevelOne } from 'components/pixi.js/levels/scenes/PixiJSLevelOne';
 import {
     getHandByRsrcName, getHands, leftHand, renderHands, renderHandsWithController, 
-    renderHandsWithKeyboardAndMouse, rightHand, setLeftHand, setRightHand
+    renderHandsWithKeyboardAndMouse, resetHandsLifeCounter, rightHand, setLeftHand, setRightHand
 } from './PixiJSHands';
 import { audioInitVolume, changeAudio, my_audio } from './PixiJSAudio';
 
@@ -205,15 +205,15 @@ export default function PixiJSMain(props) {
 
                 app.loader
                     .add(assetRsrc.leftHand.default, asset.hand.left.default)
-                    .add(assetRsrc.leftHand.crack_1, asset.hand.left)
-                    .add(assetRsrc.leftHand.crack_2, asset.hand.left)
-                    .add(assetRsrc.leftHand.crack_3, asset.hand.left)
-                    .add(assetRsrc.leftHand.crack_4, asset.hand.left)
+                    .add(assetRsrc.leftHand.crack_1, asset.hand.left.crack_1)
+                    .add(assetRsrc.leftHand.crack_2, asset.hand.left.crack_2)
+                    .add(assetRsrc.leftHand.crack_3, asset.hand.left.crack_3)
+                    .add(assetRsrc.leftHand.crack_4, asset.hand.left.crack_4)
                     .add(assetRsrc.rightHand.default, asset.hand.right.default)
-                    .add(assetRsrc.rightHand.crack_1, asset.hand.right)
-                    .add(assetRsrc.rightHand.crack_2, asset.hand.right)
-                    .add(assetRsrc.rightHand.crack_3, asset.hand.right)
-                    .add(assetRsrc.rightHand.crack_4, asset.hand.right)
+                    .add(assetRsrc.rightHand.crack_1, asset.hand.right.crack_1)
+                    .add(assetRsrc.rightHand.crack_2, asset.hand.right.crack_2)
+                    .add(assetRsrc.rightHand.crack_3, asset.hand.right.crack_3)
+                    .add(assetRsrc.rightHand.crack_4, asset.hand.right.crack_4)
                     .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
                     .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
                     .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
@@ -359,6 +359,8 @@ export default function PixiJSMain(props) {
         }
 
         app.stage.addChild(getCloudsForBackground(app));
+
+        resetHandsLifeCounter();
 
         app.stage.addChild(appContainer);
         app.ticker.start();
