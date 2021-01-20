@@ -1,12 +1,12 @@
 import React, { useEffect, Fragment } from 'react';
-import { listenerKeys, preview, views, viewsMain } from 'shared/Indentifiers';
-import { menuTopRightFn, menuCollRes } from 'components/pixi.js/PixiJSMenu';
+import { assetRsrc, goLabels, listenerKeys, preview, views } from 'shared/Indentifiers';
+import { menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import { logInfo } from 'shared/P3dcLogger';
-import { getPixiJsPreviewContainer } from "components/pixi.js/PixiJSPreview";
+import { getPixiJsPreviewContainer, removePreviewTextureFromCache } from "components/pixi.js/PixiJSPreview";
 import { addPixiTick } from 'components/pixi.js/SharedTicks';
-import { menuTopRight } from 'components/pixi.js/PixiJSMenu';
-import { menu } from 'shared/IdConstants';
-import { viewConstant } from 'components/pixi.js/ViewConstants';
+import { uiMenuButton } from 'components/pixi.js/PixiJSButton';
+import { UiMenu } from 'components/pixi.js/UiMenu';
+import { quitBtnFn } from 'components/pixi.js/PixiJSMenu';
 
 export const PixiJSLevelTwoPreview = (props) => {
 
@@ -16,34 +16,56 @@ export const PixiJSLevelTwoPreview = (props) => {
         [preview.level.startBtn]: startButton,
     } = getPixiJsPreviewContainer('Hard');
 
-    const menuTopRightButton = menuTopRight(
-        menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
-    );
+    const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
+    const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');
+    const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
 
     useEffect(() => {
         logInfo('Logging PixiJSPrevtwo useEffect');
-
         const { app, appContainer, hands, changeViewFn } = props;
-
-        appContainer.addChild(prevContainer);
-        appContainer.addChild(menuTopRightButton);
-
-        let pixiJsPreviewTick;
-        const openSmv2 = () => menuTopRightFn(
-            app, pixiJsPreviewTick, hands, listenerKeys.levelTwoPreview.mainTick,
-            () => changeViewFn(viewsMain)
-        );
 
         const previewMenuGOs = [
             [() => changeViewFn(views.levels), returnButton],
-            [() => console.log('start level two'), startButton],
-            [openSmv2, menuTopRightButton]
+            [() => changeViewFn(views.levelH), startButton],
         ];
 
-        pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands);
+        const uiMenuContainer = new UiMenu();
+        uiMenuContainer.addMenuItem({
+            [goLabels.menu.ui.element.button]: creditsUiButton,
+            [goLabels.menu.ui.element.func]: () => {console.log("credits")},
+        });
+        uiMenuContainer.addMenuItem({
+            [goLabels.menu.ui.element.button]: returnUiButton,
+            [goLabels.menu.ui.element.func]: () => props.changeViewFn(views.levels),
+        });
+        uiMenuContainer.addMenuItem({
+            [goLabels.menu.ui.element.button]: quitUiButton,
+            [goLabels.menu.ui.element.func]: quitBtnFn,
+        });
+
+        appContainer.addChild(prevContainer);
+        appContainer.addChild(uiMenuContainer.getRadialAccessPuller());
+        appContainer.addChild(uiMenuContainer.getRadialAccessButton());
+
+        const pixiJsPreviewTick = () => menuCollRes(app, previewMenuGOs, hands);
         addPixiTick(app, listenerKeys.levelTwoPreview.mainTick, pixiJsPreviewTick);
 
-    },[props, prevContainer, returnButton, startButton, menuTopRightButton]);
+        const radialAccessPullerTick = () => {
+            uiMenuContainer.getRadialAccessPullerTick(
+                app, hands, listenerKeys.levelTwoPreview.mainTick, pixiJsPreviewTick, previewMenuGOs
+            );
+        };
+        addPixiTick(app, listenerKeys.menu.uiMenuPullerTick, radialAccessPullerTick);
+
+        return(() => {
+            removePreviewTextureFromCache();
+        });
+
+    },[
+        props,
+        prevContainer, returnButton, startButton,
+        creditsUiButton, returnUiButton, quitUiButton
+    ]);
 
     return (
         <Fragment></Fragment>

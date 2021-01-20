@@ -17,10 +17,6 @@ export default class App extends Component {
         super(props);
         this.initState = {
             hasMainAppStarted: appMode._START_PAGE_,
-            pixiJSMain: {
-                height: 0,
-                width: 0,
-            },
         };
         this.state = { ...this.initState };
 
@@ -70,7 +66,7 @@ export default class App extends Component {
     }
 
     getContentPanel() {
-        const { hasMainAppStarted, pixiJSMain, } = this.state;
+        const { hasMainAppStarted, } = this.state;
 
         if (hasMainAppStarted === appMode.WEBCAM) {
             return (
@@ -86,14 +82,12 @@ export default class App extends Component {
                         id={poseWebcam}
                         mirrored={true}
                         ref={this.webcamRef}
+                        height={853}
+                        width={1144}
                         screenshotFormat='image/jpeg'
                         screenshotQuality={1}
                     />
-                    <PixiJSMain
-                        height={pixiJSMain.height}
-                        width={pixiJSMain.width}
-                        appMode={appMode.WEBCAM}
-                    />
+                    <PixiJSMain appMode={appMode.WEBCAM} />
                 </div>
             );
         } else if (hasMainAppStarted === appMode.CONTROLLER) {
@@ -111,11 +105,7 @@ export default class App extends Component {
                             src={client.icon.controllerDisconnected}
                         />
                     </div>
-                    <PixiJSMain
-                        height={pixiJSMain.height}
-                        width={pixiJSMain.width}
-                        appMode={appMode.CONTROLLER}
-                    />
+                    <PixiJSMain appMode={appMode.CONTROLLER} />
                 </div>
             );
         } else if (hasMainAppStarted === appMode.KB_AND_MOUSE) {
@@ -127,11 +117,7 @@ export default class App extends Component {
                             src={client.icon.keyboardAndMouse}
                         />
                     </div>
-                    <PixiJSMain
-                        height={pixiJSMain.height}
-                        width={pixiJSMain.width}
-                        appMode={appMode.KB_AND_MOUSE}
-                    />
+                    <PixiJSMain appMode={appMode.KB_AND_MOUSE} />
                 </div>
             );
         }

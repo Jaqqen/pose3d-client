@@ -66,6 +66,10 @@ export const asset = {
             dots: require('static/assets/pixi.js/img/envs/ground_dots.png').default,
             noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png').default,
             flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png').default,
+            underground: {
+                top: require('static/assets/pixi.js/img/envs/underground_top.png').default,
+                bottom: require('static/assets/pixi.js/img/envs/underground_bottom.png').default,
+            }
         },
         cloud: {
             one: require('static/assets/pixi.js/img/envs/cloudOne.png').default,
@@ -118,6 +122,10 @@ export const assetRsrc = {
             dots: 'groundDotsRsrc',
             noDots: 'groundNoDotsRsrc',
             flying: 'groundDotsFlyingRsrc',
+            underground: {
+                top: 'groundUndergroundTopRsrc',
+                bottom: 'groundUndergroundBottomRsrc',
+            }
         },
         cloud: {
             one: 'cloudOneRsrc',
@@ -236,6 +244,10 @@ export const listenerKeys = {
     },
     levelTwoPreview: {
         mainTick: 'levelTwoPreviewMainTickKey',
+    },
+    levelTwoScene: {
+        mainTick: 'levelTwoSceneMainTickKey',
+        menuCollTick: 'levelTwoSceneMenuCollTickKey',
     },
     levelThreePreview: {
         mainTick: 'levelThreePreviewMainTickKey',

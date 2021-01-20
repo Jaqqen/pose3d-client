@@ -28,6 +28,7 @@ import {
     renderHandsWithKeyboardAndMouse, resetHandsLifeCounter, rightHand, setLeftHand, setRightHand
 } from './PixiJSHands';
 import { audioInitVolume, changeAudio, my_audio } from './PixiJSAudio';
+import { PixiJSLevelTwo } from './levels/scenes/PixiJSLevelTwo';
 
 let app;
 let appContainer;
@@ -102,7 +103,14 @@ export default function PixiJSMain(props) {
                     />
                 );
             case views.levelH:
-                break;
+                return(
+                    <PixiJSLevelTwo
+                        app={app}
+                        appContainer={appContainer}
+                        hands={getHands(false)}
+                        exitViewFn={changeViewOnLevelOrTutExit}
+                    />
+                );
             case views.levelHPrev:
                 return(
                     <PixiJSLevelTwoPreview
@@ -183,9 +191,9 @@ export default function PixiJSMain(props) {
             let stageProps = {
                 antialias: true,
                 backgroundColor: 0x1099bb,
-                height: document.documentElement.clientHeight * 0.9,
+                height: 853,
                 transparent: false,
-                width: document.documentElement.clientWidth * 0.7,
+                width: 1144,
             };
 
             const initializeStage = () => {
@@ -215,6 +223,8 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.rightHand.crack_3, asset.hand.right.crack_3)
                     .add(assetRsrc.rightHand.crack_4, asset.hand.right.crack_4)
                     .add(assetRsrc.env.ground.dots, asset.env.ground.dots)
+                    .add(assetRsrc.env.ground.underground.top, asset.env.ground.underground.top)
+                    .add(assetRsrc.env.ground.underground.bottom, asset.env.ground.underground.bottom)
                     .add(assetRsrc.env.cloud.one, asset.env.cloud.one)
                     .add(assetRsrc.env.cloud.two, asset.env.cloud.two)
                     .add(assetRsrc.env.ground.noDots, asset.env.ground.noDots)
@@ -240,11 +250,6 @@ export default function PixiJSMain(props) {
             if (props.appMode === appMode.WEBCAM) {
                 const videoSrc = document.querySelector(poseWebcamQry);
                 videoSrc.onloadeddata = () => {
-                    stageProps = {
-                        ...stageProps,
-                        height: videoSrc.clientHeight,
-                        width: videoSrc.clientWidth,
-                    };
                     initializeStage();
                 }
             } else if (props.appMode === appMode.CONTROLLER) {

@@ -20,6 +20,28 @@ const NOT_TRIGGERED = 'PULLER_NOT_TRIGGERED';
 const isButtonOnTriggerPosition = (button) => {
     return button.x <= appViewDimension.width - button.width/2 - 20;
 }
+const getColumnMultiplyer = (orderN) => {
+    switch (orderN) {
+        case 1:
+        case 2:
+        case 3:
+            return 1;
+        case 4:
+        case 5:
+        case 6:
+            return 2;
+        case 7:
+        case 8:
+        case 9:
+            return 3;
+        case 10:
+        case 11:
+        case 12:
+            return 4;
+        default:
+            return null;
+    }
+};
 export class UiMenu {
     constructor(container=[]) {
         this.containerItemObjs = container;
@@ -57,11 +79,14 @@ export class UiMenu {
                 };
                 const offsetH = 70;
                 uiMenuObj[btnProp].x = (
-                    appViewDimension.width - uiMenuObj[btnProp].width - 3*uiMenuViewConstants.offsetW
+                    appViewDimension.width
+                    - getColumnMultiplyer(uiMenuObj.orderN) * (
+                        uiMenuObj[btnProp].width + 3 * uiMenuViewConstants.offsetW
+                    )
                 );
 
                 const halfHeightAndOffset = ((uiMenuObj[btnProp].height/2) + offsetH);
-                if (uiMenuObj.orderN === 1) {
+                if (uiMenuObj.orderN % 3 === 1) {
                     uiMenuObj[btnProp].y = uiMenuObj.orderN * halfHeightAndOffset;
                 } else {
                     uiMenuObj[btnProp].y = this.containerItemObjs

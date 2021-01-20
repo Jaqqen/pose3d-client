@@ -1,7 +1,6 @@
 import * as ID from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import { menuTopRight } from 'components/pixi.js/PixiJSMenu';
 import { menuCollRes } from 'components/pixi.js/PixiJSMenu';
 import {
     addPixiTick, addPixiTimeout, clearPixiTimeoutWithKey, pixiTimeouts, removePixiTick
@@ -9,7 +8,6 @@ import {
 import { viewConstant } from 'components/pixi.js/ViewConstants';
 
 import React, { Fragment, useEffect } from 'react'
-import { menu } from 'shared/IdConstants';
 import { assetRsrc, goLabels, listenerKeys, views, viewsMain } from 'shared/Indentifiers';
 import { logInfo } from 'shared/P3dcLogger';
 import {
@@ -29,14 +27,8 @@ import { audioOnClick, shouldPlayAudio } from 'components/pixi.js/PixiJSAudio';
 import { CHAR_STATE, PixiGameChar } from 'components/pixi.js/animations/PixiGameChar';
 
 export const PixiJSLevelOne = (props) => {
-    const menuTopRightButton = menuTopRight(
-        menu.button.topRight, viewConstant.topRightMenuCoord.x, viewConstant.topRightMenuCoord.y
-    );
-    menuTopRightButton.zIndex = 80;
-    menuTopRightButton.visible = false;
-
     const lifeBars = getLifeBars(
-        ID.levels.lifeBar, viewConstant.lifeBarsDim.x, viewConstant.lifeBarsDim.y
+        3, ID.levels.lifeBar, viewConstant.lifeBarsDim.x, viewConstant.lifeBarsDim.y
     );
     lifeBars.zIndex = 80;
     lifeBars.visible = false;
@@ -288,7 +280,7 @@ export const PixiJSLevelOne = (props) => {
 
                 if (lastPartBeforeEndX < elapsedGroundWidth) {
                     runFlagEntryAnimation(
-                        app, appContainer, flagContainer, aboveGroundHeight
+                        appContainer, flagContainer, aboveGroundHeight
                     );
 
                     runPlayerFinishAnimation(app, slime,
@@ -533,7 +525,6 @@ export const PixiJSLevelOne = (props) => {
             app, slime,
             worldGOs,
             () => {
-                menuTopRightButton.visible = true;
                 lifeBars.visible = true;
             },
             () => {
@@ -594,9 +585,9 @@ export const PixiJSLevelOne = (props) => {
                 app, hands, levelOneTickKey, levelOneTick, worldGOs, interactiveGOs, menuCollTickKey
             );
         };
-    }, [props, menuTopRightButton, lifeBars, creditsUiButton, returnUiButton, quitUiButton, audioUiButton])
+    }, [props, lifeBars, creditsUiButton, returnUiButton, quitUiButton, audioUiButton])
 
     return(
         <Fragment></Fragment>
     );
-}
+};

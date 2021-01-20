@@ -9,7 +9,9 @@ import { previews } from "shared/IdConstants";
 export const previewImgId = 'previewImg';
 
 export const removePreviewTextureFromCache = () => {
-    PIXI.utils.TextureCache[previewImgId].destroy(true);
+    if (PIXI.utils.TextureCache[previewImgId]) {
+        PIXI.utils.TextureCache[previewImgId].destroy(true);
+    }
 }
 
 export const getPixiJsPreviewContainer = (previewHeading, descriptionText=null, img=null) => {
