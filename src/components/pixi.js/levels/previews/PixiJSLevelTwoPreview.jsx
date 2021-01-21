@@ -7,6 +7,8 @@ import { addPixiTick } from 'components/pixi.js/SharedTicks';
 import { uiMenuButton } from 'components/pixi.js/PixiJSButton';
 import { UiMenu } from 'components/pixi.js/UiMenu';
 import { quitBtnFn } from 'components/pixi.js/PixiJSMenu';
+import previewImg from "static/assets/pixi.js/img/previewImg/PreviewLevelTwo.png";
+
 
 export const PixiJSLevelTwoPreview = (props) => {
 
@@ -14,7 +16,11 @@ export const PixiJSLevelTwoPreview = (props) => {
         [preview.level.container]: prevContainer,
         [preview.level.returnBtn]: returnButton,
         [preview.level.startBtn]: startButton,
-    } = getPixiJsPreviewContainer('Hard');
+    } = getPixiJsPreviewContainer(
+        'Hard',
+        'Etwas härter, aber definitiv nicht zu schwer. Im Untergrund ist euer Geschick gefragt. Versucht bis ans Ende des Untergrundpfades zu gelangen und vermeidet von den Fallen getroffen zu werden.',
+        previewImg
+    );
 
     const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
     const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');
