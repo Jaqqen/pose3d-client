@@ -58,3 +58,15 @@ export const clearPixiTimeoutWithKey = (_key) => {
 
     delete pixiTimeouts[_key];
 };
+
+export const sceneTweens = {};
+export const addSceneTweenByKey = (_key, tween) => {
+    sceneTweens[_key] = tween;
+};
+
+export const deleteAllSceneTweens = () => {
+    const sceneTweenKeys = Object.keys(sceneTweens);
+    for(let _key of sceneTweenKeys) {
+        delete pixiTimeouts[_key];
+    }
+};

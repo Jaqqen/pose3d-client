@@ -135,7 +135,7 @@ export const PixiJSLevelOne = (props) => {
         const interactiveGOKey = goLabels.interactive.go;
         const interactiveTickKey = goLabels.interactive.tick;
 
-        let meteors = [];
+        const meteors = [];
         const amtMeteors = 3;
         const meteorBoundaryPadding = 5;
         const meteorAccelBounds = {
@@ -156,7 +156,7 @@ export const PixiJSLevelOne = (props) => {
         };
         const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
 
-        let icicles = [];
+        const icicles = [];
         const amtIcicles = 2;
         const icicleBoundaryPadding = 5;
         const iciclesAccelBounds = {
@@ -529,7 +529,7 @@ export const PixiJSLevelOne = (props) => {
             },
             () => {
                 addPixiTick(app, levelOneTickKey, levelOneTick);
-                addPixiTick(app, listenerKeys.menu.uiMenuPullerTick, radialSceneAccessPullerTick)
+                addPixiTick(app, listenerKeys.menu.uiMenuPullerTick, radialSceneAccessPullerTick);
             },
             views.levelN,
             slimeStates.entry.onStart,

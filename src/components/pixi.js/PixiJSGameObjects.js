@@ -26,8 +26,10 @@ export const getCloudsForScene = (amountOfClouds) => {
         let assetType;
         if (i % 1.5 === 0) { assetType = assetRsrc.env.cloud.two; }
         else { assetType = assetRsrc.env.cloud.one; }
-        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType])
-        _cloud.scale.set(getRandomArbitrary(0.7, 1.1))
+
+        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType]);
+        _cloud.scale.set(getRandomArbitrary(0.7, 1.1));
+
         if (_cloud.scale.x < 1) {
             _cloud.alpha = _cloud.scale.x * 0.9;
         }
@@ -207,12 +209,9 @@ export const getLifeBars = (amount, id=null, x=null, y =null) => {
     const lifeBarsContainer = new PIXI.Container();
 
     for (let i = 0; i < amount; i++) {
-        const lifeBar = new PIXI.Graphics();
-        lifeBar.lineStyle(3, 0xFFFFFF, 1);
-        lifeBar.beginFill(0x799351);
-        lifeBar.drawRoundedRect(0, 0, 25, 80, 4);
-        lifeBar.endFill();
-        lifeBar.x = Math.floor(i * 30);
+        const lifeBar =  new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.life.emerald]);
+        lifeBar.scale.set(0.5);
+        lifeBar.x = Math.floor(i * lifeBar.width + 5);
 
         lifeBarsContainer.addChild(lifeBar);
     }
@@ -362,12 +361,17 @@ export const lifeHandlerTick = (
             .find(elem => elem.name = ID.appContainerName)
             .removeChild(lifeBarsContainer);
 
-        interactiveTickObjs.forEach(tickObj => {
-            const _key = tickObj[goLabels.interactive.tick];
-            removePixiTick(app, _key);
-        });
-        for (let key of Object.keys(worldTickObjs)) {
-            removePixiTick(app, key);
+        if (interactiveTickObjs && interactiveTickObjs.length > 0) {
+            interactiveTickObjs.forEach(tickObj => {
+                const _key = tickObj[goLabels.interactive.tick];
+                removePixiTick(app, _key);
+            });
+        }
+
+        if (worldTickObjs && Object.getOwnPropertyNames(worldTickObjs).length > 0) {
+            for (let key of Object.keys(worldTickObjs)) {
+                removePixiTick(app, key);
+            }
         }
 
         //* mainTickObj[0] is the KEY and mainTickObj[1] is the main tick FUNCTION

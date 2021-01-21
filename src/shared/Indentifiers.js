@@ -75,6 +75,13 @@ export const asset = {
             one: require('static/assets/pixi.js/img/envs/cloudOne.png').default,
             two: require('static/assets/pixi.js/img/envs/cloudTwo.png').default,
         },
+        bush: {
+            spiky: require('static/assets/pixi.js/img/envs/bushSpiky.png').default,
+        },
+        bridge: require('static/assets/pixi.js/img/envs/bridge.png').default,
+    },
+    life: {
+        emerald: require('static/assets/pixi.js/img/life/emerald.png').default,
     },
     hand: {
         left: {
@@ -95,6 +102,9 @@ export const asset = {
     projectile: {
         icicle: require('static/assets/pixi.js/img/projectiles/icicle.png').default,
         meteor: require('static/assets/pixi.js/img/projectiles/meteor.png').default,
+    },
+    animation: {
+        trigger: require('static/assets/pixi.js/img/trigger.png').default,
     },
 };
 
@@ -131,6 +141,13 @@ export const assetRsrc = {
             one: 'cloudOneRsrc',
             two: 'cloudTwoRsrc',
         },
+        bush: {
+            spiky: 'bushSpikyRsrc',
+        },
+        bridge: 'bridgeRsrc',
+    },
+    life: {
+        emerald: 'lifeEmeraldRsrc',
     },
     projectile: {
         icicle: 'icicleRsrc',
@@ -144,6 +161,9 @@ export const assetRsrc = {
         dollar: 'dollarRsrc',
         menu: 'menuRsrc',
         close: 'closeRsrc',
+    },
+    animation: {
+        trigger: 'animationTriggerRsrc',
     },
 };
 
@@ -330,3 +350,5 @@ export const localStorageKeys = {
     },
     videoOpacity: 'videoOpacity',
 };
+
+export const envInteractionKey = 'envInteractionKey_';

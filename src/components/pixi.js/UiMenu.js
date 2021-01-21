@@ -6,7 +6,7 @@ import { uiMenuViewConstants } from "components/pixi.js/ViewConstants";
 import { uiMenuButton, UI_MIN_BLUR } from "./PixiJSButton";
 import { 
     addPixiTick, addPixiTickFromSceneToCache, cachedPixiTicksFromScene, clearAllPixiTimeouts, 
-    pixiTicks, removeCachedPixiTickFromScene, removePixiTick 
+    pixiTicks, removeCachedPixiTickFromScene, removePixiTick, sceneTweens 
 } from "./SharedTicks";
 import { menu } from "shared/IdConstants";
 import { setCooldownTween, setHitTween, testForAABB } from "./PixiJSCollision";
@@ -180,6 +180,7 @@ export class UiMenu {
             this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Menu');
             this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
             this.radialAccessButton.y = appViewDimension.height/2;
+            this.radialAccessButton.zIndex = 30;
         }
 
         return this.radialAccessButton;
@@ -334,15 +335,27 @@ export class UiMenu {
         removePixiTick(app, listenerKeys.menu.openingMenuTick);
         clearAllPixiTimeouts();
 
-        interactiveObjs.forEach(interactiveObj => {
-            const _key = interactiveObj[goLabels.interactive.tick];
-            addPixiTickFromSceneToCache(_key, pixiTicks[_key]);
-            removePixiTick(app, _key);
-        });
+        if (interactiveObjs && interactiveObjs.length > 0) {
+            interactiveObjs.forEach(interactiveObj => {
+                const _key = interactiveObj[goLabels.interactive.tick];
+                addPixiTickFromSceneToCache(_key, pixiTicks[_key]);
+                removePixiTick(app, _key);
+            });
+        }
 
-        for (let _key of Object.keys(worldGoObjs)) {
-            addPixiTickFromSceneToCache(_key, worldGoObjs[_key]);
-            removePixiTick(app, _key)
+        if (worldGoObjs && Object.getOwnPropertyNames(worldGoObjs).length > 0) {
+            for (let _key of Object.keys(worldGoObjs)) {
+                addPixiTickFromSceneToCache(_key, worldGoObjs[_key]);
+                removePixiTick(app, _key)
+            }
+        }
+
+        if (sceneTweens && Object.keys(sceneTweens).length > 0) {
+            for (const key of Object.keys(sceneTweens)) {
+                if (sceneTweens[key] && sceneTweens[key].isActive()) {
+                    sceneTweens[key].pause();
+                }
+            }
         }
 
         if (setHitTween && setHitTween.isActive()) {
@@ -391,6 +404,14 @@ export class UiMenu {
             for (let key of cachedTickKeys) {
                 addPixiTick(app, key, cachedPixiTicksFromScene[key]);
                 removeCachedPixiTickFromScene(key);
+            }
+        }
+
+        if (sceneTweens && Object.keys(sceneTweens).length > 0) {
+            for (const key of Object.keys(sceneTweens)) {
+                if (sceneTweens[key] && sceneTweens[key].paused()) {
+                    sceneTweens[key].play();
+                }
             }
         }
 
