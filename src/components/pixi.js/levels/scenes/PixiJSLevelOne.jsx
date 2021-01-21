@@ -188,6 +188,11 @@ export const PixiJSLevelOne = (props) => {
             - groundWithDots[0].getBounds().height
             - slime.character.getChildByName('animSpriteCharName').height/2.1
         );
+        const flagDestHeight = (
+            appViewDimension.height
+            - groundWithDots[0].getBounds().height
+            + 15
+        );
 
         //? setup of scene
         slime.character.y = aboveGroundHeight;
@@ -280,7 +285,7 @@ export const PixiJSLevelOne = (props) => {
 
                 if (lastPartBeforeEndX < elapsedGroundWidth) {
                     runFlagEntryAnimation(
-                        appContainer, flagContainer, aboveGroundHeight
+                        appContainer, flagContainer, flagDestHeight
                     );
 
                     runPlayerFinishAnimation(app, slime,
@@ -402,7 +407,7 @@ export const PixiJSLevelOne = (props) => {
                     } else {
                         if (!(meteorKey in pixiTimeouts)) {
                             const timeoutId = setTimeout(
-                                initiateMeteor, getRandomTimeout.icicle(), lostMeteor
+                                initiateMeteor, getRandomTimeout.meteor(), lostMeteor
                             );
 
                             addPixiTimeout(meteorKey, timeoutId);

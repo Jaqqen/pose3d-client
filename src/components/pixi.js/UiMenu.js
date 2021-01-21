@@ -11,6 +11,7 @@ import {
 import { menu } from "shared/IdConstants";
 import { setCooldownTween, setHitTween, testForAABB } from "./PixiJSCollision";
 import { menuCollRes } from "./PixiJSMenu";
+import { setIsHoverOnOpen, setStoredHoverOnOpen } from "./PixiJSMenu";
 
 const btnProp = goLabels.menu.ui.element.button;
 const btnFunc = goLabels.menu.ui.element.func;
@@ -87,7 +88,7 @@ export class UiMenu {
 
                 const halfHeightAndOffset = ((uiMenuObj[btnProp].height/2) + offsetH);
                 if (uiMenuObj.orderN % 3 === 1) {
-                    uiMenuObj[btnProp].y = uiMenuObj.orderN * halfHeightAndOffset;
+                    uiMenuObj[btnProp].y = halfHeightAndOffset;
                 } else {
                     uiMenuObj[btnProp].y = this.containerItemObjs
                         .find(_uiMenuObj => _uiMenuObj.orderN === orderNum)[btnProp]
@@ -317,6 +318,11 @@ export class UiMenu {
         this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
         app.stage.addChild(this.pixiMenuContainer);
 
+        //* is setting isHoveringOverMenu in PixiJSMenu
+        setIsHoverOnOpen(true);
+        //* is setting storedHoverMenuItem in PixiJSMenu
+        setStoredHoverOnOpen(this.cancelButton);
+
         const uiMenuTick = () => {
             menuCollRes(app, this.getAsFunctionItemTupleArray(app, false), hands);
         };
@@ -367,6 +373,11 @@ export class UiMenu {
 
         this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
         app.stage.addChild(this.pixiMenuContainer);
+
+        //* is setting isHoveringOverMenu in PixiJSMenu
+        setIsHoverOnOpen(true);
+        //* is setting storedHoverMenuItem in PixiJSMenu
+        setStoredHoverOnOpen(this.cancelButton);
 
         const uiMenuTick = () => {
             menuCollRes(app, this.getAsFunctionItemTupleArray(app, true), hands);

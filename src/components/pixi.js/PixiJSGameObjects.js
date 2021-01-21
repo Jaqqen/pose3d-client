@@ -5,7 +5,8 @@ import { assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from 
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
 import { 
-    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, removePixiTick
+    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, deleteAllSceneTweens,
+    removePixiTick
 } from "./SharedTicks";
 
 import gsap from "gsap/gsap-core";
@@ -176,6 +177,8 @@ export const runPlayerFinishAnimation = (
                 player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
             }
 
+            deleteAllSceneTweens();
+
             initiateFinishOverlay();
         },
     });
@@ -224,9 +227,11 @@ export const getLifeBars = (amount, id=null, x=null, y =null) => {
 };
 
 export const reduceLifeByOne = (lifebarsContainer, player) => {
-    const lifeBarsFirstChild = lifebarsContainer.children.find(e => e)
+    const lifeBarsFirstChild = lifebarsContainer.children.find(e => e);
     if (lifeBarsFirstChild !== undefined) {
-        lifeBarsFirstChild.destroy(true);
+        lifebarsContainer
+            .children
+            .splice(lifebarsContainer.children.length-1, 1);
 
         const cooldownId = ID.levels.charOnCooldown;
         if (player.character.getChildByName('animSpriteCharName')) {

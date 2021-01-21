@@ -1,7 +1,7 @@
 import { CHAR_STATE, PixiGameChar } from "components/pixi.js/animations/PixiGameChar";
 import { audioOnClick, shouldPlayAudio } from "components/pixi.js/PixiJSAudio";
 import { uiMenuButton } from "components/pixi.js/PixiJSButton";
-import { testForAABB } from "components/pixi.js/PixiJSCollision";
+import { testForAABB, checkCollision, checkPlayerEnvironment } from "components/pixi.js/PixiJSCollision";
 import { 
     getFinishingFlag, getGroundsByTypeForScene, getLifeBars, removeCloudFromStageBeforeLevelStart,
     runPlayerEntryAnimation, runFlagEntryAnimation, runPlayerFinishAnimation, onFinishLevel,
@@ -9,11 +9,14 @@ import {
 } from "components/pixi.js/PixiJSGameObjects";
 import { appViewDimension } from "components/pixi.js/PixiJSMain";
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
-import { addPixiTick, addSceneTweenByKey, sceneTweens } from "components/pixi.js/SharedTicks";
+import { 
+    addPixiTick, addPixiTimeout, addSceneTweenByKey, clearPixiTimeoutWithKey, pixiTimeouts,
+    removePixiTick, sceneTweens
+} from "components/pixi.js/SharedTicks";
 import { UiMenu } from "components/pixi.js/UiMenu";
 import { viewConstant } from "components/pixi.js/ViewConstants";
 import gsap from "gsap/gsap-core";
-import { Graphics, Rectangle, Sprite, Texture, utils } from "pixi.js";
+import { Graphics, Point, Rectangle, Sprite, Texture, utils } from "pixi.js";
 import { Fragment, useEffect } from "react";
 import { levels } from "shared/IdConstants";
 import { assetRsrc, envInteractionKey, goLabels, listenerKeys, views, viewsMain } from "shared/Indentifiers";
@@ -52,12 +55,16 @@ export const PixiJSLevelTwo = (props) => {
     const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
     const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');
     const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
+    const retryUiButton = uiMenuButton(assetRsrc.ui.retry, 'retrySuffix', 'Retry');
 
     useEffect(() => {
         logInfo('Logging PixiJS Level Two useEffect');
         const { app, appContainer, hands, exitViewFn } = props;
         removeCloudFromStageBeforeLevelStart(app);
         appContainer.addChild(lifeBars);
+
+        const retryLevelFn = () => exitViewFn(views.levelH, true);
+        const returnToViewsMainFn = () => exitViewFn(viewsMain);
 
         const handGOs = {
             left: hands.left.go,
@@ -71,11 +78,15 @@ export const PixiJSLevelTwo = (props) => {
         });
         uiMenuContainer.addMenuItem({
             [goLabels.menu.ui.element.button]: returnUiButton,
-            [goLabels.menu.ui.element.func]: () => exitViewFn(views.levels),
+            [goLabels.menu.ui.element.func]: returnToViewsMainFn,
         });
         uiMenuContainer.addMenuItem({
             [goLabels.menu.ui.element.button]: quitUiButton,
             [goLabels.menu.ui.element.func]: quitBtnFn,
+        });
+        uiMenuContainer.addMenuItem({
+            [goLabels.menu.ui.element.button]: retryUiButton,
+            [goLabels.menu.ui.element.func]: retryLevelFn,
         });
         appContainer.addChild(uiMenuContainer.getRadialAccessPuller());
         appContainer.addChild(uiMenuContainer.getRadialAccessButton());
@@ -130,9 +141,6 @@ export const PixiJSLevelTwo = (props) => {
 
         const clouds = [];
         const cloudsAmount = 4;
-
-        const meteors = [];
-        const icicles = []
 
         //? character
         let slimeTween;
@@ -495,6 +503,8 @@ export const PixiJSLevelTwo = (props) => {
         const downResponse = {};
         const traphole1 = {};
         const traphole2 = {};
+        const ceilTrap1 = {};
+        const ceilTrap2 = {};
         const goUp = {};
         const doJumpUp = {};
         const upResponseBeforeGround = {};
@@ -503,8 +513,8 @@ export const PixiJSLevelTwo = (props) => {
 
         //? COLLIDER
         const colliderArr = [
-            doJumpDown, goDown, downResponse, traphole1, traphole2, doJumpUp, goUp,
-            upResponseBeforeGround, upResponseOnGround, goFinish
+            doJumpDown, goDown, downResponse, traphole1, traphole2, ceilTrap1, ceilTrap2, doJumpUp,
+            goUp, upResponseBeforeGround, upResponseOnGround, goFinish
         ];
         colliderArr.forEach(collObj => {
             collObj.state = COLL_STATE.IDLE;
@@ -528,7 +538,7 @@ export const PixiJSLevelTwo = (props) => {
         downResponse.collider.x = 2*defaultGroundWidth;
         downResponse.collider.y = ugStartHeight - downResponse.collider.height;
 
-        const trapholeStartOffset = slime.character.width;
+        const trapholeStartOffset = slime.character.width + 80;
         traphole1.collider.name = 'traphole1ColliderName';
         traphole1.collider.x = 4*defaultGroundWidth + trapholeStartOffset;
         traphole1.collider.y = ugStartHeight - traphole1.collider.height/2;
@@ -540,6 +550,19 @@ export const PixiJSLevelTwo = (props) => {
             + ugGroundBottomSmall.width
             + trapholeStartOffset;
         traphole2.collider.y = ugStartHeight - traphole1.collider.height/2;
+
+        ceilTrap1.collider.name = 'ceilTrap1ColliderName';
+        ceilTrap1.collider.x = 
+            6*defaultGroundWidth
+            + jumpDownGroundGap;
+        ceilTrap1.collider.y = ugStartHeight - ceilTrap1.collider.height/2;
+        ceilTrap2.collider.name = 'ceilTrap2ColliderName';
+        ceilTrap2.collider.x =
+            6*defaultGroundWidth
+            + jumpDownGroundGap
+            + ugGroundBottomSmall.width
+            + ceilTrapWidth;
+        ceilTrap2.collider.y = ugStartHeight - ceilTrap2.collider.height/2;
 
         doJumpUp.collider.name = 'doJumpUpColliderName';
         doJumpUp.collider.x = 8*defaultGroundWidth + 2*trapholeWidth - 200;
@@ -607,10 +630,14 @@ export const PixiJSLevelTwo = (props) => {
             bGo.alpha = 0;
             appContainer.addChild(bGo);
         });
-        [bridge1.trigger, bridge2.trigger].forEach(bTrigger => {
+        [bridge1.trigger, bridge2.trigger].forEach((bTrigger, index) => {
             bTrigger.scale.set(0.8);
             bTrigger.anchor.set(0.5);
-            bTrigger.y = ugStartHeight + bridge1.trigger.height;
+            if (index === 0) {
+                bTrigger.y = ugStartHeight + bTrigger.height;
+            } else {
+                bTrigger.y = ugTopStartHeight + bTrigger.height * 1.5;
+            }
             appContainer.addChild(bTrigger);
         });
         bridge1.go.x = 4*defaultGroundWidth;
@@ -653,6 +680,231 @@ export const PixiJSLevelTwo = (props) => {
         startBridgeTriggerTween(bridge1, traphole1);
         startBridgeTriggerTween(bridge2, traphole2);
 
+        //? INTERACTIVE OBJECTS
+        const interactiveGOKey = goLabels.interactive.go;
+        const interactiveTickKey = goLabels.interactive.tick;
+
+        const getRandomTimeout = (timeoutRanges) => {
+            return getRandomArbitrary(
+                timeoutRanges.minInTick,
+                timeoutRanges.max,
+                timeoutRanges.step
+            );
+        }
+
+        ////* METEORS
+        const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
+        const infiniteMeteorsKey = listenerKeys.game.object.meteors.own;
+        const meteorBoundaryPadding = 5;
+        const meteorTimeoutRange = {
+            min: 100,
+            minInTick: 1000,
+            max: 8000,
+            step: 1900,
+        };
+        const meteorAccelBounds = {
+            x: {
+                min: 5.2,
+                max: 5.4,
+            },
+            y: {
+                min: -0.3,
+                max: -0.6,
+            },
+        };
+        const meteors = [];
+        const amtMeteors = 5;
+        for (let i = 0; i < amtMeteors; i++) {
+            const tmpMeteor = new Sprite(utils.TextureCache[assetRsrc.projectile.meteor]);
+            tmpMeteor.id = interactiveGOKey;
+            meteors.push({
+                [interactiveGOKey]: tmpMeteor,
+                [interactiveTickKey]: meteorTickKeyPrefix + i,
+                isSpawnedLeft: i % 2 === 0 ? true : false,
+            });
+            tmpMeteor.scale.set(0.6);
+            tmpMeteor.angle = 45;
+            if (i % 2 === 0) {
+                tmpMeteor.scale.x = -0.6;
+                tmpMeteor.angle = -45;
+            }
+            tmpMeteor.x = 0 - 400;
+            tmpMeteor.y = 0 - 400;
+            tmpMeteor.zIndex = -10;
+            appContainer.addChild(tmpMeteor);
+        }
+
+        const initiateMeteor = (meteor) => {
+            const meteorGo = meteor[interactiveGOKey];
+            const meteorKey = meteor[interactiveTickKey];
+            const isSpawnedLeft = meteor.isSpawnedLeft;
+            removePixiTick(app, meteorKey);
+
+            meteorGo.acceleration = new Point(0);
+            meteorGo.id = interactiveGOKey;
+
+            meteorGo.y = getRandomArbitrary(
+                uGroundTops[0].y
+                + 2*defaultGroundHeight
+                + meteorBoundaryPadding,
+                ugGroundBottoms[0].y
+                - meteorGo.height
+                - 4*meteorBoundaryPadding
+            );
+
+            meteorGo.x = isSpawnedLeft
+                ? 0 - meteorGo.width - meteorBoundaryPadding
+                : appViewDimension.width + meteorBoundaryPadding;
+
+            const horizontalAccel = getRandomArbitrary(
+                    meteorAccelBounds.x.min, meteorAccelBounds.x.max
+                ) * (isSpawnedLeft ? -1 : 1);
+            meteorGo.acceleration.set(
+                horizontalAccel,
+                getRandomArbitrary(meteorAccelBounds.y.min, meteorAccelBounds.y.max)
+            );
+
+            const meteorTick = () => {
+                meteorGo.x -= meteorGo.acceleration.x;
+                meteorGo.y -= meteorGo.acceleration.y;
+            };
+
+            addPixiTick(app, meteorKey, meteorTick);
+            clearPixiTimeoutWithKey(meteorKey);
+        };
+        const infiniteMeteors = () => {
+            const lostMeteors = meteors.filter(
+                meteor => (
+                    meteor[interactiveGOKey].y 
+                        > (
+                            appViewDimension.height
+                            - defaultGroundHeight
+                            + meteor[interactiveGOKey].getBounds().height
+                            + meteorBoundaryPadding
+                        ) ||
+                    meteor[interactiveGOKey].y 
+                        < (
+                            0
+                            - meteor[interactiveGOKey].getBounds().height
+                            - meteorBoundaryPadding
+                        ) ||
+                    meteor[interactiveGOKey].x
+                        < (
+                            0
+                            - meteor[interactiveGOKey].getBounds().width
+                            - meteorBoundaryPadding * 2
+                        ) ||
+                    meteor[interactiveGOKey].x
+                        > (
+                            appViewDimension.width
+                            + meteor[interactiveGOKey].getBounds().width
+                            + meteorBoundaryPadding * 2
+                        )
+                )
+            );
+
+            if (lostMeteors.length > 0) {
+                lostMeteors.forEach(lostMeteor => {
+                    const meteorKey = lostMeteor[interactiveTickKey];
+                    if (!(meteorKey in pixiTimeouts)) {
+                        const timeoutId = setTimeout(
+                            initiateMeteor, getRandomTimeout(meteorTimeoutRange), lostMeteor
+                        );
+
+                        addPixiTimeout(meteorKey, timeoutId);
+                    }
+                });
+            }
+        };
+
+        ////* ICICLES
+        const icicleTickKeyPrefix = goLabels.level.one.projectiles.icicle.tickKeyPrefix;
+        const icicleBoundaryPadding = 5;
+        const icicles = [];
+        const iciclesAmount = 6;
+        for (let i = 0; i < iciclesAmount; i++) {
+            const tmpIcicle = new Sprite(utils.TextureCache[assetRsrc.projectile.icicle]);
+            tmpIcicle.scale.set(0.6);
+            tmpIcicle.y = ugTopStartHeight - tmpIcicle.height - icicleBoundaryPadding;
+            if (i < 3) {
+                tmpIcicle.x =
+                    6*defaultGroundWidth
+                    + jumpDownGroundGap
+                    + getRandomArbitrary(
+                        ceilTrapWidth*0.2, ceilTrapWidth*0.8
+                    );
+            } else {
+                tmpIcicle.x =
+                    6*defaultGroundWidth
+                    + jumpDownGroundGap
+                    + ugGroundBottomSmall.width
+                    + ceilTrapWidth
+                    + getRandomArbitrary(
+                        ceilTrapWidth*0.2, ceilTrapWidth*0.8
+                    );
+            }
+            tmpIcicle.acceleration = new Point(0, -10);
+            tmpIcicle.id = interactiveGOKey;
+
+            icicles.push({
+                [interactiveGOKey]: tmpIcicle,
+                [interactiveTickKey]: icicleTickKeyPrefix + i,
+                ceilIndex: i,
+            });
+
+            appContainer.addChild(tmpIcicle);
+        }
+
+        const icicleGosOnly = icicles.map(icicle => icicle[interactiveGOKey]);
+
+        const startCeilTrapTween = (icicleArray, tweenIndex) => {
+            const ceilTrapTween = gsap.to({}, {
+                ease: "power3.inOut",
+                onUpdate: () => {
+                    icicleArray.forEach(icicle => {
+                        icicle[interactiveGOKey].y -= icicle[interactiveGOKey].acceleration.y;
+                        const lostIcicles = icicleArray.filter(_icicle => (
+                                icicle[interactiveGOKey].y
+                                    > (
+                                        appViewDimension.height
+                                        - defaultGroundHeight
+                                        + icicle[interactiveGOKey].getBounds().height
+                                        + icicleBoundaryPadding
+                                    ) ||
+                                icicle[interactiveGOKey].y
+                                    < (
+                                        0
+                                        - icicle[interactiveGOKey].getBounds().height * 2
+                                        - icicleBoundaryPadding
+                                    ) ||
+                                icicle[interactiveGOKey].x
+                                    < (
+                                        0
+                                        - icicle[interactiveGOKey].getBounds().width
+                                        - icicleBoundaryPadding
+                                    ) ||
+                                icicle[interactiveGOKey].x
+                                    > (
+                                        appViewDimension.width
+                                        + icicle[interactiveGOKey].getBounds().width
+                                        + icicleBoundaryPadding
+                                    )
+                        ));
+                        if (lostIcicles.length === 3) {
+                            if (ceilTrapTween) {
+                                ceilTrapTween.kill();
+                            }
+                            lostIcicles.forEach(disIci => {
+                                appContainer.removeChild(disIci[interactiveGOKey]);
+                            });
+                        }
+                    });
+                },
+                repeat: -1,
+            });
+            addSceneTweenByKey('iciclesTween' + tweenIndex, ceilTrapTween);
+        };
+
         const worldObjects = [
             ...clouds,
             ...groundBottoms,
@@ -664,8 +916,29 @@ export const PixiJSLevelTwo = (props) => {
             bridge1.trigger,
             bridge2.go,
             bridge2.trigger,
+            ...icicleGosOnly,
         ];
         const worldTweenKey = 'worldTweenKey';
+
+        const cleanUpOnFinish = () => {
+            const lostAppContChildren = appContainer.children.filter(
+                child => (
+                    child.y > (
+                        appViewDimension.height
+                        - defaultGroundHeight
+                        + child.getBounds().height
+                    ) ||
+                    child.y < (0 - child.getBounds().height) ||
+                    child.x < (0 - child.getBounds().width) ||
+                    child.x > (appViewDimension.width + child.getBounds().width) ||
+                    child.id === interactiveGOKey
+                )
+            );
+
+            lostAppContChildren.forEach(lostChild => {
+                lostChild.destroy({children: true, texture: false, baseTexture: false});
+            });
+        };
 
         const worldAnimation = () => {
             worldObjects.forEach(worldObj => {
@@ -734,6 +1007,8 @@ export const PixiJSLevelTwo = (props) => {
                                     worldSpeedTween.kill();
                                     slimeTween.kill();
 
+                                    removePixiTick(app, infiniteMeteorsKey);
+
                                     worldTickSpeedX = 0.5;
                                     worldTickSpeedY = 8;
 
@@ -772,6 +1047,13 @@ export const PixiJSLevelTwo = (props) => {
                                                             'walk_anim'
                                                         );
                                                     },
+                                                    onComplete: () => {
+                                                        addPixiTick(
+                                                            app,
+                                                            infiniteMeteorsKey,
+                                                            infiniteMeteors
+                                                        );
+                                                    }
                                                 });
                                                 addSceneTweenByKey(slimeTweenKey, slimeTween);
 
@@ -787,7 +1069,6 @@ export const PixiJSLevelTwo = (props) => {
                                 }
                                 case 'traphole1ColliderName': {
                                     worldTickSpeedX = 0;
-                                    console.log('trap1-coll');
 
                                     sceneTweens[bridge1.triggerTweenkey].kill();
                                     sceneTweens[bridge2.triggerTweenkey].kill();
@@ -801,8 +1082,8 @@ export const PixiJSLevelTwo = (props) => {
                                                 [], {},
                                                 [levelTwoTickKey, levelTwoTick],
                                                 handGOs,
-                                                () => exitViewFn(views.levelH, true),
-                                                () => exitViewFn(viewsMain),
+                                                retryLevelFn,
+                                                returnToViewsMainFn,
                                                 [menuCollTickKey, menuCollTick],
                                                 lifeBars, listenerKeys.menu.uiMenuPullerTick
                                             );
@@ -812,7 +1093,6 @@ export const PixiJSLevelTwo = (props) => {
                                 }
                                 case 'traphole2ColliderName': {
                                     worldTickSpeedX = 0;
-                                    console.log('trap1-coll');
 
                                     sceneTweens[bridge1.triggerTweenkey].kill();
                                     sceneTweens[bridge2.triggerTweenkey].kill();
@@ -826,8 +1106,8 @@ export const PixiJSLevelTwo = (props) => {
                                                 [], {},
                                                 [levelTwoTickKey, levelTwoTick],
                                                 handGOs,
-                                                () => exitViewFn(views.levelH, true),
-                                                () => exitViewFn(viewsMain),
+                                                retryLevelFn,
+                                                returnToViewsMainFn,
                                                 [menuCollTickKey, menuCollTick],
                                                 lifeBars, listenerKeys.menu.uiMenuPullerTick
                                             );
@@ -835,9 +1115,25 @@ export const PixiJSLevelTwo = (props) => {
                                     });
                                     break;
                                 }
+                                case 'ceilTrap1ColliderName': {
+                                    const icicleArray = icicles.filter(icicles =>
+                                        icicles.ceilIndex < 3
+                                    );
+                                    startCeilTrapTween(icicleArray, 1);
+
+                                    break;
+                                }
+                                case 'ceilTrap2ColliderName': {
+                                    const icicleArray = icicles.filter(icicles =>
+                                        icicles.ceilIndex >= 3
+                                    );
+                                    startCeilTrapTween(icicleArray, 2);
+
+                                    break;
+                                }
                                 case 'doJumpUpColliderName': {
                                     worldTickSpeedX = 0;
-
+                                    removePixiTick(app, infiniteMeteorsKey);
                                     const spdWrapper = {_spd: worldTickSpeedX};
                                     worldSpeedTween = gsap.to(spdWrapper, {
                                         _spd: slowdownWorldSpeedX,
@@ -969,20 +1265,21 @@ export const PixiJSLevelTwo = (props) => {
                                         appContainer, flagContainer, defaultUpperGroundY
                                     );
 
-
                                     runPlayerFinishAnimation(app, slime,
                                         {
                                             [worldAnimKey]: worldAnimation,
                                             [levelTwoTickKey]: levelTwoTick
                                         },
-                                        null,
-                                        () => console.log('cleanUp'),
+                                        {
+                                            [infiniteMeteorsKey]: infiniteMeteors,
+                                        },
+                                        cleanUpOnFinish,
                                         () => onFinishLevel(
-                                            app, [], {},
+                                            app, interactiveGOs, worldTicks,
                                             [levelTwoTickKey, levelTwoTick],
                                             handGOs,
-                                            () => exitViewFn(views.levelH, true),
-                                            () => exitViewFn(viewsMain),
+                                            retryLevelFn,
+                                            returnToViewsMainFn,
                                             [menuCollTickKey, menuCollTick]
                                         ),
                                         slimeStates.finish.onStart,
@@ -1000,7 +1297,7 @@ export const PixiJSLevelTwo = (props) => {
         };
 
         const worldTicks = {
-            [worldAnimKey]: worldAnimation
+            [worldAnimKey]: worldAnimation,
         };
 
         let radialSceneAccessPullerTick;
@@ -1020,15 +1317,48 @@ export const PixiJSLevelTwo = (props) => {
             null
         );
 
+        const rightHand = {
+            isHit: false,
+            isOnCooldown: false,
+            cooldownCircle: new Graphics(),
+            angle: -95,
+            whichHand: 'rightHand',
+        };
+        rightHand.cooldownCircle.zIndex = hands.right.go.zIndex + 1;
+
+        const interactiveGOs = [
+            ...meteors,
+            ...icicles
+        ];
+        const leftHand = {
+            isHit: false,
+            isOnCooldown: false,
+            cooldownCircle: new Graphics(),
+            angle: -95,
+            whichHand: 'leftHand',
+        };
+        leftHand.cooldownCircle.zIndex = hands.left.go.zIndex + 1;
         levelTwoTick = () => {
+            checkCollision(app, hands.left, interactiveGOs, leftHand);
+            checkCollision(app, hands.right, interactiveGOs, rightHand);
+            checkPlayerEnvironment(interactiveGOs, slime, lifeBars);
+            lifeHandlerTick(
+                app, interactiveGOs, worldTicks,
+                [levelTwoTickKey, levelTwoTick],
+                handGOs,
+                retryLevelFn,
+                returnToViewsMainFn,
+                [menuCollTickKey, menuCollTick],
+                lifeBars, listenerKeys.menu.uiMenuPullerTick
+            );
         };
 
         radialSceneAccessPullerTick = () => {
             uiMenuContainer.getSceneRadialAccessPullerTick(
-                app, hands, levelTwoTickKey, levelTwoTick, worldTicks, [], menuCollTickKey
+                app, hands, levelTwoTickKey, levelTwoTick, worldTicks, interactiveGOs, menuCollTickKey
             );
         };
-    }, [props, lifeBars, creditsUiButton, returnUiButton, quitUiButton, audioUiButton])
+    }, [props, lifeBars, creditsUiButton, returnUiButton, quitUiButton, audioUiButton, retryUiButton])
 
     return(
         <Fragment></Fragment>

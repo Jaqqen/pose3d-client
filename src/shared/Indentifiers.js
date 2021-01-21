@@ -45,6 +45,7 @@ export const client = {
         power: require('static/img/ui/power.png').default,
         dollar: require('static/img/ui/dollar.png').default,
         menu: require('static/img/ui/menu.png').default,
+        retry: require('static/img/ui/reload.png').default,
     },
 }
 
@@ -161,6 +162,7 @@ export const assetRsrc = {
         dollar: 'dollarRsrc',
         menu: 'menuRsrc',
         close: 'closeRsrc',
+        retry: 'retryRsrc',
     },
     animation: {
         trigger: 'animationTriggerRsrc',

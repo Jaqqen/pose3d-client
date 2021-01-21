@@ -10,7 +10,7 @@ import { logInfo } from 'shared/P3dcLogger';
 import { PixiJSMenu } from 'components/pixi.js/PixiJSMenu';
 import { PixiJSLevels } from 'components/pixi.js/levels/PixiJSLevels';
 import {
-    clearAllPixiTimeouts, pixiTicks, removePixiTick, clearAllCachedPixiTicksFromScene
+    clearAllPixiTimeouts, pixiTicks, removePixiTick, clearAllCachedPixiTicksFromScene, deleteAllSceneTweens
 } from 'components/pixi.js/SharedTicks';
 import { PixiJSTutorials } from 'components/pixi.js/tutorials/PixiJSTutorials';
 import { PixiJSLevelOnePreview } from 'components/pixi.js/levels/previews/PixiJSLevelOnePreview';
@@ -239,7 +239,12 @@ export default function PixiJSMain(props) {
                     .add(assetRsrc.ui.dollar, client.icon.dollar)
                     .add(assetRsrc.ui.menu, client.icon.menu)
                     .add(assetRsrc.ui.close, client.icon.close)
+                    .add(assetRsrc.ui.retry, client.icon.retry)
                     .add(assetRsrc.character.slime_spritesheet, asset.character.slime.spriteSheet)
+                    .add(assetRsrc.env.bush.spiky, asset.env.bush.spiky)
+                    .add(assetRsrc.env.bridge, asset.env.bridge)
+                    .add(assetRsrc.life.emerald, asset.life.emerald)
+                    .add(assetRsrc.animation.trigger, asset.animation.trigger)
                     .load(() => {
                         appViewDimension.width = app.view.width;
                         appViewDimension.height = app.view.height;
@@ -343,6 +348,7 @@ export default function PixiJSMain(props) {
         app.ticker.stop();
         clearAllPixiTimeouts();
         clearAllCachedPixiTicksFromScene(app);
+        deleteAllSceneTweens();
         const pixiTickKeys = Object.keys(pixiTicks);
         for (let _tickKey of pixiTickKeys) {
             removePixiTick(app, _tickKey);

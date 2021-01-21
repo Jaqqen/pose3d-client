@@ -67,6 +67,9 @@ export const addSceneTweenByKey = (_key, tween) => {
 export const deleteAllSceneTweens = () => {
     const sceneTweenKeys = Object.keys(sceneTweens);
     for(let _key of sceneTweenKeys) {
+        if (pixiTimeouts[_key] && typeof pixiTimeouts[_key].kill === 'function') {
+            pixiTimeouts[_key].kill();
+        }
         delete pixiTimeouts[_key];
     }
 };
