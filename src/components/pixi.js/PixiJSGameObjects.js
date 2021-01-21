@@ -5,7 +5,8 @@ import { assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from 
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
 import { 
-    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, removePixiTick
+    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, deleteAllSceneTweens,
+    removePixiTick
 } from "./SharedTicks";
 
 import gsap from "gsap/gsap-core";
@@ -26,8 +27,10 @@ export const getCloudsForScene = (amountOfClouds) => {
         let assetType;
         if (i % 1.5 === 0) { assetType = assetRsrc.env.cloud.two; }
         else { assetType = assetRsrc.env.cloud.one; }
-        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType])
-        _cloud.scale.set(getRandomArbitrary(0.7, 1.1))
+
+        const _cloud = new PIXI.Sprite(PIXI.utils.TextureCache[assetType]);
+        _cloud.scale.set(getRandomArbitrary(0.7, 1.1));
+
         if (_cloud.scale.x < 1) {
             _cloud.alpha = _cloud.scale.x * 0.9;
         }
@@ -37,7 +40,7 @@ export const getCloudsForScene = (amountOfClouds) => {
 };
 
 export const getGroundsByTypeForScene = (amount, groundType) => {
-    let grounds = [];
+    const grounds = [];
     for (let i = 0; i < amount; i++) {
         grounds.push(new PIXI.Sprite(PIXI.utils.TextureCache[groundType]));
     }
@@ -90,7 +93,7 @@ export const getFinishingFlag = () => {
 
 export const onScreenStartingX = 450;
 export const runPlayerEntryAnimation = (
-    app, player, animations, showMenuAndLifebars, addMainTickToPixiTick, levelView,
+    app, player, animations, showLifebars, addMainTickToPixiTick, levelView,
     onStartAnim, onCompleteAnim
 ) => {
     const characterInit = {x: -70};
@@ -116,7 +119,7 @@ export const runPlayerEntryAnimation = (
                 addPixiTick(app, key, animations[key]);
             }
             removePixiTick(app, listenerKeys.char.entry.own);
-            showMenuAndLifebars();
+            showLifebars();
             addMainTickToPixiTick();
 
             if (
@@ -157,8 +160,10 @@ export const runPlayerFinishAnimation = (
             }
         },
         onComplete: () => {
-            for (let key of Object.keys(onCompleteAnimations)) {
-                removePixiTick(app, key);
+            if (onCompleteAnimations && Object.getOwnPropertyNames(onCompleteAnimations).length > 0) {
+                for (let key of Object.keys(onCompleteAnimations)) {
+                    removePixiTick(app, key);
+                }
             }
 
             removePixiTick(app, listenerKeys.char.finish.own);
@@ -172,29 +177,27 @@ export const runPlayerFinishAnimation = (
                 player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
             }
 
+            deleteAllSceneTweens();
+
             initiateFinishOverlay();
         },
     });
     addPixiTick(app, listenerKeys.char.finish.own, characterFinishingTick);
 };
 
-export const runFlagEntryAnimation = (app, appContainer, flagContainer, groundHeight) => {
+export const runFlagEntryAnimation = (appContainer, flagContainer, groundHeight) => {
     flagContainer.zIndex = -10;
     flagContainer.x = flagPosition();
     flagContainer.y = groundHeight + flagContainer.getBounds().height;
     appContainer.addChild(flagContainer);
 
-    const flagContainerInit = {y: flagContainer.y};
-    const flagEntryTick = () => {flagContainer.y = flagContainerInit.y};
-    gsap.to(flagContainerInit, {
-        y: groundHeight - 25,
-        duration: 2,
+    gsap.to(flagContainer, {
+        y: groundHeight - flagContainer.getBounds().height + 10,
+        duration: 2.5,
         ease: Linear.easeIn,
         onComplete: () => {
-            removePixiTick(app, listenerKeys.game.object.flag.own);
         },
     });
-    addPixiTick(app, listenerKeys.game.object.flag.own, flagEntryTick);
 };
 
 export const removeCloudFromStageBeforeLevelStart = (app) => {
@@ -205,16 +208,13 @@ export const removeCloudFromStageBeforeLevelStart = (app) => {
     app.stage.removeChild(bgCloudsContainer);
 }
 
-export const getLifeBars = (id=null, x=null, y =null) => {
+export const getLifeBars = (amount, id=null, x=null, y =null) => {
     const lifeBarsContainer = new PIXI.Container();
 
-    for (let i = 0; i < 3; i++) {
-        const lifeBar = new PIXI.Graphics();
-        lifeBar.lineStyle(3, 0xFFFFFF, 1);
-        lifeBar.beginFill(0x799351);
-        lifeBar.drawRoundedRect(0, 0, 25, 80, 4);
-        lifeBar.endFill();
-        lifeBar.x = Math.floor(i * 30);
+    for (let i = 0; i < amount; i++) {
+        const lifeBar =  new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.life.emerald]);
+        lifeBar.scale.set(0.5);
+        lifeBar.x = Math.floor(i * lifeBar.width + 5);
 
         lifeBarsContainer.addChild(lifeBar);
     }
@@ -227,9 +227,11 @@ export const getLifeBars = (id=null, x=null, y =null) => {
 };
 
 export const reduceLifeByOne = (lifebarsContainer, player) => {
-    const lifeBarsFirstChild = lifebarsContainer.children.find(e => e)
+    const lifeBarsFirstChild = lifebarsContainer.children.find(e => e);
     if (lifeBarsFirstChild !== undefined) {
-        lifeBarsFirstChild.destroy(true);
+        lifebarsContainer
+            .children
+            .splice(lifebarsContainer.children.length-1, 1);
 
         const cooldownId = ID.levels.charOnCooldown;
         if (player.character.getChildByName('animSpriteCharName')) {
@@ -364,12 +366,17 @@ export const lifeHandlerTick = (
             .find(elem => elem.name = ID.appContainerName)
             .removeChild(lifeBarsContainer);
 
-        interactiveTickObjs.forEach(tickObj => {
-            const _key = tickObj[goLabels.interactive.tick];
-            removePixiTick(app, _key);
-        });
-        for (let key of Object.keys(worldTickObjs)) {
-            removePixiTick(app, key);
+        if (interactiveTickObjs && interactiveTickObjs.length > 0) {
+            interactiveTickObjs.forEach(tickObj => {
+                const _key = tickObj[goLabels.interactive.tick];
+                removePixiTick(app, _key);
+            });
+        }
+
+        if (worldTickObjs && Object.getOwnPropertyNames(worldTickObjs).length > 0) {
+            for (let key of Object.keys(worldTickObjs)) {
+                removePixiTick(app, key);
+            }
         }
 
         //* mainTickObj[0] is the KEY and mainTickObj[1] is the main tick FUNCTION
@@ -417,12 +424,16 @@ export const onFinishLevel = (
 ) => {
     clearAllPixiTimeouts();
 
-    interactiveTickObjs.forEach(tickObj => {
-        const _key = tickObj[goLabels.interactive.tick];
-        removePixiTick(app, _key);
-    });
-    for (let key of Object.keys(worldTickObjs)) {
-        removePixiTick(app, key);
+    if (interactiveTickObjs && interactiveTickObjs.length > 0) {
+        interactiveTickObjs.forEach(tickObj => {
+            const _key = tickObj[goLabels.interactive.tick];
+            removePixiTick(app, _key);
+        });
+    }
+    if (worldTickObjs && Object.getOwnPropertyNames(worldTickObjs).length > 0) {
+        for (let key of Object.keys(worldTickObjs)) {
+            removePixiTick(app, key);
+        }
     }
 
     //* mainTickObj[0] is the KEY and mainTickObj[1] is the main tick FUNCTION

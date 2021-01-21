@@ -6,11 +6,12 @@ import { uiMenuViewConstants } from "components/pixi.js/ViewConstants";
 import { uiMenuButton, UI_MIN_BLUR } from "./PixiJSButton";
 import { 
     addPixiTick, addPixiTickFromSceneToCache, cachedPixiTicksFromScene, clearAllPixiTimeouts, 
-    pixiTicks, removeCachedPixiTickFromScene, removePixiTick 
+    pixiTicks, removeCachedPixiTickFromScene, removePixiTick, sceneTweens 
 } from "./SharedTicks";
 import { menu } from "shared/IdConstants";
 import { setCooldownTween, setHitTween, testForAABB } from "./PixiJSCollision";
 import { menuCollRes } from "./PixiJSMenu";
+import { setIsHoverOnOpen, setStoredHoverOnOpen } from "./PixiJSMenu";
 
 const btnProp = goLabels.menu.ui.element.button;
 const btnFunc = goLabels.menu.ui.element.func;
@@ -20,6 +21,28 @@ const NOT_TRIGGERED = 'PULLER_NOT_TRIGGERED';
 const isButtonOnTriggerPosition = (button) => {
     return button.x <= appViewDimension.width - button.width/2 - 20;
 }
+const getColumnMultiplyer = (orderN) => {
+    switch (orderN) {
+        case 1:
+        case 2:
+        case 3:
+            return 1;
+        case 4:
+        case 5:
+        case 6:
+            return 2;
+        case 7:
+        case 8:
+        case 9:
+            return 3;
+        case 10:
+        case 11:
+        case 12:
+            return 4;
+        default:
+            return null;
+    }
+};
 export class UiMenu {
     constructor(container=[]) {
         this.containerItemObjs = container;
@@ -57,12 +80,15 @@ export class UiMenu {
                 };
                 const offsetH = 70;
                 uiMenuObj[btnProp].x = (
-                    appViewDimension.width - uiMenuObj[btnProp].width - 3*uiMenuViewConstants.offsetW
+                    appViewDimension.width
+                    - getColumnMultiplyer(uiMenuObj.orderN) * (
+                        uiMenuObj[btnProp].width + 3 * uiMenuViewConstants.offsetW
+                    )
                 );
 
                 const halfHeightAndOffset = ((uiMenuObj[btnProp].height/2) + offsetH);
-                if (uiMenuObj.orderN === 1) {
-                    uiMenuObj[btnProp].y = uiMenuObj.orderN * halfHeightAndOffset;
+                if (uiMenuObj.orderN % 3 === 1) {
+                    uiMenuObj[btnProp].y = halfHeightAndOffset;
                 } else {
                     uiMenuObj[btnProp].y = this.containerItemObjs
                         .find(_uiMenuObj => _uiMenuObj.orderN === orderNum)[btnProp]
@@ -155,6 +181,7 @@ export class UiMenu {
             this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Menu');
             this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
             this.radialAccessButton.y = appViewDimension.height/2;
+            this.radialAccessButton.zIndex = 30;
         }
 
         return this.radialAccessButton;
@@ -291,6 +318,11 @@ export class UiMenu {
         this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
         app.stage.addChild(this.pixiMenuContainer);
 
+        //* is setting isHoveringOverMenu in PixiJSMenu
+        setIsHoverOnOpen(true);
+        //* is setting storedHoverMenuItem in PixiJSMenu
+        setStoredHoverOnOpen(this.cancelButton);
+
         const uiMenuTick = () => {
             menuCollRes(app, this.getAsFunctionItemTupleArray(app, false), hands);
         };
@@ -309,15 +341,27 @@ export class UiMenu {
         removePixiTick(app, listenerKeys.menu.openingMenuTick);
         clearAllPixiTimeouts();
 
-        interactiveObjs.forEach(interactiveObj => {
-            const _key = interactiveObj[goLabels.interactive.tick];
-            addPixiTickFromSceneToCache(_key, pixiTicks[_key]);
-            removePixiTick(app, _key);
-        });
+        if (interactiveObjs && interactiveObjs.length > 0) {
+            interactiveObjs.forEach(interactiveObj => {
+                const _key = interactiveObj[goLabels.interactive.tick];
+                addPixiTickFromSceneToCache(_key, pixiTicks[_key]);
+                removePixiTick(app, _key);
+            });
+        }
 
-        for (let _key of Object.keys(worldGoObjs)) {
-            addPixiTickFromSceneToCache(_key, worldGoObjs[_key]);
-            removePixiTick(app, _key)
+        if (worldGoObjs && Object.getOwnPropertyNames(worldGoObjs).length > 0) {
+            for (let _key of Object.keys(worldGoObjs)) {
+                addPixiTickFromSceneToCache(_key, worldGoObjs[_key]);
+                removePixiTick(app, _key)
+            }
+        }
+
+        if (sceneTweens && Object.keys(sceneTweens).length > 0) {
+            for (const key of Object.keys(sceneTweens)) {
+                if (sceneTweens[key] && sceneTweens[key].isActive()) {
+                    sceneTweens[key].pause();
+                }
+            }
         }
 
         if (setHitTween && setHitTween.isActive()) {
@@ -329,6 +373,11 @@ export class UiMenu {
 
         this.pixiMenuContainer = this.getContainerAsPixiContainer(menu.container.ui);
         app.stage.addChild(this.pixiMenuContainer);
+
+        //* is setting isHoveringOverMenu in PixiJSMenu
+        setIsHoverOnOpen(true);
+        //* is setting storedHoverMenuItem in PixiJSMenu
+        setStoredHoverOnOpen(this.cancelButton);
 
         const uiMenuTick = () => {
             menuCollRes(app, this.getAsFunctionItemTupleArray(app, true), hands);
@@ -366,6 +415,14 @@ export class UiMenu {
             for (let key of cachedTickKeys) {
                 addPixiTick(app, key, cachedPixiTicksFromScene[key]);
                 removeCachedPixiTickFromScene(key);
+            }
+        }
+
+        if (sceneTweens && Object.keys(sceneTweens).length > 0) {
+            for (const key of Object.keys(sceneTweens)) {
+                if (sceneTweens[key] && sceneTweens[key].paused()) {
+                    sceneTweens[key].play();
+                }
             }
         }
 

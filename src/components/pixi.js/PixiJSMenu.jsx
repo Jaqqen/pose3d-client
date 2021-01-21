@@ -26,7 +26,13 @@ const loading = {
     tween: null,
 };
 let isHoveringOverMenu = false;
+export const setIsHoverOnOpen = (value) => {
+    isHoveringOverMenu = value;
+};
 let storedHoverMenuItem = null;
+export const setStoredHoverOnOpen = (buttonToStore) => {
+    storedHoverMenuItem = buttonToStore.id;
+}
 
 export const menuCollRes = (app, otherGOs, handGOs) => {
     if (handGOs !== undefined && handGOs !== null &&

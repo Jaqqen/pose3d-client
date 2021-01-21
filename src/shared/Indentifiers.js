@@ -45,6 +45,7 @@ export const client = {
         power: require('static/img/ui/power.png').default,
         dollar: require('static/img/ui/dollar.png').default,
         menu: require('static/img/ui/menu.png').default,
+        retry: require('static/img/ui/reload.png').default,
     },
 }
 
@@ -66,11 +67,22 @@ export const asset = {
             dots: require('static/assets/pixi.js/img/envs/ground_dots.png').default,
             noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png').default,
             flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png').default,
+            underground: {
+                top: require('static/assets/pixi.js/img/envs/underground_top.png').default,
+                bottom: require('static/assets/pixi.js/img/envs/underground_bottom.png').default,
+            }
         },
         cloud: {
             one: require('static/assets/pixi.js/img/envs/cloudOne.png').default,
             two: require('static/assets/pixi.js/img/envs/cloudTwo.png').default,
         },
+        bush: {
+            spiky: require('static/assets/pixi.js/img/envs/bushSpiky.png').default,
+        },
+        bridge: require('static/assets/pixi.js/img/envs/bridge.png').default,
+    },
+    life: {
+        emerald: require('static/assets/pixi.js/img/life/emerald.png').default,
     },
     hand: {
         left: {
@@ -91,6 +103,9 @@ export const asset = {
     projectile: {
         icicle: require('static/assets/pixi.js/img/projectiles/icicle.png').default,
         meteor: require('static/assets/pixi.js/img/projectiles/meteor.png').default,
+    },
+    animation: {
+        trigger: require('static/assets/pixi.js/img/trigger.png').default,
     },
 };
 
@@ -118,11 +133,22 @@ export const assetRsrc = {
             dots: 'groundDotsRsrc',
             noDots: 'groundNoDotsRsrc',
             flying: 'groundDotsFlyingRsrc',
+            underground: {
+                top: 'groundUndergroundTopRsrc',
+                bottom: 'groundUndergroundBottomRsrc',
+            }
         },
         cloud: {
             one: 'cloudOneRsrc',
             two: 'cloudTwoRsrc',
         },
+        bush: {
+            spiky: 'bushSpikyRsrc',
+        },
+        bridge: 'bridgeRsrc',
+    },
+    life: {
+        emerald: 'lifeEmeraldRsrc',
     },
     projectile: {
         icicle: 'icicleRsrc',
@@ -136,6 +162,10 @@ export const assetRsrc = {
         dollar: 'dollarRsrc',
         menu: 'menuRsrc',
         close: 'closeRsrc',
+        retry: 'retryRsrc',
+    },
+    animation: {
+        trigger: 'animationTriggerRsrc',
     },
 };
 
@@ -237,6 +267,10 @@ export const listenerKeys = {
     levelTwoPreview: {
         mainTick: 'levelTwoPreviewMainTickKey',
     },
+    levelTwoScene: {
+        mainTick: 'levelTwoSceneMainTickKey',
+        menuCollTick: 'levelTwoSceneMenuCollTickKey',
+    },
     levelThreePreview: {
         mainTick: 'levelThreePreviewMainTickKey',
     },
@@ -318,3 +352,5 @@ export const localStorageKeys = {
     },
     videoOpacity: 'videoOpacity',
 };
+
+export const envInteractionKey = 'envInteractionKey_';
