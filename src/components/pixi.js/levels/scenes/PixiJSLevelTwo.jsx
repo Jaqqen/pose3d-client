@@ -704,8 +704,8 @@ export const PixiJSLevelTwo = (props) => {
         };
         const meteorAccelBounds = {
             x: {
-                min: 5.2,
-                max: 5.4,
+                min: 4.2,
+                max: 4.4,
             },
             y: {
                 min: -0.3,

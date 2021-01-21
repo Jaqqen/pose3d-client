@@ -158,6 +158,8 @@ export const runPlayerFinishAnimation = (
             ) {
                 player.playAnimation(onStartAnim.state, onStartAnim.animation);
             }
+
+            removePixiTick(app, listenerKeys.menu.uiMenuPullerTick);
         },
         onComplete: () => {
             if (onCompleteAnimations && Object.getOwnPropertyNames(onCompleteAnimations).length > 0) {
