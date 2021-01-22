@@ -18,7 +18,7 @@ export const PixiJSLevelTwoPreview = (props) => {
         [preview.level.startBtn]: startButton,
     } = getPixiJsPreviewContainer(
         'Hard',
-        'Etwas härter, aber definitiv nicht zu schwer. Im Untergrund ist euer Geschick gefragt. Versucht bis ans Ende des Untergrundpfades zu gelangen und vermeidet von den Fallen getroffen zu werden.',
+        'Etwas härter, aber definitiv nicht zu schwer. Versucht bis ans Ende des Untergrundpfades zu kommen und vermeidet, von den Fallen getroffen zu werden. Gibt Acht auf die rotierenden Ringe.',
         previewImg
     );
 
