@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/pose3d-client/static/css/main.2d7f4d67.chunk.css",
-    "main.js": "/pose3d-client/static/js/main.6f01e1e6.chunk.js",
-    "main.js.map": "/pose3d-client/static/js/main.6f01e1e6.chunk.js.map",
+    "main.js": "/pose3d-client/static/js/main.934c7082.chunk.js",
+    "main.js.map": "/pose3d-client/static/js/main.934c7082.chunk.js.map",
     "runtime-main.js": "/pose3d-client/static/js/runtime-main.6062e713.js",
     "runtime-main.js.map": "/pose3d-client/static/js/runtime-main.6062e713.js.map",
     "static/js/2.ca83a231.chunk.js": "/pose3d-client/static/js/2.ca83a231.chunk.js",
@@ -23,6 +23,6 @@
     "static/js/runtime-main.6062e713.js",
     "static/js/2.ca83a231.chunk.js",
     "static/css/main.2d7f4d67.chunk.css",
-    "static/js/main.6f01e1e6.chunk.js"
+    "static/js/main.934c7082.chunk.js"
   ]
 }
