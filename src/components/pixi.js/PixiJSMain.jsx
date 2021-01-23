@@ -249,6 +249,9 @@ export default function PixiJSMain(props) {
                         appViewDimension.width = app.view.width;
                         appViewDimension.height = app.view.height;
                         setAreRsrcsLoaded(true);
+
+                        my_gui = new GUI();
+                        app.ticker.maxFPS = 60;
                     });
             };
 
@@ -289,7 +292,6 @@ export default function PixiJSMain(props) {
                 const videoSrc = document.querySelector(poseWebcamQry);
                 renderHands(videoSrc);
 
-                my_gui = new GUI();
                 const guiVideo = my_gui.addFolder('VIDEO');
                 const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
                 const videoOpacityKey = localStorageKeys.videoOpacity;
@@ -299,14 +301,12 @@ export default function PixiJSMain(props) {
             } else if (props.appMode === appMode.CONTROLLER) {
                 logInfo('Logging Controller-Render');
 
-                my_gui = new GUI();
                 const guiHands = my_gui.addFolder('HANDS');
 
                 renderHandsWithController(guiHands);
             } else if (props.appMode === appMode.KB_AND_MOUSE) {
                 logInfo('Logging KB and Mouse-Render');
 
-                my_gui = new GUI();
                 const guiHands = my_gui.addFolder('HANDS');
 
                 renderHandsWithKeyboardAndMouse(app, guiHands);
