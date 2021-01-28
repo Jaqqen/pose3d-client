@@ -1,7 +1,7 @@
 import * as ID from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import { assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from "shared/Indentifiers";
+import { asset, assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from "shared/Indentifiers";
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
 import { 
@@ -15,7 +15,7 @@ import { viewConstant } from './ViewConstants';
 import { getPixiJsText } from './PixiJSText';
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
 import { menuCollRes } from './PixiJSMenu';
-import { changeAudio } from './PixiJSAudio';
+import { changeAudio, playSoundEffectWithRsrc } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
 
 const cloudInitDist = 272;
@@ -176,6 +176,7 @@ export const runPlayerFinishAnimation = (
                 player.character && player.character.children &&
                 player.character.getChildByName('animSpriteCharName')
             ) {
+                playSoundEffectWithRsrc(asset.audio.bgm.levelCompleted);
                 player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
             }
 
@@ -463,6 +464,7 @@ export const lifeHandlerTick = (
             [quitBtnFn, quitBtn]
         ]
 
+        playSoundEffectWithRsrc(asset.audio.character.death);
         const overlayTick = () => menuCollRes(app, overlayGOs, hands);
         addPixiTick(app, listenerKeys.game.overlay.own, overlayTick);
     }

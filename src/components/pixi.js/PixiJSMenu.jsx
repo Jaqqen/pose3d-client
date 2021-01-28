@@ -14,8 +14,8 @@ import {
 } from 'components/pixi.js/SharedTicks';
 import { viewConstant } from './ViewConstants';
 import { defaultMenuButton, disabledMenuButton, UI_MIN_BLUR } from "components/pixi.js/PixiJSButton";
-import { goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
-import { changeAudio } from './PixiJSAudio';
+import { asset, goLabels, listenerKeys, smvRefs, views } from 'shared/Indentifiers';
+import { changeAudio, playSoundEffectWithRsrc } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
 import { getRAD } from 'shared/Utils';
 
@@ -154,6 +154,7 @@ const loadingConfigurator = {
             const resetInfo = loadingConfigurator.stop(app, loading.tick, loading.tween);
             loading.tick = resetInfo.resetTick;
             loading.tween = resetInfo.resetTween;
+            playSoundEffectWithRsrc(asset.audio.bgm.menuSelection);
             onCompleteFunc();
         };
 

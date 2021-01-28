@@ -94,7 +94,7 @@ export const PixiJSLevelTwo = (props) => {
         const levelTwoTickKey = listenerKeys.levelTwoScene.mainTick;
 
         //? measures and tracking variables
-        const initWorldTickSpeedX = 4;
+        const initWorldTickSpeedX = 5;
         const slowdownWorldSpeedX = 0.16;
         let worldTickSpeedX = initWorldTickSpeedX;
         const initWorldTickSpeedY = 0;
