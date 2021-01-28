@@ -6,6 +6,8 @@ import { UiMenu } from 'components/pixi.js/UiMenu';
 import React, { Fragment, useEffect } from 'react';
 import { assetRsrc, goLabels, listenerKeys, preview, views } from 'shared/Indentifiers';
 import { logInfo } from 'shared/P3dcLogger';
+import previewImg from "static/assets/pixi.js/img/previewImg/PreviewLevelThree.png";
+
 
 export const PixiJSLevelThreePreview = (props) => {
 
@@ -13,7 +15,11 @@ export const PixiJSLevelThreePreview = (props) => {
         [preview.level.container]: prevContainer,
         [preview.level.returnBtn]: returnButton,
         [preview.level.startBtn]: startButton,
-    } = getPixiJsPreviewContainer('Extreme');
+    } = getPixiJsPreviewContainer(
+        'Extreme',
+        'Wachsamkeit ist gefragt. Wer auf die Spielelemente achtet, gewinnt auch. Bei knappem Leben hat man hier die Chance, es sich teils wiederzuholen.',
+        previewImg
+    );
 
     const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
     const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');

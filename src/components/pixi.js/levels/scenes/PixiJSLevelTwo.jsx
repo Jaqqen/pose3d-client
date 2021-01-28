@@ -162,12 +162,7 @@ export const PixiJSLevelTwo = (props) => {
                 startColumn: 0,
                 endColumn: 13,
                 row: 2,
-            },
-            status_surprise: {
-                startColumn: 0,
-                endColumn: 1,
-                row: 3,
-            },
+            }
         }, 'idle_anim');
         const slimeStates = {
             entry: {

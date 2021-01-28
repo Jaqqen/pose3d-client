@@ -181,7 +181,7 @@ export const PixiJSLevelThree = (props) => {
 
         //? COLLIDER
         const collNameSuffix = 'ColliderName';
-        const collTransparency = 0.3;
+        const collTransparency = 0;
         const collPadd = 25;
         const goUpOne = {};
         const showTrigger1 = {};
