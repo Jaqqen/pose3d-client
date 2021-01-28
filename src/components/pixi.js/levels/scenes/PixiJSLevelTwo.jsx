@@ -1068,7 +1068,8 @@ export const PixiJSLevelTwo = (props) => {
                                         y: appViewDimension.height + slime.character.height,
                                         duration: 2,
                                         onComplete: () => {
-                                            lifeBars.children = 0;
+                                            // lifeBars.children = 0;
+                                            lifeBars.getChildByName('lifeBarEnergy').width = 0;
                                             lifeHandlerTick(
                                                 app,
                                                 [], {},
@@ -1092,7 +1093,8 @@ export const PixiJSLevelTwo = (props) => {
                                         y: appViewDimension.height + slime.character.height,
                                         duration: 2,
                                         onComplete: () => {
-                                            lifeBars.children = 0;
+                                            // lifeBars.children = 0;
+                                            lifeBars.getChildByName('lifeBarEnergy').width = 0;
                                             lifeHandlerTick(
                                                 app,
                                                 [], {},
@@ -1272,7 +1274,8 @@ export const PixiJSLevelTwo = (props) => {
                                             handGOs,
                                             retryLevelFn,
                                             returnToViewsMainFn,
-                                            [menuCollTickKey, menuCollTick]
+                                            [menuCollTickKey, menuCollTick],
+                                            () => exitViewFn(views.levelX)
                                         ),
                                         slimeStates.finish.onStart,
                                         slimeStates.finish.onComplete,

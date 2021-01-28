@@ -301,7 +301,8 @@ export default function PixiJSMain(props) {
                 renderHands(videoSrc);
 
                 const guiVideo = my_gui.addFolder('VIDEO');
-                const videoOpacity = guiVideo.add(videoSrc.style, 'opacity');
+                const guiOpacity = guiVideo.addFolder('OPACITY (0 - 1)');
+                const videoOpacity = guiOpacity.add(videoSrc.style, 'opacity');
                 const videoOpacityKey = localStorageKeys.videoOpacity;
                 setDatGuiControllerListener(videoOpacity, videoOpacityKey);
                 setDatGuiControllerValWithLocalStorage(videoOpacity, videoOpacityKey, "0");

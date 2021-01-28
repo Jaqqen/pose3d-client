@@ -171,7 +171,7 @@ export class UiMenu {
         this.radialAccessPuller.state = NOT_TRIGGERED;
 
         this.radialAccessPuller.puller.x = x || appViewDimension.width - this.radialAccessPuller.puller.width;
-        this.radialAccessPuller.puller.y = y || appViewDimension.height/2 - this.radialAccessPuller.puller.height/2;
+        this.radialAccessPuller.puller.y = y || appViewDimension.height*0.13 - this.radialAccessPuller.puller.height/2;
 
         return this.radialAccessPuller.puller;
     }
@@ -180,7 +180,7 @@ export class UiMenu {
         if (this.radialAccessButton === null) {
             this.radialAccessButton = uiMenuButton(assetRsrc.ui.menu, 'menuSuffix', 'Menu');
             this.radialAccessButton.x = appViewDimension.width - this.radialAccessButton.width/2 + 50;
-            this.radialAccessButton.y = appViewDimension.height/2;
+            this.radialAccessButton.y = appViewDimension.height*0.13;
             this.radialAccessButton.zIndex = 30;
         }
 

@@ -1,16 +1,19 @@
 import gsap from 'gsap/gsap-core';
-import { goLabels } from 'shared/Indentifiers';
+import { appContainerName } from 'shared/IdConstants';
+import { goLabels, pJsTxtOptions } from 'shared/Indentifiers';
 import { getRAD } from 'shared/Utils';
 import { reduceLifeByOne } from './PixiJSGameObjects';
 import { manageHandLife } from './PixiJSHands';
 import { appViewDimension } from './PixiJSMain';
+import { getPixiJsText } from './PixiJSText';
+import { viewConstant } from './ViewConstants';
 
 export const testForAABB = (object1, object2) => {
     const b1 = object1.getBounds();
     const b2 = object2.getBounds();
 
-    return  b1.x < b2.x + b2.width && b1.x + b1.width > b2.x &&
-            b1.y < b2.y + b2.height && b1.y + b1.height > b2.y;
+    return  b1.x < b2.x + b2.width - 10 && b1.x + b1.width - 10 > b2.x &&
+            b1.y < b2.y + b2.height - 10 && b1.y + b1.height - 10 > b2.y;
 };
 
 const getCollisionInFrame = (collisionGos) => {
@@ -49,9 +52,45 @@ export const checkCollision = (app, hand, collisionGOs, handStatus) => {
                     hitGO.acceleration.set(horizontalSpeed, verticalSpeed);
 
                     if (!handStatus.isHit && !handStatus.isOnCooldown) {
+                        let handCounterTxt = null;
                         setHitTween = gsap.to(handStatus, {
                             isHit: false,
+                            onStart: () => {
+                                handCounterTxt = getPixiJsText(
+                                    5 - hand.lifeCounter, {
+                                        [pJsTxtOptions.removeShadow]: false,
+                                        [pJsTxtOptions.customFontSize]: 35,
+                                        [pJsTxtOptions.wordWrap]: (viewConstant.previewDim.w/3) - 50,
+                                        [pJsTxtOptions.fill]: '#dddddd',
+                                    }
+                                );
+                                handCounterTxt.x = hand.go.x + hand.go.width/2 + 5;
+                                handCounterTxt.y = hand.go.y - hand.go.height/2 - 5;
+                                if (handStatus.whichHand !== 'rightHand') {
+                                    handCounterTxt.x = hand.go.x - hand.go.width/2 - 30
+                                }
+                                handCounterTxt.name = 'currentHandCounterTxt';
+                                app.stage
+                                    .getChildByName(appContainerName)
+                                    .addChild(handCounterTxt);
+                            },
+                            onUpdate: () => {
+                                if (handCounterTxt) {
+                                    handCounterTxt.x = hand.go.x + hand.go.width/2 + 5;
+                                    handCounterTxt.y = hand.go.y - hand.go.height/2 - 5;
+                                    if (handStatus.whichHand !== 'rightHand') {
+                                        handCounterTxt.x = hand.go.x - hand.go.width/2 - 30
+                                    }
+                                }
+                            },
                             duration: 1.3,
+                            onComplete: () => {
+                                if (handCounterTxt) {
+                                    app.stage
+                                        .getChildByName(appContainerName)
+                                        .removeChild(handCounterTxt);
+                                }
+                            }
                         });
                         if (hand.lifeCounter < 5) {
                             handStatus.isHit = true;

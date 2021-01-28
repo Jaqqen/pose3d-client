@@ -350,6 +350,7 @@ export const overlayerRefs = {
     container: 'overlayContainerRef',
     retry: 'overlayRetryRef',
     mainMenu: 'overlayMainMenuRef',
+    nextLevel: 'overlayNextLevelRef',
     quit: 'overlayQuitRef',
 }
 
