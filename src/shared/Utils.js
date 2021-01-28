@@ -50,3 +50,7 @@ export const setDatGuiControllerValWithLocalStorage = (guiController, storageKey
 };
 
 export const getRAD = () => Math.PI / 180;
+
+export const doesObjectContainFunction = (obj, fn) => {
+    return obj && typeof obj[fn] === 'function';
+};

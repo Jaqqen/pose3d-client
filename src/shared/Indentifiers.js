@@ -186,6 +186,13 @@ export const goLabels = {
                 },
             },
         },
+        env: {
+            bush: {
+                spiky: {
+                    tickKeyPrefix: '_bushTickKeyPrefix_',
+                },
+            },
+        },
     },
     menu: {
         ui: {
@@ -273,6 +280,10 @@ export const listenerKeys = {
     },
     levelThreePreview: {
         mainTick: 'levelThreePreviewMainTickKey',
+    },
+    levelThreeScene: {
+        mainTick: 'levelThreeSceneMainTickKey',
+        menuCollTick: 'levelThreeSceneMenuCollTickKey',
     },
     tutorialsView: {
         mainTick: 'tutorialsViewMainTickKey',

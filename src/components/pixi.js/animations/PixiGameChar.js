@@ -116,17 +116,19 @@ export class PixiGameChar {
     }
 
     playStatusAnimation(statusName) {
-        if (!this.status.isStatusOn) {
-            this.status.isStatusOn = true;
-
-            const statusObj = this.character.getChildByName(statusName);
-            statusObj.animationSpeed = this.animationSpeed;
-            statusObj.loop = false;
-            statusObj.visible = true;
-            statusObj.play();
-            this.status.currentStatusName = statusName;
-
-            this.cancelStatusAnimation();
+        if (this.spriteAnimations.textures[statusName]) {
+            if (!this.status.isStatusOn) {
+                this.status.isStatusOn = true;
+    
+                const statusObj = this.character.getChildByName(statusName);
+                statusObj.animationSpeed = this.animationSpeed;
+                statusObj.loop = false;
+                statusObj.visible = true;
+                statusObj.play();
+                this.status.currentStatusName = statusName;
+    
+                this.cancelStatusAnimation();
+            }
         }
     }
 
