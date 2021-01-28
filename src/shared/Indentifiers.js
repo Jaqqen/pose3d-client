@@ -1,5 +1,8 @@
 import snowMagic from 'static/assets/pixi.js/audio/arthur-vyncke-snow-and-magic.mp3';
 import divisionBlade from 'static/assets/pixi.js/audio/schematist-division-blade.mp3';
+import characterDeath from 'static/assets/pixi.js/audio/414209__jacksonacademyashmore__death.wav';
+import menu_selection from 'static/assets/pixi.js/audio/171697__nenadsimic__menu-selection-click.wav';
+import levelComplete from 'static/assets/pixi.js/audio/487436__elijahdanie__game-win.mp3';
 
 export const appMode = {
     _START_PAGE_: '_START_PAGE_MODE_',
@@ -53,7 +56,12 @@ export const asset = {
     audio: {
         bgm: {
             menu: snowMagic,
+            menuSelection: menu_selection,
             levelScene: divisionBlade,
+            levelCompleted: levelComplete,
+        },
+        character: {
+            death: characterDeath,
         },
     },
     character: {
@@ -350,6 +358,7 @@ export const overlayerRefs = {
     container: 'overlayContainerRef',
     retry: 'overlayRetryRef',
     mainMenu: 'overlayMainMenuRef',
+    nextLevel: 'overlayNextLevelRef',
     quit: 'overlayQuitRef',
 }
 

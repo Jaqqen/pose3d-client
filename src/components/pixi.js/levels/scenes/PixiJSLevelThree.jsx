@@ -85,7 +85,7 @@ export const PixiJSLevelThree = (props) => {
         const levelThreeTickKey = listenerKeys.levelThreeScene.mainTick;
 
         //? measures and tracking variables
-        const initWorldTickSpeedX = 12;
+        const initWorldTickSpeedX = 5;
         const slowdownWorldSpeedX = 0.16;
         let worldTickSpeedX = initWorldTickSpeedX;
         const initWorldTickSpeedY = 0;
@@ -247,7 +247,8 @@ export const PixiJSLevelThree = (props) => {
                 y: appViewDimension.height + slime.character.height,
                 duration: 2,
                 onComplete: () => {
-                    lifeBars.children = 0;
+                    // lifeBars.children = 0;
+                    lifeBars.getChildByName('lifeBarEnergy').width = 0;
                     lifeHandlerTick(
                         app,
                         interactiveGOs, worldTicks,
@@ -281,7 +282,11 @@ export const PixiJSLevelThree = (props) => {
                                 if (testForAABB(lc, hands[hKey].go)) {
                                     lc.name = 'dead';
                                     appContainer.removeChild(lc);
-                                    lifeBars.addChild(getLife(lifeBars.children.length));
+                                    if (lifeBars.getChildByName('lifeBarEnergy')) {
+                                        lifeBars.getChildByName('lifeBarEnergy').width += 100;
+                                    } else {
+                                        lifeBars.addChild(getLife(lifeBars.children.length));
+                                    }
                                 }
                             }
                         })
@@ -1612,7 +1617,8 @@ export const PixiJSLevelThree = (props) => {
                                             handGOs,
                                             retryLevelFn,
                                             returnToViewsMainFn,
-                                            [menuCollTickKey, menuCollTick]
+                                            [menuCollTickKey, menuCollTick],
+                                            null
                                         ),
                                         slimeStates.finish.onStart,
                                         slimeStates.finish.onComplete,

@@ -15,9 +15,25 @@ export default class StartPageMain extends Component {
                     <p>
                         Please follow the instructions before clicking on <b>Start</b>
                     </p>
+                    <p style={{width: '35vw', lineHeight: 1.5}}>
+                        For an <b>optimal</b> gaming experience with the webcam, please make sure that your room is sufficiently illuminated.
+                        <br/>
+                        <b>Additionally</b>, make sure that your upper body can be easily seen in the webcam by taking a distance between 1,5 - 3 meters.
+                        <br/>
+                        <b>To check this out</b>, you can set the webcam opacity after entering the game through the black menu in the top-right.
+                        <br/>
+                        <b>Also</b>, if the music is too loud/quiet, you can set the volume through the black-menu in the top-right.
+                    </p>
+                    <p>
+                        The controls on:
+                        <br/>
+                        <b>➤ Keyboard and Mouse</b>: WASD-Keys and Mouse-Cursor
+                        <br/>
+                        <b>➤ Controller</b>: Both joysticks
+                    </p>
                     <br/>
                     <p>
-                        Please use <b>both hands</b> to navigate throughout the menu.
+                        Please use <b>both ingame-hands</b> to navigate throughout the menu.
                     </p>
                 </div>
                 <div style={{display: 'flex',}}>

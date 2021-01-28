@@ -105,12 +105,7 @@ export const PixiJSLevelOne = (props) => {
                 startColumn: 0,
                 endColumn: 13,
                 row: 2,
-            },
-            status_surprise: {
-                startColumn: 0,
-                endColumn: 1,
-                row: 3,
-            },
+            }
         }, 'idle_anim');
         const slimeStates = {
             entry: {
@@ -306,7 +301,8 @@ export const PixiJSLevelOne = (props) => {
                             handGOs,
                             () => exitViewFn(views.levelN, true),
                             () => exitViewFn(viewsMain),
-                            [menuCollTickKey, menuCollTick]
+                            [menuCollTickKey, menuCollTick],
+                            () => exitViewFn(views.levelH)
                         ),
                         slimeStates.finish.onStart,
                         slimeStates.finish.onComplete,

@@ -94,7 +94,7 @@ export const PixiJSLevelTwo = (props) => {
         const levelTwoTickKey = listenerKeys.levelTwoScene.mainTick;
 
         //? measures and tracking variables
-        const initWorldTickSpeedX = 4;
+        const initWorldTickSpeedX = 5;
         const slowdownWorldSpeedX = 0.16;
         let worldTickSpeedX = initWorldTickSpeedX;
         const initWorldTickSpeedY = 0;
@@ -1068,7 +1068,8 @@ export const PixiJSLevelTwo = (props) => {
                                         y: appViewDimension.height + slime.character.height,
                                         duration: 2,
                                         onComplete: () => {
-                                            lifeBars.children = 0;
+                                            // lifeBars.children = 0;
+                                            lifeBars.getChildByName('lifeBarEnergy').width = 0;
                                             lifeHandlerTick(
                                                 app,
                                                 [], {},
@@ -1092,7 +1093,8 @@ export const PixiJSLevelTwo = (props) => {
                                         y: appViewDimension.height + slime.character.height,
                                         duration: 2,
                                         onComplete: () => {
-                                            lifeBars.children = 0;
+                                            // lifeBars.children = 0;
+                                            lifeBars.getChildByName('lifeBarEnergy').width = 0;
                                             lifeHandlerTick(
                                                 app,
                                                 [], {},
@@ -1272,7 +1274,8 @@ export const PixiJSLevelTwo = (props) => {
                                             handGOs,
                                             retryLevelFn,
                                             returnToViewsMainFn,
-                                            [menuCollTickKey, menuCollTick]
+                                            [menuCollTickKey, menuCollTick],
+                                            () => exitViewFn(views.levelX)
                                         ),
                                         slimeStates.finish.onStart,
                                         slimeStates.finish.onComplete,

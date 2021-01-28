@@ -1,7 +1,7 @@
 import * as ID from 'shared/IdConstants';
 import * as PIXI from 'pixi.js';
 
-import { assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from "shared/Indentifiers";
+import { asset, assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions } from "shared/Indentifiers";
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
 import { 
@@ -15,7 +15,7 @@ import { viewConstant } from './ViewConstants';
 import { getPixiJsText } from './PixiJSText';
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
 import { menuCollRes } from './PixiJSMenu';
-import { changeAudio } from './PixiJSAudio';
+import { changeAudio, playSoundEffectWithRsrc } from './PixiJSAudio';
 import { appViewDimension } from './PixiJSMain';
 
 const cloudInitDist = 272;
@@ -176,6 +176,7 @@ export const runPlayerFinishAnimation = (
                 player.character && player.character.children &&
                 player.character.getChildByName('animSpriteCharName')
             ) {
+                playSoundEffectWithRsrc(asset.audio.bgm.levelCompleted);
                 player.playAnimation(onCompleteAnim.state, onCompleteAnim.animation);
             }
 
@@ -213,11 +214,24 @@ export const removeCloudFromStageBeforeLevelStart = (app) => {
 export const getLifeBars = (amount, id=null, x=null, y =null) => {
     const lifeBarsContainer = new PIXI.Container();
 
-    for (let i = 0; i < amount; i++) {
-        const lifeBar = getLife(i);
-        lifeBarsContainer.addChild(lifeBar);
-    }
+    const lifeEnergy = new PIXI.Graphics();
+    lifeEnergy.beginFill(0xDE3249);
+    lifeEnergy.drawRect(0, 0, amount*100, 70);
+    lifeEnergy.endFill();
+    lifeEnergy.name = 'lifeBarEnergy';
+    lifeBarsContainer.addChild(lifeEnergy);
 
+    const lifeBarFrame = new PIXI.Graphics();
+    lifeBarFrame.lineStyle(8, 0xeeeeee, 1);
+    lifeBarFrame.beginFill(0xDE3249, 0);
+    lifeBarFrame.drawRect(0, 0, amount*100, 70);
+    lifeBarFrame.endFill();
+    lifeBarsContainer.addChild(lifeBarFrame);
+
+    // for (let i = 0; i < amount; i++) {
+    //     const lifeBar = getLife(i);
+    //     lifeBarsContainer.addChild(lifeBar);
+    // }
     if (id !== null) lifeBarsContainer.id = id;
     if (x !== null) lifeBarsContainer.x = x;
     if (y !== null) lifeBarsContainer.y = y;
@@ -232,30 +246,54 @@ export const getLife = (index) => {
 }
 
 export const reduceLifeByOne = (lifebarsContainer, player) => {
-    const lifeBarsFirstChild = lifebarsContainer.children.find(e => e);
-    if (lifeBarsFirstChild !== undefined) {
-        lifebarsContainer
-            .children
-            .splice(lifebarsContainer.children.length-1, 1);
+    if (lifebarsContainer.getChildByName('lifeBarEnergy')) {
+        lifebarsContainer.getChildByName('lifeBarEnergy').width -= 50;
 
         const cooldownId = ID.levels.charOnCooldown;
-        if (player.character.getChildByName('animSpriteCharName')) {
-            player.setDamageState(false);
-        } else {
-            player.tint = '0xa20a0a';
-            player.id = cooldownId;
-        }
-
-        const removeCharId_id = setTimeout(() => {
             if (player.character.getChildByName('animSpriteCharName')) {
-                player.setDamageState(true);
+                player.setDamageState(false);
             } else {
-                player.id = null;
-                player.tint = '0xffffff';
+                player.tint = '0xa20a0a';
+                player.id = cooldownId;
             }
-            clearPixiTimeoutWithKey(cooldownId);
-        }, 3000);
-        addPixiTimeout(cooldownId, removeCharId_id);
+
+            const removeCharId_id = setTimeout(() => {
+                if (player.character.getChildByName('animSpriteCharName')) {
+                    player.setDamageState(true);
+                } else {
+                    player.id = null;
+                    player.tint = '0xffffff';
+                }
+                clearPixiTimeoutWithKey(cooldownId);
+            }, 3000);
+            addPixiTimeout(cooldownId, removeCharId_id);
+        
+    } else {
+        const lifeBarsFirstChild = lifebarsContainer.children.find(e => e);
+        if (lifeBarsFirstChild !== undefined) {
+            lifebarsContainer
+                .children
+                .splice(lifebarsContainer.children.length-1, 1);
+
+                const cooldownId = ID.levels.charOnCooldown;
+                if (player.character.getChildByName('animSpriteCharName')) {
+                    player.setDamageState(false);
+                } else {
+                    player.tint = '0xa20a0a';
+                    player.id = cooldownId;
+                }
+
+                const removeCharId_id = setTimeout(() => {
+                    if (player.character.getChildByName('animSpriteCharName')) {
+                        player.setDamageState(true);
+                    } else {
+                        player.id = null;
+                        player.tint = '0xffffff';
+                    }
+                    clearPixiTimeoutWithKey(cooldownId);
+                }, 3000);
+                addPixiTimeout(cooldownId, removeCharId_id);
+        }
     }
 };
 
@@ -328,7 +366,6 @@ const getGameOverlayByStatus = (gameStatus) => {
     );
     uiRetryBtn.scale.set(0.8);
     uiRetryBtn.zIndex = 52;
-
     gameOverlayContainer.addChild(uiRetryBtn);
 
     const uiMainMenuBtn = uiMenuOverworldButton(
@@ -338,7 +375,6 @@ const getGameOverlayByStatus = (gameStatus) => {
     );
     uiMainMenuBtn.scale.set(0.8);
     uiMainMenuBtn.zIndex = 52;
-
     gameOverlayContainer.addChild(uiMainMenuBtn);
 
     const uiQuitBtn = uiMenuOverworldButton(
@@ -348,8 +384,17 @@ const getGameOverlayByStatus = (gameStatus) => {
     );
     uiQuitBtn.scale.set(0.8);
     uiQuitBtn.zIndex = 52;
-
     gameOverlayContainer.addChild(uiQuitBtn);
+
+    const uiNextLevelBtn = uiMenuOverworldButton(
+        'overlayNextLevelBtnId', 'Next Level',
+        getColumnX(2), buttonConstraints.y + uiMainMenuBtn.height*1.4,
+        btnStatusColor
+    );
+    uiNextLevelBtn.scale.set(0.8);
+    uiNextLevelBtn.zIndex = 52;
+    gameOverlayContainer.addChild(uiNextLevelBtn);
+
     gameOverlayContainer.name = 'gameOverlayContainerName';
 
     return {
@@ -357,6 +402,7 @@ const getGameOverlayByStatus = (gameStatus) => {
         [overlayerRefs.retry]: uiRetryBtn,
         [overlayerRefs.mainMenu]: uiMainMenuBtn,
         [overlayerRefs.quit]: uiQuitBtn,
+        [overlayerRefs.nextLevel]: uiNextLevelBtn,
     };
 }
 
@@ -364,7 +410,7 @@ export const lifeHandlerTick = (
     app, interactiveTickObjs, worldTickObjs, mainTickObj, hands, _retryFn, _exitFn,
     menuTickObj, lifeBarsContainer, uiPullerTicKey
 ) => {
-    if (lifeBarsContainer.children <= 0) {
+    if (lifeBarsContainer.children <= 0 || lifeBarsContainer.getChildByName('lifeBarEnergy').width <= 0) {
         clearAllPixiTimeouts();
         app.stage
             .children
@@ -418,6 +464,7 @@ export const lifeHandlerTick = (
             [quitBtnFn, quitBtn]
         ]
 
+        playSoundEffectWithRsrc(asset.audio.character.death);
         const overlayTick = () => menuCollRes(app, overlayGOs, hands);
         addPixiTick(app, listenerKeys.game.overlay.own, overlayTick);
     }
@@ -425,7 +472,7 @@ export const lifeHandlerTick = (
 
 export const onFinishLevel = (
     app, interactiveTickObjs, worldTickObjs, mainTickObj, hands, _retryFn, _exitFn,
-    menuTickObj
+    menuTickObj, _nextLevelFn
 ) => {
     clearAllPixiTimeouts();
 
@@ -451,7 +498,8 @@ export const onFinishLevel = (
         [overlayerRefs.container]: container,
         [overlayerRefs.retry]: retryBtn,
         [overlayerRefs.mainMenu]: mainMenuBtn,
-        [overlayerRefs.quit]: quitBtn
+        [overlayerRefs.quit]: quitBtn,
+        [overlayerRefs.nextLevel]: nextLevelBtn
     } = getGameOverlayByStatus(ID.levels.status.win);
     app.stage.addChild(container);
 
@@ -467,11 +515,31 @@ export const onFinishLevel = (
         _exitFn();
     };
 
-    const overlayGOs = [
-        [retryFn, retryBtn],
-        [exitFn, mainMenuBtn],
-        [quitBtnFn, quitBtn]
-    ]
+    let overlayGOs;
+    if (_nextLevelFn) {
+        const nextLevelFn = () => {
+            removePixiTick(app, listenerKeys.game.overlay.own);
+            app.stage.removeChild(container);
+            _nextLevelFn();
+        }
+        overlayGOs = [
+            [retryFn, retryBtn],
+            [exitFn, mainMenuBtn],
+            [quitBtnFn, quitBtn],
+            [nextLevelFn, nextLevelBtn],
+        ]
+    } else {
+        container.children.forEach(child => {
+            if (child && child.id && child.id === ID.menu.button.ui.overworldBtnIdPrefix + 'overlayNextLevelBtnId') {
+                container.removeChild(child);
+            }
+        });
+        overlayGOs = [
+            [retryFn, retryBtn],
+            [exitFn, mainMenuBtn],
+            [quitBtnFn, quitBtn],
+        ]
+    }
 
     const overlayTick = () => menuCollRes(app, overlayGOs, hands);
     addPixiTick(app, listenerKeys.game.overlay.own, overlayTick);

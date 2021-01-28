@@ -20,7 +20,7 @@ export const viewConstant = {
         w: 250,
     },
     previewDim: {
-        h: 600,
+        h: 650,
         w: 890,
     },
     topRightMenuCoord: {
