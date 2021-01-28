@@ -214,10 +214,7 @@ export const getLifeBars = (amount, id=null, x=null, y =null) => {
     const lifeBarsContainer = new PIXI.Container();
 
     for (let i = 0; i < amount; i++) {
-        const lifeBar =  new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.life.emerald]);
-        lifeBar.scale.set(0.5);
-        lifeBar.x = Math.floor(i * lifeBar.width + 5);
-
+        const lifeBar = getLife(i);
         lifeBarsContainer.addChild(lifeBar);
     }
 
@@ -227,6 +224,12 @@ export const getLifeBars = (amount, id=null, x=null, y =null) => {
 
     return lifeBarsContainer;
 };
+export const getLife = (index) => {
+    const _life =  new PIXI.Sprite(PIXI.utils.TextureCache[assetRsrc.life.emerald]);
+    _life.scale.set(0.5);
+    _life.x = Math.floor(index * _life.width + 5);
+    return _life
+}
 
 export const reduceLifeByOne = (lifebarsContainer, player) => {
     const lifeBarsFirstChild = lifebarsContainer.children.find(e => e);
@@ -472,4 +475,9 @@ export const onFinishLevel = (
 
     const overlayTick = () => menuCollRes(app, overlayGOs, hands);
     addPixiTick(app, listenerKeys.game.overlay.own, overlayTick);
+};
+
+export const COLL_STATE = {
+    IDLE: 'COLL_STATE_IDLE',
+    TRIGGERED: 'COLL_STATE_TRIGGERED',
 };

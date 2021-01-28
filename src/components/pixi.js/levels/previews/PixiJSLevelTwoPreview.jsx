@@ -66,7 +66,6 @@ export const PixiJSLevelTwoPreview = (props) => {
         return(() => {
             removePreviewTextureFromCache();
         });
-
     },[
         props,
         prevContainer, returnButton, startButton,

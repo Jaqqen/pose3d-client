@@ -5,7 +5,7 @@ import { testForAABB, checkCollision, checkPlayerEnvironment } from "components/
 import { 
     getFinishingFlag, getGroundsByTypeForScene, getLifeBars, removeCloudFromStageBeforeLevelStart,
     runPlayerEntryAnimation, runFlagEntryAnimation, runPlayerFinishAnimation, onFinishLevel,
-    getCloudsForScene, getCloudXDist, lifeHandlerTick
+    getCloudsForScene, getCloudXDist, lifeHandlerTick, COLL_STATE
 } from "components/pixi.js/PixiJSGameObjects";
 import { appViewDimension } from "components/pixi.js/PixiJSMain";
 import { quitBtnFn } from "components/pixi.js/PixiJSMenu";
@@ -36,10 +36,6 @@ const getMomentumForJump = (startX, endX, currentX, constSpeed=null) => {
     return constSpeed ? constSpeed + val : val;
 }
 
-const COLL_STATE = {
-    IDLE: 'COLL_STATE_IDLE',
-    TRIGGERED: 'COLL_STATE_TRIGGERED',
-};
 export const PixiJSLevelTwo = (props) => {
     const lifeBars = getLifeBars(
         5, levels.lifeBar, viewConstant.lifeBarsDim.x, viewConstant.lifeBarsDim.y
@@ -52,7 +48,7 @@ export const PixiJSLevelTwo = (props) => {
         'audioSuffix',
         'Audio'
     );
-    const creditsUiButton = uiMenuButton(assetRsrc.ui.dollar, 'creditsSuffix', 'Credits');
+
     const returnUiButton = uiMenuButton(assetRsrc.ui.return, 'returnSuffix', 'Back');
     const quitUiButton = uiMenuButton(assetRsrc.ui.power, 'quitSuffix', 'Quit');
     const retryUiButton = uiMenuButton(assetRsrc.ui.retry, 'retrySuffix', 'Retry');
@@ -95,7 +91,7 @@ export const PixiJSLevelTwo = (props) => {
         let levelTwoTick;
         let menuCollTick;
         const menuCollTickKey = listenerKeys.levelTwoScene.menuCollTick;
-        const levelTwoTickKey = listenerKeys.levelTwoScene.mainTick; 
+        const levelTwoTickKey = listenerKeys.levelTwoScene.mainTick;
 
         //? measures and tracking variables
         const initWorldTickSpeedX = 4;
@@ -498,6 +494,7 @@ export const PixiJSLevelTwo = (props) => {
             appContainer.addChild(ugGroundBottom);
         });
 
+        //? COLLIDER
         const doJumpDown = {};
         const goDown = {};
         const downResponse = {};
@@ -511,7 +508,6 @@ export const PixiJSLevelTwo = (props) => {
         const upResponseOnGround = {};
         const goFinish = {};
 
-        //? COLLIDER
         const colliderArr = [
             doJumpDown, goDown, downResponse, traphole1, traphole2, ceilTrap1, ceilTrap2, doJumpUp,
             goUp, upResponseBeforeGround, upResponseOnGround, goFinish
@@ -690,7 +686,7 @@ export const PixiJSLevelTwo = (props) => {
                 timeoutRanges.max,
                 timeoutRanges.step
             );
-        }
+        };
 
         ////* METEORS
         const meteorTickKeyPrefix = goLabels.level.one.projectiles.meteor.tickKeyPrefix;
@@ -851,7 +847,7 @@ export const PixiJSLevelTwo = (props) => {
                 [interactiveTickKey]: icicleTickKeyPrefix + i,
                 ceilIndex: i,
             });
-
+        
             appContainer.addChild(tmpIcicle);
         }
 
@@ -905,6 +901,7 @@ export const PixiJSLevelTwo = (props) => {
             addSceneTweenByKey('iciclesTween' + tweenIndex, ceilTrapTween);
         };
 
+        //? WORLD
         const worldObjects = [
             ...clouds,
             ...groundBottoms,
@@ -1358,7 +1355,7 @@ export const PixiJSLevelTwo = (props) => {
                 app, hands, levelTwoTickKey, levelTwoTick, worldTicks, interactiveGOs, menuCollTickKey
             );
         };
-    }, [props, lifeBars, creditsUiButton, returnUiButton, quitUiButton, audioUiButton, retryUiButton])
+    }, [props, lifeBars, returnUiButton, quitUiButton, audioUiButton, retryUiButton]);
 
     return(
         <Fragment></Fragment>

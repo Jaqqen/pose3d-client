@@ -29,6 +29,7 @@ import {
 } from './PixiJSHands';
 import { audioInitVolume, changeAudio, my_audio } from './PixiJSAudio';
 import { PixiJSLevelTwo } from './levels/scenes/PixiJSLevelTwo';
+import { PixiJSLevelThree } from './levels/scenes/PixiJSLevelThree';
 
 let app;
 let appContainer;
@@ -121,7 +122,14 @@ export default function PixiJSMain(props) {
                     />
                 );
             case views.levelX:
-                break;
+                return(
+                    <PixiJSLevelThree
+                        app={app}
+                        appContainer={appContainer}
+                        hands={getHands(false)}
+                        exitViewFn={changeViewOnLevelOrTutExit}
+                    />
+                );
             case views.levelXPrev:
                 return(
                     <PixiJSLevelThreePreview
@@ -133,7 +141,7 @@ export default function PixiJSMain(props) {
                 );
             case views.levels:
                 return(
-                    <PixiJSLevels 
+                    <PixiJSLevels
                         app={app}
                         appContainer={appContainer}
                         hands={getHands()}

@@ -1,6 +1,6 @@
 import { uiMenuButton } from 'components/pixi.js/PixiJSButton';
 import { menuCollRes, quitBtnFn } from 'components/pixi.js/PixiJSMenu';
-import { getPixiJsPreviewContainer } from "components/pixi.js/PixiJSPreview";
+import { getPixiJsPreviewContainer, removePreviewTextureFromCache } from "components/pixi.js/PixiJSPreview";
 import { addPixiTick } from 'components/pixi.js/SharedTicks';
 import { UiMenu } from 'components/pixi.js/UiMenu';
 import React, { Fragment, useEffect } from 'react';
@@ -25,7 +25,7 @@ export const PixiJSLevelThreePreview = (props) => {
 
         const previewMenuGOs = [
             [() => changeViewFn(views.levels), returnButton],
-            [() => console.log('start level three'), startButton],
+            [() => changeViewFn(views.levelX), startButton],
         ];
 
         const uiMenuContainer = new UiMenu();
@@ -56,6 +56,9 @@ export const PixiJSLevelThreePreview = (props) => {
         };
         addPixiTick(app, listenerKeys.menu.uiMenuPullerTick, radialAccessPullerTick);
 
+        return(() => {
+            removePreviewTextureFromCache();
+        });
     },[props, prevContainer, returnButton, startButton, creditsUiButton, returnUiButton, quitUiButton]);
 
     return (
