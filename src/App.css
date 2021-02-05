@@ -49,8 +49,13 @@
 
 /* ? Startpage */
 .startpagemain-container {
-    padding-top: 10px;
+    background-color: whitesmoke;
     margin: auto;
+    padding: 1px 10px 23px 10px;
+    border-radius: 13px;
+    box-shadow: 0 0 0 3px #222222;
+    margin-top: 33px;
+    z-index: 5;
     width: fit-content;
 }
 .startpagemain-container p{
