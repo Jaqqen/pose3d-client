@@ -5,7 +5,7 @@ import { asset, assetRsrc, goLabels, listenerKeys, overlayerRefs, pJsTxtOptions 
 import { getRandomArbitrary } from "shared/Utils";
 import { Linear } from "gsap/gsap-core";
 import { 
-    addPixiTick, addPixiTimeout, clearAllPixiTimeouts, clearPixiTimeoutWithKey, deleteAllSceneTweens,
+    addPixiTick, addPixiTimeout, addSceneTweenByKey, clearAllPixiTimeouts, clearPixiTimeoutWithKey, deleteAllSceneTweens,
     removePixiTick
 } from "./SharedTicks";
 
@@ -250,24 +250,25 @@ export const reduceLifeByOne = (lifebarsContainer, player) => {
         lifebarsContainer.getChildByName('lifeBarEnergy').width -= 50;
 
         const cooldownId = ID.levels.charOnCooldown;
-            if (player.character.getChildByName('animSpriteCharName')) {
-                player.setDamageState(false);
-            } else {
-                player.tint = '0xa20a0a';
-                player.id = cooldownId;
-            }
+        if (player.character.getChildByName('animSpriteCharName')) {
+            player.setDamageState(false);
+        } else {
+            player.tint = '0xa20a0a';
+            player.id = cooldownId;
+        }
 
-            const removeCharId_id = setTimeout(() => {
+        const removeCharId = gsap.to({}, {
+            duration: 3,
+            onComplete: () => {
                 if (player.character.getChildByName('animSpriteCharName')) {
                     player.setDamageState(true);
                 } else {
                     player.id = null;
                     player.tint = '0xffffff';
                 }
-                clearPixiTimeoutWithKey(cooldownId);
-            }, 3000);
-            addPixiTimeout(cooldownId, removeCharId_id);
-        
+            },
+        });
+        addSceneTweenByKey('removeCharIdTweenKey', removeCharId);
     } else {
         const lifeBarsFirstChild = lifebarsContainer.children.find(e => e);
         if (lifeBarsFirstChild !== undefined) {
