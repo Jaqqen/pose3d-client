@@ -1,1 +1,3 @@
 Test file for GitHub Jira-Plugin Integration
+
+Test GitHub issue linking
