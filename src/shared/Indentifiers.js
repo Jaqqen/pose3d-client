@@ -37,18 +37,18 @@ export const body = {
 
 export const client = {
     icon: {
-        close: require('static/img/ui/close.png').default,
-        controller: require('static/img/ui/controller.png').default,
-        controllerDisconnected: require('static/img/ui/controller_disconnected.png').default,
-        keyboardAndMouse: require('static/img/ui/keyboard_and_mouse.png').default,
-        pause: require('static/img/ui/pause.png').default,
-        play: require('static/img/ui/play.png').default,
-        webcam: require('static/img/ui/webcam.png').default,
-        return: require('static/img/ui/return.png').default,
-        power: require('static/img/ui/power.png').default,
-        dollar: require('static/img/ui/dollar.png').default,
-        menu: require('static/img/ui/menu.png').default,
-        retry: require('static/img/ui/reload.png').default,
+        close: require('static/img/ui/close.png'),
+        controller: require('static/img/ui/controller.png'),
+        controllerDisconnected: require('static/img/ui/controller_disconnected.png'),
+        keyboardAndMouse: require('static/img/ui/keyboard_and_mouse.png'),
+        pause: require('static/img/ui/pause.png'),
+        play: require('static/img/ui/play.png'),
+        webcam: require('static/img/ui/webcam.png'),
+        return: require('static/img/ui/return.png'),
+        power: require('static/img/ui/power.png'),
+        dollar: require('static/img/ui/dollar.png'),
+        menu: require('static/img/ui/menu.png'),
+        retry: require('static/img/ui/reload.png'),
     },
 }
 
@@ -65,55 +65,55 @@ export const asset = {
         },
     },
     character: {
-        dummy: require('static/assets/pixi.js/img/character_dummy.png').default,
+        dummy: require('static/assets/pixi.js/img/character_dummy.png'),
         slime: {
-            spriteSheet: require('static/assets/pixi.js/img/slime_spritesheet.png').default,
+            spriteSheet: require('static/assets/pixi.js/img/slime_spritesheet.png'),
         }
     },
     env: {
         ground: {
-            dots: require('static/assets/pixi.js/img/envs/ground_dots.png').default,
-            noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png').default,
-            flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png').default,
+            dots: require('static/assets/pixi.js/img/envs/ground_dots.png'),
+            noDots: require('static/assets/pixi.js/img/envs/ground_no_dots.png'),
+            flying: require('static/assets/pixi.js/img/envs/ground_dots_flying.png'),
             underground: {
-                top: require('static/assets/pixi.js/img/envs/underground_top.png').default,
-                bottom: require('static/assets/pixi.js/img/envs/underground_bottom.png').default,
+                top: require('static/assets/pixi.js/img/envs/underground_top.png'),
+                bottom: require('static/assets/pixi.js/img/envs/underground_bottom.png'),
             }
         },
         cloud: {
-            one: require('static/assets/pixi.js/img/envs/cloudOne.png').default,
-            two: require('static/assets/pixi.js/img/envs/cloudTwo.png').default,
+            one: require('static/assets/pixi.js/img/envs/cloudOne.png'),
+            two: require('static/assets/pixi.js/img/envs/cloudTwo.png'),
         },
         bush: {
-            spiky: require('static/assets/pixi.js/img/envs/bushSpiky.png').default,
+            spiky: require('static/assets/pixi.js/img/envs/bushSpiky.png'),
         },
-        bridge: require('static/assets/pixi.js/img/envs/bridge.png').default,
+        bridge: require('static/assets/pixi.js/img/envs/bridge.png'),
     },
     life: {
-        emerald: require('static/assets/pixi.js/img/life/emerald.png').default,
+        emerald: require('static/assets/pixi.js/img/life/emerald.png'),
     },
     hand: {
         left: {
-            default: require('static/assets/pixi.js/img/bodyparts/leftHand.png').default,
-            crack_1: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_1.png').default,
-            crack_2: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_2.png').default,
-            crack_3: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_3.png').default,
-            crack_4: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_4.png').default,
+            default: require('static/assets/pixi.js/img/bodyparts/leftHand.png'),
+            crack_1: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_1.png'),
+            crack_2: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_2.png'),
+            crack_3: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_3.png'),
+            crack_4: require('static/assets/pixi.js/img/bodyparts/leftHand_crack_4.png'),
         },
         right: {
-            default: require('static/assets/pixi.js/img/bodyparts/rightHand.png').default,
-            crack_1: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_1.png').default,
-            crack_2: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_2.png').default,
-            crack_3: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_3.png').default,
-            crack_4: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_4.png').default,
+            default: require('static/assets/pixi.js/img/bodyparts/rightHand.png'),
+            crack_1: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_1.png'),
+            crack_2: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_2.png'),
+            crack_3: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_3.png'),
+            crack_4: require('static/assets/pixi.js/img/bodyparts/rightHand_crack_4.png'),
         },
     },
     projectile: {
-        icicle: require('static/assets/pixi.js/img/projectiles/icicle.png').default,
-        meteor: require('static/assets/pixi.js/img/projectiles/meteor.png').default,
+        icicle: require('static/assets/pixi.js/img/projectiles/icicle.png'),
+        meteor: require('static/assets/pixi.js/img/projectiles/meteor.png'),
     },
     animation: {
-        trigger: require('static/assets/pixi.js/img/trigger.png').default,
+        trigger: require('static/assets/pixi.js/img/trigger.png'),
     },
 };
 
