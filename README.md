@@ -10,4 +10,4 @@ Slimper (Slime + Swiper) is an interactive web-game. Protect the slime and finis
 - Keyboard & Mouse
 
 ## Demo
-Currently unavailable
+[Demo](https://jaqqen.github.io/slimper/)
