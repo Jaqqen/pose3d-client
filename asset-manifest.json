@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/pose3d-client/static/css/main.dd91c968.css",
-    "main.js": "/pose3d-client/static/js/main.0c24852a.js",
-    "static/media/arthur-vyncke-snow-and-magic.mp3": "/pose3d-client/static/media/arthur-vyncke-snow-and-magic.81eb4e087b8a4715d3c5.mp3",
-    "static/media/schematist-division-blade.mp3": "/pose3d-client/static/media/schematist-division-blade.0fcb10ce9c6c2091b906.mp3",
-    "static/media/StartPageMainBackground.gif": "/pose3d-client/static/media/StartPageMainBackground.21401db207ee67a651fd.gif",
-    "static/media/PreviewLevelThree.png": "/pose3d-client/static/media/PreviewLevelThree.eac390ab80806709aeea.png",
-    "static/media/PreviewLevelTwo.png": "/pose3d-client/static/media/PreviewLevelTwo.b02883cccbc92f956443.png",
-    "static/media/PreviewLevelOne.png": "/pose3d-client/static/media/PreviewLevelOne.2feec8183366fe2d1383.png",
-    "static/media/414209__jacksonacademyashmore__death.wav": "/pose3d-client/static/media/414209__jacksonacademyashmore__death.79f0a236f9d4e618bcac.wav",
-    "static/media/487436__elijahdanie__game-win.mp3": "/pose3d-client/static/media/487436__elijahdanie__game-win.84fe7b8da8374b0e1a6b.mp3",
-    "static/media/171697__nenadsimic__menu-selection-click.wav": "/pose3d-client/static/media/171697__nenadsimic__menu-selection-click.504e31278c0ed47e7562.wav",
-    "static/media/slime_spritesheet.png": "/pose3d-client/static/media/slime_spritesheet.49636f6e735d7c459e5c.png",
-    "static/media/underground_top.png": "/pose3d-client/static/media/underground_top.194dfe7a11bf87023add.png",
-    "static/media/underground_bottom.png": "/pose3d-client/static/media/underground_bottom.652b6d8315d854840dcb.png",
-    "static/media/ground_dots.png": "/pose3d-client/static/media/ground_dots.e3ea3a1d0d67e01467cf.png",
-    "index.html": "/pose3d-client/index.html",
-    "main.dd91c968.css.map": "/pose3d-client/static/css/main.dd91c968.css.map",
-    "main.0c24852a.js.map": "/pose3d-client/static/js/main.0c24852a.js.map"
+    "main.css": "/slimper/static/css/main.dd91c968.css",
+    "main.js": "/slimper/static/js/main.ebe13a33.js",
+    "static/media/arthur-vyncke-snow-and-magic.mp3": "/slimper/static/media/arthur-vyncke-snow-and-magic.81eb4e087b8a4715d3c5.mp3",
+    "static/media/schematist-division-blade.mp3": "/slimper/static/media/schematist-division-blade.0fcb10ce9c6c2091b906.mp3",
+    "static/media/StartPageMainBackground.gif": "/slimper/static/media/StartPageMainBackground.21401db207ee67a651fd.gif",
+    "static/media/PreviewLevelThree.png": "/slimper/static/media/PreviewLevelThree.eac390ab80806709aeea.png",
+    "static/media/PreviewLevelTwo.png": "/slimper/static/media/PreviewLevelTwo.b02883cccbc92f956443.png",
+    "static/media/PreviewLevelOne.png": "/slimper/static/media/PreviewLevelOne.2feec8183366fe2d1383.png",
+    "static/media/414209__jacksonacademyashmore__death.wav": "/slimper/static/media/414209__jacksonacademyashmore__death.79f0a236f9d4e618bcac.wav",
+    "static/media/487436__elijahdanie__game-win.mp3": "/slimper/static/media/487436__elijahdanie__game-win.84fe7b8da8374b0e1a6b.mp3",
+    "static/media/171697__nenadsimic__menu-selection-click.wav": "/slimper/static/media/171697__nenadsimic__menu-selection-click.504e31278c0ed47e7562.wav",
+    "static/media/slime_spritesheet.png": "/slimper/static/media/slime_spritesheet.49636f6e735d7c459e5c.png",
+    "static/media/underground_top.png": "/slimper/static/media/underground_top.194dfe7a11bf87023add.png",
+    "static/media/underground_bottom.png": "/slimper/static/media/underground_bottom.652b6d8315d854840dcb.png",
+    "static/media/ground_dots.png": "/slimper/static/media/ground_dots.e3ea3a1d0d67e01467cf.png",
+    "index.html": "/slimper/index.html",
+    "main.dd91c968.css.map": "/slimper/static/css/main.dd91c968.css.map",
+    "main.ebe13a33.js.map": "/slimper/static/js/main.ebe13a33.js.map"
   },
   "entrypoints": [
     "static/css/main.dd91c968.css",
-    "static/js/main.0c24852a.js"
+    "static/js/main.ebe13a33.js"
   ]
 }
