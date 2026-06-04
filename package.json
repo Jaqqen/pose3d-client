@@ -1,6 +1,6 @@
 {
-    "homepage": "https://jaqqen.github.io/pose3d-client",
-    "name": "pose3d-client-frontend",
+    "homepage": "https://jaqqen.github.io/slimper",
+    "name": "slimper",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
