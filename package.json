@@ -20,12 +20,14 @@
         "react-webcam": "^5.2.0"
     },
     "scripts": {
+        "install:include-legacy": "npm install",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "clean:intellij-target": "rm -rf node_modules; npm cache clean --force;"
     },
     "eslintConfig": {
         "extends": "react-app"
