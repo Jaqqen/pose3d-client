@@ -1,33 +1,26 @@
 {
   "files": {
-    "main.css": "/pose3d-client/static/css/main.b8bfb79c.chunk.css",
-    "main.js": "/pose3d-client/static/js/main.73c543d3.chunk.js",
-    "main.js.map": "/pose3d-client/static/js/main.73c543d3.chunk.js.map",
-    "runtime-main.js": "/pose3d-client/static/js/runtime-main.6062e713.js",
-    "runtime-main.js.map": "/pose3d-client/static/js/runtime-main.6062e713.js.map",
-    "static/js/2.ccf5581d.chunk.js": "/pose3d-client/static/js/2.ccf5581d.chunk.js",
-    "static/js/2.ccf5581d.chunk.js.map": "/pose3d-client/static/js/2.ccf5581d.chunk.js.map",
+    "main.css": "/pose3d-client/static/css/main.dd91c968.css",
+    "main.js": "/pose3d-client/static/js/main.0c24852a.js",
+    "static/media/arthur-vyncke-snow-and-magic.mp3": "/pose3d-client/static/media/arthur-vyncke-snow-and-magic.81eb4e087b8a4715d3c5.mp3",
+    "static/media/schematist-division-blade.mp3": "/pose3d-client/static/media/schematist-division-blade.0fcb10ce9c6c2091b906.mp3",
+    "static/media/StartPageMainBackground.gif": "/pose3d-client/static/media/StartPageMainBackground.21401db207ee67a651fd.gif",
+    "static/media/PreviewLevelThree.png": "/pose3d-client/static/media/PreviewLevelThree.eac390ab80806709aeea.png",
+    "static/media/PreviewLevelTwo.png": "/pose3d-client/static/media/PreviewLevelTwo.b02883cccbc92f956443.png",
+    "static/media/PreviewLevelOne.png": "/pose3d-client/static/media/PreviewLevelOne.2feec8183366fe2d1383.png",
+    "static/media/414209__jacksonacademyashmore__death.wav": "/pose3d-client/static/media/414209__jacksonacademyashmore__death.79f0a236f9d4e618bcac.wav",
+    "static/media/487436__elijahdanie__game-win.mp3": "/pose3d-client/static/media/487436__elijahdanie__game-win.84fe7b8da8374b0e1a6b.mp3",
+    "static/media/171697__nenadsimic__menu-selection-click.wav": "/pose3d-client/static/media/171697__nenadsimic__menu-selection-click.504e31278c0ed47e7562.wav",
+    "static/media/slime_spritesheet.png": "/pose3d-client/static/media/slime_spritesheet.49636f6e735d7c459e5c.png",
+    "static/media/underground_top.png": "/pose3d-client/static/media/underground_top.194dfe7a11bf87023add.png",
+    "static/media/underground_bottom.png": "/pose3d-client/static/media/underground_bottom.652b6d8315d854840dcb.png",
+    "static/media/ground_dots.png": "/pose3d-client/static/media/ground_dots.e3ea3a1d0d67e01467cf.png",
     "index.html": "/pose3d-client/index.html",
-    "static/css/main.b8bfb79c.chunk.css.map": "/pose3d-client/static/css/main.b8bfb79c.chunk.css.map",
-    "static/js/2.ccf5581d.chunk.js.LICENSE.txt": "/pose3d-client/static/js/2.ccf5581d.chunk.js.LICENSE.txt",
-    "static/media/171697__nenadsimic__menu-selection-click.504e3127.wav": "/pose3d-client/static/media/171697__nenadsimic__menu-selection-click.504e3127.wav",
-    "static/media/414209__jacksonacademyashmore__death.79f0a236.wav": "/pose3d-client/static/media/414209__jacksonacademyashmore__death.79f0a236.wav",
-    "static/media/487436__elijahdanie__game-win.84fe7b8d.mp3": "/pose3d-client/static/media/487436__elijahdanie__game-win.84fe7b8d.mp3",
-    "static/media/PreviewLevelOne.2feec818.png": "/pose3d-client/static/media/PreviewLevelOne.2feec818.png",
-    "static/media/PreviewLevelThree.eac390ab.png": "/pose3d-client/static/media/PreviewLevelThree.eac390ab.png",
-    "static/media/PreviewLevelTwo.b02883cc.png": "/pose3d-client/static/media/PreviewLevelTwo.b02883cc.png",
-    "static/media/StartPageMainBackground.21401db2.gif": "/pose3d-client/static/media/StartPageMainBackground.21401db2.gif",
-    "static/media/arthur-vyncke-snow-and-magic.81eb4e08.mp3": "/pose3d-client/static/media/arthur-vyncke-snow-and-magic.81eb4e08.mp3",
-    "static/media/ground_dots.png": "/pose3d-client/static/media/ground_dots.e3ea3a1d.png",
-    "static/media/schematist-division-blade.0fcb10ce.mp3": "/pose3d-client/static/media/schematist-division-blade.0fcb10ce.mp3",
-    "static/media/slime_spritesheet.png": "/pose3d-client/static/media/slime_spritesheet.49636f6e.png",
-    "static/media/underground_bottom.png": "/pose3d-client/static/media/underground_bottom.652b6d83.png",
-    "static/media/underground_top.png": "/pose3d-client/static/media/underground_top.194dfe7a.png"
+    "main.dd91c968.css.map": "/pose3d-client/static/css/main.dd91c968.css.map",
+    "main.0c24852a.js.map": "/pose3d-client/static/js/main.0c24852a.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.6062e713.js",
-    "static/js/2.ccf5581d.chunk.js",
-    "static/css/main.b8bfb79c.chunk.css",
-    "static/js/main.73c543d3.chunk.js"
+    "static/css/main.dd91c968.css",
+    "static/js/main.0c24852a.js"
   ]
 }
